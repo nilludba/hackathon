@@ -200,9 +200,9 @@ INTRO_CSS = """<style>
   background-size: 170% 170% !important; background-attachment: scroll !important;
   animation: drift 16s ease-in-out infinite alternate; }
 .nav, .hero-t { color: #F5F5F7; }
-.grad { background-image: linear-gradient(100deg, #9AA5B4 0%, #9AA5B4 38%, #FFFFFF 50%, #9AA5B4 62%, #9AA5B4 100%); }
+.grad { background-image: linear-gradient(100deg, #D3DAE3 0%, #D3DAE3 38%, #FFFFFF 50%, #D3DAE3 62%, #D3DAE3 100%); }
 .hero-t { margin-top: 4.5rem; font-size: clamp(3rem, 8.5vw, 5.8rem); }
-.hero-s, .feat .d, .foot { color: #A1A1A6; }
+.hero-s, .feat .d, .foot, .demo-note { color: #D2D2D7 !important; }
 .pill { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); color: #F5F5F7; backdrop-filter: blur(12px); }
 [data-testid="stExpander"] details { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.12); }
 [data-testid="stExpander"] summary, [data-testid="stExpander"] p, [data-testid="stExpander"] li { color: #E8E8ED; }
@@ -270,7 +270,7 @@ def use_documents(blobs):
 _pad_l, cta, _pad_r = st.columns([1, 1.3, 1])
 if DEMO_PDFS and cta.button(_("Demo starten"), type="primary", width="stretch"):
     st.session_state["demo"] = "pdf"
-cta.markdown(f"<div style='text-align:center;color:#86868B;font-size:.85rem;line-height:1.4'>{_('Metallbau Gruber GmbH (Beispiel): Träger und Schrauben aus der Türkei, Alu-Profile aus China, Ventile.')}</div>",
+cta.markdown(f"<div class='demo-note' style='text-align:center;color:#86868B;font-size:.85rem;line-height:1.4'>{_('Metallbau Gruber GmbH (Beispiel): Träger und Schrauben aus der Türkei, Alu-Profile aus China, Ventile.')}</div>",
              unsafe_allow_html=True)
 uploads = st.file_uploader(_("Oder eigene Rechnungen hochladen — PDF oder CSV"), type=["pdf", "csv"], accept_multiple_files=True,
                            help=_("Auftragsbestätigungen zählen als geplante Einfuhr, nicht als bereits eingeführt. CSV-Spalten: ") + ", ".join(COLUMNS))
