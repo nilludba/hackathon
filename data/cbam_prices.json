@@ -1,0 +1,10 @@
+{
+  "2026-Q1": 75.36,
+  "2026-Q2": 75.28,
+  "2026-Q3": 82.32,
+  "unit": "EUR per CBAM certificate (= 1 t CO2e)",
+  "published": {"2026-Q1": "2026-04-07", "2026-Q2": "2026-07-06", "2026-Q3": "2026-10-05"},
+  "note": "2026: quarterly price = weighted average of EU ETS auction clearing prices of the quarter; applies to goods imported in that quarter. Q4 2026 is due on 2027-01-04. From 2027 prices are weekly.",
+  "checked": "2026-11-27",
+  "source": "https://taxation-customs.ec.europa.eu/carbon-border-adjustment-mechanism/price-cbam-certificates_en"
+}
