@@ -32,9 +32,9 @@ STATUS_COLOR = {"exempt": "#248A3D", "near": "#BF4800", "over": "#D70015"}
 st.set_page_config(page_title="CBAM-Lotse", page_icon="◼", layout="centered", initial_sidebar_state="collapsed")
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Color+Emoji&display=swap');
 html, body, .stApp, button, input, textarea, select, p, li, label {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Inter', 'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
   -webkit-font-smoothing: antialiased; }
 header[data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDecoration"], footer, #MainMenu,
 section[data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"] { display: none !important; }
@@ -96,7 +96,9 @@ prices = try_load(load_prices)
 # Top bar: wordmark left, language right
 nav_l, nav_r = st.columns([4, 1], vertical_alignment="center")
 nav_l.markdown("<div class='nav'>CBAM-Lotse</div>", unsafe_allow_html=True)
+FLAGS = {"DE": "🇦🇹 DE", "EN": "🇬🇧 EN"}  # Austrian German, British English
 L = LANGS[nav_r.segmented_control("Sprache", list(LANGS), default=list(LANGS)[0], key="ui_lang",
+                                  format_func=lambda k: FLAGS.get(k, k),
                                   label_visibility="collapsed") or list(LANGS)[0]]
 
 
