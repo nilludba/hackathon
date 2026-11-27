@@ -55,14 +55,14 @@ h1, h2, h3, h4 { letter-spacing: -0.022em; color: #1D1D1F; }
   border-radius: 980px; padding: .6rem 1.4rem; font-weight: 500; border: 1px solid #D2D2D7; }
 button[data-testid="stBaseButton-primary"] { background: #0071E3; border-color: #0071E3; color: #FFFFFF; }
 button[data-testid="stBaseButton-primary"]:hover { background: #0077ED; border-color: #0077ED; color: #FFFFFF; }
-.hero-card { background: #F5F5F7; border-radius: 24px; padding: 2.3rem 2.3rem 2rem; margin: .4rem 0 1.1rem; }
+.hero-card { background: var(--glass); border: 1px solid rgba(255,255,255,.7); box-shadow: var(--lift); backdrop-filter: blur(18px) saturate(160%); border-radius: 24px; padding: 2.3rem 2.3rem 2rem; margin: .4rem 0 1.1rem; }
 .hero-card .kicker { font-size: .88rem; color: #6E6E73; font-weight: 500; }
 .hero-card .title { font-size: clamp(1.7rem, 3.8vw, 2.6rem); font-weight: 700; letter-spacing: -0.032em; line-height: 1.1; margin: .45rem 0 .7rem; }
 .hero-card .sub { font-size: 1.12rem; color: #424245; line-height: 1.45; }
-.option { background: #F5F5F7; border-radius: 20px; padding: 1.4rem; min-height: 158px; color: #424245; line-height: 1.45; }
+.option { background: var(--glass); border: 1px solid rgba(255,255,255,.7); box-shadow: var(--lift); backdrop-filter: blur(18px) saturate(160%); border-radius: 20px; padding: 1.4rem; min-height: 158px; color: #424245; line-height: 1.45; }
 .option b { display: block; font-size: 1.06rem; margin-bottom: .4rem; color: #1D1D1F; }
 div[data-testid="stColumn"] > div:has(.option) { height: 100%; }
-div[data-testid="stMetric"] { background: #F5F5F7; border-radius: 20px; padding: 1.1rem 1.3rem; }
+div[data-testid="stMetric"] { background: var(--glass); border: 1px solid rgba(255,255,255,.7); box-shadow: var(--lift); backdrop-filter: blur(18px) saturate(160%); border-radius: 20px; padding: 1.1rem 1.3rem; }
 div[data-testid="stMetricValue"] { font-size: 1.9rem; font-weight: 600; letter-spacing: -0.025em; }
 div[data-testid="stMetricLabel"] p { color: #6E6E73; }
 .tbar { position: relative; height: 14px; border-radius: 7px; background: #E8E8ED; margin: 26px 0 10px; }
@@ -76,11 +76,27 @@ div[data-testid="stMetricLabel"] p { color: #6E6E73; }
 .tlegend i.hatch { background: repeating-linear-gradient(45deg, #D70015 0 3px, #F9D0D5 3px 6px); }
 [data-baseweb="tab-list"] { gap: 1.8rem; }
 [data-baseweb="tab"] p { font-weight: 500; font-size: 1rem; }
-[data-testid="stExpander"] details { border: none; background: #F5F5F7; border-radius: 14px; }
-[data-testid="stFileUploaderDropzone"] { background: #F5F5F7; border: 1px dashed #C7C7CC; border-radius: 18px; }
+[data-testid="stExpander"] details { border: 1px solid rgba(255,255,255,.7); background: var(--glass); backdrop-filter: blur(18px); border-radius: 14px; }
+[data-testid="stFileUploaderDropzone"] { background: var(--glass); backdrop-filter: blur(18px); border: 1px dashed #C7C7CC; border-radius: 18px; }
 .foot { color: #86868B; font-size: .8rem; text-align: center; margin-top: 4.5rem; line-height: 1.6; }
 /* Motion and detail */
-.stApp { background: radial-gradient(1100px 520px at 50% -12%, rgba(0,113,227,.09), rgba(122,90,248,.04) 45%, transparent 70%), #FFFFFF; }
+:root { --glass: rgba(255,255,255,.72); --lift: 0 10px 30px rgba(17,17,26,.06); }
+.stApp { background:
+  radial-gradient(48% 40% at 8% 0%, rgba(0,113,227,.16), transparent 62%),
+  radial-gradient(42% 38% at 96% 8%, rgba(122,90,248,.14), transparent 62%),
+  radial-gradient(50% 45% at 50% 105%, rgba(229,0,125,.08), transparent 62%), #F7F8FB;
+  background-attachment: fixed; }
+@keyframes drift { 0% { background-position: 0% 0%; } 100% { background-position: 100% 100%; } }
+.chip { display: inline-block; padding: .3rem .8rem; border-radius: 980px; font-size: .85rem; font-weight: 600; margin: .55rem 0 .2rem; }
+.nums { display: flex; align-items: baseline; flex-wrap: wrap; gap: .5rem .8rem; margin: .5rem 0 .8rem; }
+.nums .big { font-size: clamp(2.4rem, 6vw, 3.6rem); font-weight: 700; letter-spacing: -0.04em; line-height: 1; color: #1D1D1F; }
+.nums .of { font-size: 1.3rem; color: #86868B; font-weight: 500; }
+.nums .arrow { font-size: 1.8rem; color: #86868B; }
+.nums .over { align-self: center; padding: .35rem .8rem; border-radius: 980px; background: #D70015; color: #FFFFFF; font-weight: 600; font-size: .95rem;
+  animation: pop .5s .9s both; }
+@keyframes pop { from { opacity: 0; transform: scale(.8); } to { opacity: 1; transform: none; } }
+.tbar .zone { position: absolute; top: 0; right: 0; height: 14px; border-radius: 0 7px 7px 0;
+  background: repeating-linear-gradient(-45deg, rgba(215,0,21,.10) 0 6px, rgba(215,0,21,.04) 6px 12px); }
 @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes shine { to { background-position: 200% center; } }
@@ -175,11 +191,53 @@ def footer():
 
 importer = st.session_state.get("importer", "Metallbau Gruber GmbH")
 
-# Hero
-st.markdown(f"<div class='pill'><span class='dot'></span>{_('CBAM-Pflicht seit 1. Jänner 2026')}</div>"
-            f"<div class='hero-t'>{_('Betrifft mich CBAM?').replace('CBAM', '<span class=grad>CBAM</span>')}</div>"
-            f"<div class='hero-s'>{_('Laden Sie Ihre Rechnungen. In einer Minute wissen Sie, ob die CO₂-Grenzabgabe der EU Sie trifft, was sie kostet und was jetzt zu tun ist.')}</div>",
-            unsafe_allow_html=True)
+INTRO_CSS = """<style>
+.stApp { background:
+  radial-gradient(55% 50% at 18% 18%, rgba(0,113,227,.55), transparent 62%),
+  radial-gradient(50% 45% at 85% 25%, rgba(122,90,248,.45), transparent 62%),
+  radial-gradient(60% 55% at 50% 100%, rgba(229,0,125,.32), transparent 62%), #05060A !important;
+  background-size: 170% 170% !important; background-attachment: scroll !important;
+  animation: drift 16s ease-in-out infinite alternate; }
+.nav, .hero-t { color: #F5F5F7; }
+.hero-t { margin-top: 4.5rem; font-size: clamp(3rem, 8.5vw, 5.8rem); }
+.hero-s, .feat .d, .foot { color: #A1A1A6; }
+.pill { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); color: #F5F5F7; backdrop-filter: blur(12px); }
+[data-testid="stExpander"] details { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.12); }
+[data-testid="stExpander"] summary, [data-testid="stExpander"] p, [data-testid="stExpander"] li { color: #E8E8ED; }
+[data-testid="stButtonGroup"] button { background: rgba(255,255,255,.08); color: #F5F5F7; border-color: rgba(255,255,255,.2); }
+[data-testid="stButtonGroup"] button p { color: #F5F5F7; }
+button[data-testid="stBaseButton-primary"] { font-size: 1.05rem; padding: .8rem 1.6rem; box-shadow: 0 10px 34px rgba(0,113,227,.55); }
+</style>"""
+
+
+def hero():
+    st.markdown(f"<div class='pill'><span class='dot'></span>{_('CBAM-Pflicht seit 1. Jänner 2026')}</div>"
+                f"<div class='hero-t'>{_('Betrifft mich CBAM?').replace('CBAM', '<span class=grad>CBAM</span>')}</div>"
+                f"<div class='hero-s'>{_('Laden Sie Ihre Rechnungen. In einer Minute wissen Sie, ob die CO₂-Grenzabgabe der EU Sie trifft, was sie kostet und was jetzt zu tun ist.')}</div>",
+                unsafe_allow_html=True)
+
+
+# Intro: a landing page first; the tool opens after "Los geht's"
+if not st.session_state.get("started"):
+    st.markdown(INTRO_CSS, unsafe_allow_html=True)
+    hero()
+    _pad_l, go, _pad_r = st.columns([1, 1, 1])
+    if go.button(_("Los geht's"), type="primary", width="stretch"):
+        st.session_state["started"] = True
+        st.rerun()
+    st.markdown("<div style='height:2.5rem'></div>", unsafe_allow_html=True)
+    f1, f2, f3 = st.columns(3)
+    for i, (col, k, d) in enumerate(((f1, "50 t", _("pro Jahr. Darunter sind Sie befreit, darüber brauchen Sie eine Zulassung.")),
+                                     (f2, "€ 300–500", _("Strafe je Tonne CO₂ ohne Zulassung — auf alle Emissionen des Jahres.")),
+                                     (f3, _("1 Minute"), _("von der Rechnung zur Entscheidung. Jede Zahl mit Quelle.")))):
+        col.markdown(f"<div class='feat' style='animation-delay:{.35 + .12 * i:.2f}s'><div class='k grad'>{k}</div>"
+                     f"<div class='d'>{d}</div></div>", unsafe_allow_html=True)
+    with st.expander(_("Was ist CBAM? (30 Sekunden)")):
+        st.markdown(_("Seit 1. Jänner 2026 kostet die Einfuhr von Stahl, Aluminium, Zement, Dünger, Strom und Wasserstoff in die EU einen CO₂-Preis. Wer mehr als **50 Tonnen** solcher Waren pro Jahr einführt, braucht vorher eine Zulassung. Ohne Zulassung drohen **€ 300–500 Strafe je Tonne CO₂**. Ob eine Ware zählt, entscheidet ihr Zolltarif-Code (KN-Code)."))
+    footer()
+    st.stop()
+
+section(_("Schritt 1"), _("Ihre Einkäufe"))
 
 if annex is None:
     st.error(_("data/annex_i.json fehlt — ohne Anhang I ist keine Prüfung möglich."))
@@ -219,13 +277,7 @@ elif st.session_state.get("demo") == "pdf":
     lines = use_documents([(p.read_bytes(), p.name) for p in DEMO_PDFS])
 
 if lines is None:
-    f1, f2, f3 = st.columns(3)
-    for col, k, d in ((f1, "50 t", _("pro Jahr. Darunter sind Sie befreit, darüber brauchen Sie eine Zulassung.")),
-                      (f2, "€ 300–500", _("Strafe je Tonne CO₂ ohne Zulassung — auf alle Emissionen des Jahres.")),
-                      (f3, _("1 Minute"), _("von der Rechnung zur Entscheidung. Jede Zahl mit Quelle."))):
-        col.markdown(f"<div class='feat'><div class='k grad'>{k}</div><div class='d'>{d}</div></div>", unsafe_allow_html=True)
-    with st.expander(_("Was ist CBAM? (30 Sekunden)")):
-        st.markdown(_("Seit 1. Jänner 2026 kostet die Einfuhr von Stahl, Aluminium, Zement, Dünger, Strom und Wasserstoff in die EU einen CO₂-Preis. Wer mehr als **50 Tonnen** solcher Waren pro Jahr einführt, braucht vorher eine Zulassung. Ohne Zulassung drohen **€ 300–500 Strafe je Tonne CO₂**. Ob eine Ware zählt, entscheidet ihr Zolltarif-Code (KN-Code)."))
+    st.info(_("Laden Sie die Demo oder Ihre Rechnungen — das Ergebnis erscheint dann hier."))
     footer()
     st.stop()
 
@@ -324,22 +376,25 @@ if default_values is not None and prices is not None:
 # Step 2: the answer, in one sentence
 section(_("Schritt 2"), _("Ihr Ergebnis"))
 t = status["total_t"]
-headline = {
-    "exempt": _("Sie sind befreit: {t:.1f} t von 50 t", t=t),
-    "near": _("Achtung: {t:.1f} t von 50 t — knapp unter der Schwelle", t=t),
-    "over": _("Schwelle überschritten: {t:.1f} t von 50 t", t=t),
-}[status["status"]]
 sub = {
     "exempt": _("Sie müssen derzeit nichts zahlen. Geben Sie die Befreiung in der Zollanmeldung an und behalten Sie die Menge im Blick."),
     "near": _("Noch {left:.1f} t, dann brauchen Sie eine Zulassung als CBAM-Anmelder — sonst drohen hohe Strafen.", left=max(THRESHOLD_T - t, 0)),
     "over": _("Sie brauchen den Status als zugelassener CBAM-Anmelder. Ohne Zulassung drohen hohe Strafen."),
 }[status["status"]]
+chip = {"exempt": _("Befreit"), "near": _("Knapp unter dem Limit"), "over": _("Limit überschritten")}[status["status"]]
 if crosses:
-    headline = _("Achtung: Ihre geplante Lieferung bringt Sie auf {n:.1f} t von 50 t", n=total_after)
+    chip = _("Geplante Lieferung überschreitet das Limit")
     sub = _("Heute sind Sie mit {t:.1f} t noch befreit. Die bestätigte Bestellung über {p:.1f} t würde die Schwelle überschreiten — entscheiden Sie vorher (Schritt 3).", t=t, p=planned_t)
 color = STATUS_COLOR["over" if crosses else status["status"]]
+end_t = total_after if planned_t else t
+nums = f"<span class='big'>{n(t)} t</span><span class='of'>/ 50 t</span>"
+if planned_t:
+    nums += f"<span class='arrow'>→</span><span class='big' style='color:{STATUS_COLOR['over'] if end_t > THRESHOLD_T else '#1D1D1F'}'>{n(end_t)} t</span>"
+if end_t > THRESHOLD_T:
+    nums += f"<span class='over'>{_('+{o:.1f} t über dem Limit', o=end_t - THRESHOLD_T)}</span>"
 st.markdown(f"<div class='hero-card' style='--c:{color}'><div class='kicker'>{html.escape(importer)} · {year}</div>"
-            f"<div class='title' style='color:{color}'>{headline}</div><div class='sub'>{sub}</div></div>",
+            f"<span class='chip' style='color:{color};background:{color}1A'>{chip}</span>"
+            f"<div class='nums'>{nums}</div><div class='sub'>{sub}</div></div>",
             unsafe_allow_html=True)
 # Threshold bar: imported (solid) + planned (hatched), 50 t marker
 scale = max(THRESHOLD_T * 1.2, total_after * 1.05)
@@ -347,6 +402,7 @@ w_imp, w_plan, x_lim = t / scale * 100, planned_t / scale * 100, THRESHOLD_T / s
 bar_color = STATUS_COLOR["over" if t > THRESHOLD_T else ("near" if t >= 0.8 * THRESHOLD_T else "exempt")]
 st.markdown(
     f"<div class='tbar' role='img' aria-label='{html.escape(_('{t:.1f} t von {max:.0f} t CBAM-Waren im Jahr {year}', t=t, max=THRESHOLD_T, year=year))}'>"
+    f"<div class='zone' style='left:{x_lim:.1f}%'></div>"
     f"<div class='imp' style='width:{w_imp:.1f}%;background:{bar_color}'></div>"
     f"<div class='plan' style='left:{w_imp:.1f}%;width:{w_plan:.1f}%'></div>"
     f"<div class='lim' style='left:{x_lim:.1f}%'><span>50 t</span></div></div>"

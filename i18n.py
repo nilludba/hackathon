@@ -276,6 +276,15 @@ T.update({
 
 T.update({'CBAM-Pflicht seit 1. Jänner 2026': {'en': 'CBAM obligations since 1 January 2026'}})
 
+T.update({
+    "Los geht's": {"en": "Let's start"},
+    'Befreit': {"en": 'Exempt'},
+    'Knapp unter dem Limit': {"en": 'Just below the limit'},
+    'Limit überschritten': {"en": 'Limit exceeded'},
+    'Geplante Lieferung überschreitet das Limit': {"en": 'Planned delivery exceeds the limit'},
+    '+{o:.1f} t über dem Limit': {"en": '+{o:.1f} t over the limit'},
+})
+
 def tr(text, lang, **kw):
     """Translate a German UI text and fill its {placeholders}."""
     s = T.get(text, {}).get(lang, text)
