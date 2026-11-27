@@ -7,7 +7,7 @@ exemption threshold introduced by the CBAM Omnibus (Regulation (EU) 2025/2083),
 estimates certificate cost and penalty risk, and drafts the supplier request and a
 report in which every number links to its legal source.
 
-**Live demo: https://cbam-lotse.streamlit.app** — click "Demo-PDFs einlesen", language switch in the sidebar.
+**Live demo: https://cbam-lotse.streamlit.app/?embed=true** — click "Demo-PDFs einlesen", language switch in the sidebar.
 
 Built at the AAU Hackathon, Klagenfurt, 27–29 November 2026
 (University Challenge "The $15-an-Hour Expert").
