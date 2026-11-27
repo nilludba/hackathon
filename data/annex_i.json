@@ -1,0 +1,393 @@
+[
+  {
+    "cn": "25070080",
+    "cn_display": "2507 00 80",
+    "sector": "cement",
+    "description_de": "Anderer kaolinischer Ton und Lehm",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "25231000",
+    "cn_display": "2523 10 00",
+    "sector": "cement",
+    "description_de": "Zementklinker",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "25232100",
+    "cn_display": "2523 21 00",
+    "sector": "cement",
+    "description_de": "Weißer Portlandzement, auch künstlich gefärbt",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "25232900",
+    "cn_display": "2523 29 00",
+    "sector": "cement",
+    "description_de": "Anderer Portlandzement",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "25233000",
+    "cn_display": "2523 30 00",
+    "sector": "cement",
+    "description_de": "Tonerdezement",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "25239000",
+    "cn_display": "2523 90 00",
+    "sector": "cement",
+    "description_de": "Anderer Zement",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "27160000",
+    "cn_display": "2716 00 00",
+    "sector": "electricity",
+    "description_de": "Elektrischer Strom",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "28080000",
+    "cn_display": "2808 00 00",
+    "sector": "fertilisers",
+    "description_de": "Salpetersäure; Nitriersäuren",
+    "exclude": [],
+    "ghg": "CO2+N2O",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "2814",
+    "cn_display": "2814",
+    "sector": "fertilisers",
+    "description_de": "Ammoniak, wasserfrei oder in wässriger Lösung",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "28342100",
+    "cn_display": "2834 21 00",
+    "sector": "fertilisers",
+    "description_de": "Kaliumnitrat",
+    "exclude": [],
+    "ghg": "CO2+N2O",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "3102",
+    "cn_display": "3102",
+    "sector": "fertilisers",
+    "description_de": "Mineralische oder chemische Stickstoffdüngemittel",
+    "exclude": [],
+    "ghg": "CO2+N2O",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "3105",
+    "cn_display": "3105",
+    "sector": "fertilisers",
+    "description_de": "Mineralische oder chemische Düngemittel mit zwei oder drei der Stoffe Stickstoff, Phosphor, Kalium; andere Düngemittel (ausgenommen 3105 60 00)",
+    "exclude": [
+      "31056000"
+    ],
+    "ghg": "CO2+N2O",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "72",
+    "cn_display": "72",
+    "sector": "iron_steel",
+    "description_de": "Kapitel 72 – Eisen und Stahl, ausgenommen Ferrosilicium (7202 2), Ferrosiliciummangan, -chrom, Ferromolybdän, -wolfram, -titan, -vanadium, -niob, andere Ferrolegierungen (7202 99) sowie Abfälle und Schrott (7204)",
+    "exclude": [
+      "72022",
+      "72023000",
+      "72025000",
+      "72027000",
+      "72028000",
+      "72029100",
+      "72029200",
+      "72029300",
+      "720299",
+      "7204"
+    ],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "26011200",
+    "cn_display": "2601 12 00",
+    "sector": "iron_steel",
+    "description_de": "Agglomerierte Eisenerze und ihre Konzentrate, ausgenommen Schwefelkiesabbrände",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7301",
+    "cn_display": "7301",
+    "sector": "iron_steel",
+    "description_de": "Spundwanderzeugnisse; durch Schweißen hergestellte Profile, aus Eisen oder Stahl",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7302",
+    "cn_display": "7302",
+    "sector": "iron_steel",
+    "description_de": "Oberbaumaterial für Bahnen (Schienen, Schwellen, Laschen usw.), aus Eisen oder Stahl",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "730300",
+    "cn_display": "7303 00",
+    "sector": "iron_steel",
+    "description_de": "Rohre und Hohlprofile, aus Gusseisen",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7304",
+    "cn_display": "7304",
+    "sector": "iron_steel",
+    "description_de": "Rohre und Hohlprofile, nahtlos, aus Eisen (ausgenommen Gusseisen) oder Stahl",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7305",
+    "cn_display": "7305",
+    "sector": "iron_steel",
+    "description_de": "Andere Rohre mit kreisförmigem Querschnitt, äußerer Durchmesser mehr als 406,4 mm, aus Eisen oder Stahl",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7306",
+    "cn_display": "7306",
+    "sector": "iron_steel",
+    "description_de": "Andere Rohre und Hohlprofile (z. B. geschweißt, genietet, gefalzt), aus Eisen oder Stahl",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7307",
+    "cn_display": "7307",
+    "sector": "iron_steel",
+    "description_de": "Rohrformstücke, Rohrverschlussstücke und Rohrverbindungsstücke, aus Eisen oder Stahl",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7308",
+    "cn_display": "7308",
+    "sector": "iron_steel",
+    "description_de": "Konstruktionen und Konstruktionsteile (Brücken, Türme, Tore, Türen, Fenster, Geländer usw.) sowie zu Konstruktionszwecken vorgearbeitete Bleche, Profile, Rohre, aus Eisen oder Stahl",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "730900",
+    "cn_display": "7309 00",
+    "sector": "iron_steel",
+    "description_de": "Sammelbehälter, Fässer, Bottiche aus Eisen oder Stahl, mehr als 300 l",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7310",
+    "cn_display": "7310",
+    "sector": "iron_steel",
+    "description_de": "Sammelbehälter, Fässer, Trommeln, Kannen, Dosen aus Eisen oder Stahl, 300 l oder weniger",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "731100",
+    "cn_display": "7311 00",
+    "sector": "iron_steel",
+    "description_de": "Behälter aus Eisen oder Stahl für verdichtete oder verflüssigte Gase",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7318",
+    "cn_display": "7318",
+    "sector": "iron_steel",
+    "description_de": "Schrauben, Bolzen, Muttern, Niete, Splinte, Unterlegscheiben und ähnliche Waren, aus Eisen oder Stahl",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7326",
+    "cn_display": "7326",
+    "sector": "iron_steel",
+    "description_de": "Andere Waren aus Eisen oder Stahl",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7601",
+    "cn_display": "7601",
+    "sector": "aluminium",
+    "description_de": "Aluminium in Rohform",
+    "exclude": [],
+    "ghg": "CO2+PFC",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7603",
+    "cn_display": "7603",
+    "sector": "aluminium",
+    "description_de": "Pulver und Flitter, aus Aluminium",
+    "exclude": [],
+    "ghg": "CO2+PFC",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7604",
+    "cn_display": "7604",
+    "sector": "aluminium",
+    "description_de": "Stangen (Stäbe) und Profile, aus Aluminium",
+    "exclude": [],
+    "ghg": "CO2+PFC",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7605",
+    "cn_display": "7605",
+    "sector": "aluminium",
+    "description_de": "Draht aus Aluminium",
+    "exclude": [],
+    "ghg": "CO2+PFC",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7606",
+    "cn_display": "7606",
+    "sector": "aluminium",
+    "description_de": "Bleche und Bänder, aus Aluminium, Dicke mehr als 0,2 mm",
+    "exclude": [],
+    "ghg": "CO2+PFC",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7607",
+    "cn_display": "7607",
+    "sector": "aluminium",
+    "description_de": "Folien und dünne Bänder, aus Aluminium, Dicke 0,2 mm oder weniger",
+    "exclude": [],
+    "ghg": "CO2+PFC",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7608",
+    "cn_display": "7608",
+    "sector": "aluminium",
+    "description_de": "Rohre aus Aluminium",
+    "exclude": [],
+    "ghg": "CO2+PFC",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "76090000",
+    "cn_display": "7609 00 00",
+    "sector": "aluminium",
+    "description_de": "Rohrformstücke, Rohrverschlussstücke und Rohrverbindungsstücke, aus Aluminium",
+    "exclude": [],
+    "ghg": "CO2+PFC",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7610",
+    "cn_display": "7610",
+    "sector": "aluminium",
+    "description_de": "Konstruktionen und Konstruktionsteile sowie zu Konstruktionszwecken vorgearbeitete Bleche, Profile, Rohre, aus Aluminium",
+    "exclude": [],
+    "ghg": "CO2+PFC",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "76110000",
+    "cn_display": "7611 00 00",
+    "sector": "aluminium",
+    "description_de": "Sammelbehälter, Fässer, Bottiche aus Aluminium, mehr als 300 l",
+    "exclude": [],
+    "ghg": "CO2+PFC",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7612",
+    "cn_display": "7612",
+    "sector": "aluminium",
+    "description_de": "Sammelbehälter, Fässer, Dosen, Tuben aus Aluminium, 300 l oder weniger",
+    "exclude": [],
+    "ghg": "CO2+PFC",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "76130000",
+    "cn_display": "7613 00 00",
+    "sector": "aluminium",
+    "description_de": "Behälter aus Aluminium für verdichtete oder verflüssigte Gase",
+    "exclude": [],
+    "ghg": "CO2+PFC",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7614",
+    "cn_display": "7614",
+    "sector": "aluminium",
+    "description_de": "Litzen, Kabel, Seile aus Aluminium, ausgenommen isolierte Erzeugnisse für die Elektrotechnik",
+    "exclude": [],
+    "ghg": "CO2+PFC",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "7616",
+    "cn_display": "7616",
+    "sector": "aluminium",
+    "description_de": "Andere Waren aus Aluminium",
+    "exclude": [],
+    "ghg": "CO2+PFC",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  },
+  {
+    "cn": "28041000",
+    "cn_display": "2804 10 00",
+    "sector": "hydrogen",
+    "description_de": "Wasserstoff",
+    "exclude": [],
+    "ghg": "CO2",
+    "source": "https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02023R0956-20251020 (Verordnung (EU) 2023/956, konsolidierte Fassung vom 20.10.2025, Anhang I)"
+  }
+]
