@@ -36,3 +36,9 @@ def test_default_value_lookup(cn, country, total, markup_2026):
 
 def test_unknown_country_returns_none():
     assert default_value("7308 90 59", "RS", load_default_values()) is None
+
+
+def test_only_direct_emissions_count_for_steel_and_aluminium():
+    # Anhang II VO 2023/956: iron/steel and aluminium -> direct emissions only
+    for r in load_default_values():
+        assert r["total_tco2_per_t"] == pytest.approx(float(r["direct_tco2_per_t"]))
