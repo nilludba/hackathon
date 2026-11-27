@@ -106,6 +106,69 @@ T = {
         "ru": "например: что будет, если осенью я куплю ещё 20 t профилей?"},
     "Der Lotse rechnet …": {"en": "Calculating …", "ru": "Считаю …"},
     "Werkzeug": {"en": "Tool", "ru": "Инструмент"},
+    "**So funktioniert es**\n\n1. Rechnungen hochladen oder Demo laden\n2. Ergebnis lesen: Betrifft mich CBAM?\n3. Nächsten Schritt wählen und Dokumente herunterladen": {
+        "en": "**How it works**\n\n1. Upload invoices or load the demo\n2. Read the result: does CBAM apply to me?\n3. Pick the next step and download documents",
+        "ru": "**Как это работает**\n\n1. Загрузите счета или откройте демо\n2. Прочитайте итог: касается ли меня CBAM?\n3. Выберите следующий шаг и скачайте документы"},
+    "Ersteinschätzung, keine Rechtsberatung. Zuständig in Österreich: AnEH, cbam@bmf.gv.at.": {
+        "en": "First assessment, not legal advice. Competent authority in Austria: AnEH, cbam@bmf.gv.at.",
+        "ru": "Предварительная оценка, не юридическая консультация. Ведомство в Австрии: AnEH, cbam@bmf.gv.at."},
+    "Was ist CBAM? (30 Sekunden)": {"en": "What is CBAM? (30 seconds)", "ru": "Что такое CBAM? (30 секунд)"},
+    "Seit 1. Jänner 2026 kostet die Einfuhr von Stahl, Aluminium, Zement, Dünger, Strom und Wasserstoff in die EU einen CO₂-Preis. Wer mehr als **50 Tonnen** solcher Waren pro Jahr einführt, braucht vorher eine Zulassung. Ohne Zulassung drohen **€ 300–500 Strafe je Tonne CO₂**. Ob eine Ware zählt, entscheidet ihr Zolltarif-Code (KN-Code).": {
+        "en": "Since 1 January 2026, importing steel, aluminium, cement, fertilisers, electricity and hydrogen into the EU carries a CO₂ price. Anyone importing more than **50 tonnes** of such goods per year needs an authorisation first. Without it, the penalty is **€ 300–500 per tonne of CO₂**. Whether a product counts depends on its customs code (CN code).",
+        "ru": "С 1 января 2026 года за ввоз в ЕС стали, алюминия, цемента, удобрений, электроэнергии и водорода нужно платить за CO₂. Кто ввозит больше **50 тонн** таких товаров в год, должен заранее получить допуск. Без допуска штраф — **€ 300–500 за тонну CO₂**. Подпадает ли товар, решает его таможенный код (код КН)."},
+    "Schritt 1": {"en": "Step 1", "ru": "Шаг 1"},
+    "Schritt 2": {"en": "Step 2", "ru": "Шаг 2"},
+    "Schritt 3": {"en": "Step 3", "ru": "Шаг 3"},
+    "Ihre Einkäufe": {"en": "Your purchases", "ru": "Ваши закупки"},
+    "Demo ausprobieren": {"en": "Try the demo", "ru": "Попробовать демо"},
+    "Metallbau Gruber GmbH (Beispiel): Träger und Schrauben aus der Türkei, Alu-Profile aus China, Ventile.": {
+        "en": "Metallbau Gruber GmbH (example): beams and screws from Turkey, aluminium profiles from China, valves.",
+        "ru": "Metallbau Gruber GmbH (пример): балки и винты из Турции, алюминиевые профили из Китая, вентили."},
+    "Laden Sie die Demo oder Ihre Rechnungen — das Ergebnis erscheint dann hier.": {
+        "en": "Load the demo or your invoices — the result will appear here.",
+        "ru": "Откройте демо или загрузите свои счета — итог появится здесь."},
+    "Erkannte Positionen prüfen und korrigieren ({n})": {
+        "en": "Check and correct the recognised lines ({n})", "ru": "Проверить и исправить распознанные строки ({n})"},
+    "Ware": {"en": "Product", "ru": "Товар"},
+    "KN-Code": {"en": "CN code", "ru": "Код КН"},
+    "Nettomasse (kg)": {"en": "Net mass (kg)", "ru": "Масса нетто (кг)"},
+    "Land": {"en": "Country", "ru": "Страна"},
+    "Datum": {"en": "Date", "ru": "Дата"},
+    "Lieferant": {"en": "Supplier", "ru": "Поставщик"},
+    "Ihr Ergebnis": {"en": "Your result", "ru": "Ваш итог"},
+    "Sie sind befreit: {t:.1f} t von 50 t": {"en": "You are exempt: {t:.1f} t of 50 t", "ru": "Вы освобождены: {t:.1f} t из 50 t"},
+    "Achtung: {t:.1f} t von 50 t — knapp unter der Schwelle": {
+        "en": "Careful: {t:.1f} t of 50 t — just below the threshold", "ru": "Внимание: {t:.1f} t из 50 t — почти на пороге"},
+    "Schwelle überschritten: {t:.1f} t von 50 t": {"en": "Threshold exceeded: {t:.1f} t of 50 t", "ru": "Порог превышен: {t:.1f} t из 50 t"},
+    "Sie müssen derzeit nichts zahlen. Geben Sie die Befreiung in der Zollanmeldung an und behalten Sie die Menge im Blick.": {
+        "en": "You pay nothing for now. State the exemption in the customs declaration and keep an eye on the quantity.",
+        "ru": "Сейчас платить ничего не нужно. Укажите освобождение в таможенной декларации и следите за объёмом."},
+    "Noch {left:.1f} t, dann brauchen Sie eine Zulassung als CBAM-Anmelder — sonst drohen hohe Strafen.": {
+        "en": "{left:.1f} t more and you need authorisation as a CBAM declarant — otherwise high penalties apply.",
+        "ru": "Ещё {left:.1f} t — и понадобится допуск декларанта CBAM, иначе грозят большие штрафы."},
+    "Sie brauchen den Status als zugelassener CBAM-Anmelder. Ohne Zulassung drohen hohe Strafen.": {
+        "en": "You need the status of authorised CBAM declarant. Without it, high penalties apply.",
+        "ru": "Нужен статус уполномоченного декларанта CBAM. Без него грозят большие штрафы."},
+    "Ihre geplanten Lieferungen ({p:.1f} t) würden die Schwelle überschreiten.": {
+        "en": "Your planned deliveries ({p:.1f} t) would exceed the threshold.",
+        "ru": "Запланированные поставки ({p:.1f} t) превысят порог."},
+    "Was jetzt?": {"en": "What now?", "ru": "Что делать?"},
+    "✅ Nächste Schritte": {"en": "✅ Next steps", "ru": "✅ Следующие шаги"},
+    "📦 Waren": {"en": "📦 Goods", "ru": "📦 Товары"},
+    "💶 Kosten": {"en": "💶 Cost", "ru": "💶 Стоимость"},
+    "💬 Fragen": {"en": "💬 Questions", "ru": "💬 Вопросы"},
+    "Dokumente": {"en": "Documents", "ru": "Документы"},
+    "**{y}** CBAM-Ware(n) · **{n}** nicht betroffen · **{u}** unklar": {
+        "en": "**{y}** CBAM good(s) · **{n}** not affected · **{u}** unclear",
+        "ru": "Товаров CBAM: **{y}** · не подпадают: **{n}** · неясно: **{u}**"},
+    "Menge (t)": {"en": "Quantity (t)", "ru": "Количество (t)"},
+    "So rechnen wir: **Menge × Standardwert der EU (t CO₂ je t Ware) × Zertifikatspreis des Quartals**.": {
+        "en": "How we calculate: **quantity × EU default value (t CO₂ per t of goods) × certificate price of the quarter**.",
+        "ru": "Как считаем: **количество × значение ЕС по умолчанию (t CO₂ на t товара) × цена сертификата за квартал**."},
+    "Rechnung": {"en": "Calculation", "ru": "Расчёт"},
+    "Ihre Frage": {"en": "Your question", "ru": "Ваш вопрос"},
+    "Fragen": {"en": "Ask", "ru": "Спросить"},
+
 }
 
 
