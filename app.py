@@ -27,32 +27,58 @@ COLUMNS = ["description", "cn", "net_mass_kg", "origin", "date", "supplier"]
 OMNIBUS_URL = "https://eur-lex.europa.eu/eli/reg/2025/2083/oj"
 CBAM_REG_URL = "https://eur-lex.europa.eu/eli/reg/2023/956/oj"
 PRICE_URL = "https://taxation-customs.ec.europa.eu/carbon-border-adjustment-mechanism/price-cbam-certificates_en"
-STATUS_COLOR = {"exempt": "#2E7D4F", "near": "#B7791F", "over": "#B42318"}
+STATUS_COLOR = {"exempt": "#248A3D", "near": "#BF4800", "over": "#D70015"}
 
-st.set_page_config(page_title="CBAM-Lotse", page_icon="🏭", layout="centered")
+st.set_page_config(page_title="CBAM-Lotse", page_icon="◼", layout="centered", initial_sidebar_state="collapsed")
 st.markdown("""
 <style>
-.block-container { padding-top: 2rem; max-width: 880px; }
-.hero { background: #FFFFFF; border: 1px solid #E4DED2; border-radius: 14px; padding: 22px 26px; margin: 8px 0 18px; }
-.hero .kicker { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: #6B6457; }
-.hero .title { font-size: 1.7rem; font-weight: 700; line-height: 1.25; margin: 4px 0 6px; }
-.hero .sub { font-size: 1.05rem; color: #3D3A33; }
-.step { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: #A8451A; font-weight: 700; margin-top: 1.2rem; }
-.option { background: #FFFFFF; border: 1px solid #E4DED2; border-radius: 12px; padding: 14px 16px; height: 100%; }
-.option b { display: block; margin-bottom: 4px; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+html, body, .stApp, button, input, textarea, select, p, li, label {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased; }
+header[data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDecoration"], footer, #MainMenu,
+section[data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"] { display: none !important; }
+.block-container { max-width: 980px; padding-top: 1.2rem; padding-bottom: 5rem; }
+h1, h2, h3, h4 { letter-spacing: -0.022em; color: #1D1D1F; }
+.nav { font-weight: 600; font-size: 1.05rem; letter-spacing: -0.01em; color: #1D1D1F; }
+.hero-t { text-align: center; font-size: clamp(2.6rem, 6.5vw, 4.4rem); font-weight: 700; letter-spacing: -0.035em;
+  line-height: 1.04; margin: 3.2rem 0 1rem; color: #1D1D1F; }
+.hero-s { text-align: center; font-size: clamp(1.1rem, 2.3vw, 1.4rem); color: #6E6E73; line-height: 1.42;
+  max-width: 640px; margin: 0 auto 2.2rem; }
+.feat { text-align: center; padding: 1.4rem .4rem; }
+.feat .k { font-size: 2.3rem; font-weight: 700; letter-spacing: -0.035em; color: #1D1D1F; }
+.feat .d { color: #6E6E73; font-size: .98rem; line-height: 1.42; margin-top: .2rem; }
+.section { font-size: clamp(1.9rem, 4.2vw, 2.7rem); font-weight: 700; letter-spacing: -0.032em; line-height: 1.1;
+  margin: 4.2rem 0 1.2rem; color: #1D1D1F; }
+.section small { display: block; font-size: .95rem; font-weight: 600; color: #86868B; letter-spacing: 0; margin-bottom: .45rem; }
+.stButton > button, .stDownloadButton > button, .stFormSubmitButton > button {
+  border-radius: 980px; padding: .6rem 1.4rem; font-weight: 500; border: 1px solid #D2D2D7; }
+button[data-testid="stBaseButton-primary"] { background: #0071E3; border-color: #0071E3; color: #FFFFFF; }
+button[data-testid="stBaseButton-primary"]:hover { background: #0077ED; border-color: #0077ED; color: #FFFFFF; }
+.hero-card { background: #F5F5F7; border-radius: 24px; padding: 2.3rem 2.3rem 2rem; margin: .4rem 0 1.1rem; }
+.hero-card .kicker { font-size: .88rem; color: #6E6E73; font-weight: 500; }
+.hero-card .title { font-size: clamp(1.7rem, 3.8vw, 2.6rem); font-weight: 700; letter-spacing: -0.032em; line-height: 1.1; margin: .45rem 0 .7rem; }
+.hero-card .sub { font-size: 1.12rem; color: #424245; line-height: 1.45; }
+.option { background: #F5F5F7; border-radius: 20px; padding: 1.4rem; min-height: 158px; color: #424245; line-height: 1.45; }
+.option b { display: block; font-size: 1.06rem; margin-bottom: .4rem; color: #1D1D1F; }
 div[data-testid="stColumn"] > div:has(.option) { height: 100%; }
-.option { min-height: 132px; box-shadow: 0 1px 2px rgba(31,36,48,.06); }
-.tbar { position: relative; height: 22px; border-radius: 11px; background: #E9E3D7; margin: 14px 0 8px; }
-.tbar .imp { position: absolute; left: 0; top: 0; height: 22px; border-radius: 11px; }
-.tbar .plan { position: absolute; top: 0; height: 22px; border-radius: 0 11px 11px 0;
-  background: repeating-linear-gradient(45deg, #C2541E 0 6px, #F2D3C2 6px 12px); }
-.tbar .lim { position: absolute; top: -8px; width: 3px; height: 38px; background: #1F2430; border-radius: 2px; }
-.tbar .lim span { position: absolute; top: -22px; left: -14px; font-size: .78rem; font-weight: 700; color: #1F2430; white-space: nowrap; }
-.tlegend { display: flex; gap: 22px; flex-wrap: wrap; font-size: .85rem; color: #4A4F5C; margin-bottom: 14px; }
-.tlegend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
-.tlegend i.hatch { background: repeating-linear-gradient(45deg, #C2541E 0 3px, #F2D3C2 3px 6px); }
-div[data-testid="stMetric"] { background: #FFFFFF; border: 1px solid #E4DED2; border-radius: 12px; padding: 12px 16px; }
-div[data-testid="stMetricValue"] { font-size: 1.55rem; }
+div[data-testid="stMetric"] { background: #F5F5F7; border-radius: 20px; padding: 1.1rem 1.3rem; }
+div[data-testid="stMetricValue"] { font-size: 1.9rem; font-weight: 600; letter-spacing: -0.025em; }
+div[data-testid="stMetricLabel"] p { color: #6E6E73; }
+.tbar { position: relative; height: 14px; border-radius: 7px; background: #E8E8ED; margin: 26px 0 10px; }
+.tbar .imp { position: absolute; left: 0; top: 0; height: 14px; border-radius: 7px; }
+.tbar .plan { position: absolute; top: 0; height: 14px; border-radius: 0 7px 7px 0;
+  background: repeating-linear-gradient(45deg, #D70015 0 5px, #F9D0D5 5px 10px); }
+.tbar .lim { position: absolute; top: -7px; width: 2px; height: 28px; background: #1D1D1F; border-radius: 1px; }
+.tbar .lim span { position: absolute; top: -21px; left: -12px; font-size: .78rem; font-weight: 600; color: #1D1D1F; white-space: nowrap; }
+.tlegend { display: flex; gap: 22px; flex-wrap: wrap; font-size: .86rem; color: #6E6E73; margin-bottom: 18px; }
+.tlegend i { display: inline-block; width: 10px; height: 10px; border-radius: 5px; margin-right: 7px; }
+.tlegend i.hatch { background: repeating-linear-gradient(45deg, #D70015 0 3px, #F9D0D5 3px 6px); }
+[data-baseweb="tab-list"] { gap: 1.8rem; }
+[data-baseweb="tab"] p { font-weight: 500; font-size: 1rem; }
+[data-testid="stExpander"] details { border: none; background: #F5F5F7; border-radius: 14px; }
+[data-testid="stFileUploaderDropzone"] { background: #F5F5F7; border: 1px dashed #C7C7CC; border-radius: 18px; }
+.foot { color: #86868B; font-size: .8rem; text-align: center; margin-top: 4.5rem; line-height: 1.6; }
 </style>""", unsafe_allow_html=True)
 
 
@@ -67,16 +93,18 @@ annex = try_load(load_annex)
 default_values = try_load(load_default_values)
 prices = try_load(load_prices)
 
-# Sidebar: settings that apply to the whole page
-with st.sidebar:
-    L = LANGS[st.radio("Sprache / Language / Язык", list(LANGS), key="ui_lang")]
+# Top bar: wordmark left, language right
+nav_l, nav_r = st.columns([4, 1], vertical_alignment="center")
+nav_l.markdown("<div class='nav'>CBAM-Lotse</div>", unsafe_allow_html=True)
+L = LANGS[nav_r.segmented_control("Sprache", list(LANGS), default=list(LANGS)[0], key="ui_lang",
+                                  label_visibility="collapsed") or list(LANGS)[0]]
 
 
 def _loc(s):
-    """Number separators for the UI language: 1,234.5 (en) · 1.234,5 (de) · 1 234,5 (ru)."""
+    """Number separators for the UI language: 1,234.5 (en) · 1.234,5 (de)."""
     if L == "en":
         return s
-    return s.replace(",", "\0").replace(".", ",").replace("\0", "." if L == "de" else " ")
+    return s.replace(",", "\0").replace(".", ",").replace("\0", ".")
 
 
 class _Num(float):
@@ -97,12 +125,15 @@ def _(text, **kw):
     return tr(text, L, **kw)
 
 
-with st.sidebar:
-    importer = st.text_input(_("Ihr Unternehmen"), "Metallbau Gruber GmbH")
-    st.divider()
-    st.markdown(_("**So funktioniert es**\n\n1. Rechnungen hochladen oder Demo laden\n2. Ergebnis lesen: Betrifft mich CBAM?\n3. Nächsten Schritt wählen und Dokumente herunterladen"))
-    st.caption(_("Ersteinschätzung, keine Rechtsberatung. Zuständig in Österreich: AnEH, cbam@bmf.gv.at."))
-    with st.expander(_("🧪 Wie prüfen wir uns selbst?")):
+def section(step, title):
+    st.markdown(f"<div class='section'><small>{step}</small>{title}</div>", unsafe_allow_html=True)
+
+
+def footer():
+    st.markdown(f"<div class='foot'>{_('Ersteinschätzung, keine Rechtsberatung. Zuständig in Österreich: AnEH, cbam@bmf.gv.at.')}"
+                f"<br>{_('Quellen: Verordnung (EU) 2023/956, (EU) 2025/2083, DVO (EU) 2025/2621, Europäische Kommission.')}</div>",
+                unsafe_allow_html=True)
+    with st.expander(_("Wie prüfen wir uns selbst?")):
         st.markdown(_("Die KI liest nur und erklärt. Anhang I, Schwelle und Kosten rechnet geprüfter Code. Sie können die automatischen Tests hier selbst laufen lassen."))
         if st.button(_("Tests ausführen")):
             import subprocess
@@ -112,18 +143,18 @@ with st.sidebar:
             summary = (run.stdout.strip().splitlines() or ["?"])[-1]
             (st.success if run.returncode == 0 else st.error)(summary)
 
-st.title("🏭 CBAM-Lotse")
-st.markdown(_("Betrifft mich CBAM? Prüfung Ihrer Stahl- und Aluminiumimporte gegen Anhang I und die 50-Tonnen-Schwelle — jede Zahl mit Quelle."))
-with st.expander(_("Was ist CBAM? (30 Sekunden)")):
-    st.markdown(_("Seit 1. Jänner 2026 kostet die Einfuhr von Stahl, Aluminium, Zement, Dünger, Strom und Wasserstoff in die EU einen CO₂-Preis. Wer mehr als **50 Tonnen** solcher Waren pro Jahr einführt, braucht vorher eine Zulassung. Ohne Zulassung drohen **€ 300–500 Strafe je Tonne CO₂**. Ob eine Ware zählt, entscheidet ihr Zolltarif-Code (KN-Code)."))
+
+importer = st.session_state.get("importer", "Metallbau Gruber GmbH")
+
+# Hero
+st.markdown(f"<div class='hero-t'>{_('Betrifft mich CBAM?')}</div>"
+            f"<div class='hero-s'>{_('Laden Sie Ihre Rechnungen. In einer Minute wissen Sie, ob die CO₂-Grenzabgabe der EU Sie trifft, was sie kostet und was jetzt zu tun ist.')}</div>",
+            unsafe_allow_html=True)
 
 if annex is None:
     st.error(_("data/annex_i.json fehlt — ohne Anhang I ist keine Prüfung möglich."))
     st.stop()
 
-# Step 1: input
-st.markdown(f"<div class='step'>{_('Schritt 1')}</div>", unsafe_allow_html=True)
-st.subheader(_("Ihre Einkäufe"))
 lines = None
 planned_lines = []  # order confirmations: planned imports, never counted as imported
 
@@ -145,31 +176,27 @@ def use_documents(blobs):
     return pd.DataFrame(imported) if imported else None
 
 
-tab_demo, tab_pdf, tab_csv = st.tabs(["▶ " + _("Demo ausprobieren"), _("Rechnungen (PDF) hochladen"), _("CSV hochladen")])
-with tab_demo:
-    st.write(_("Metallbau Gruber GmbH (Beispiel): Träger und Schrauben aus der Türkei, Alu-Profile aus China, Ventile."))
-    if DEMO_PDFS and st.button(_("Demo-PDFs einlesen ({n} Dokumente)", n=len(DEMO_PDFS)), type="primary"):
-        st.session_state["demo"] = "pdf"
-    if st.session_state.get("demo") == "pdf":
-        lines = use_documents([(p.read_bytes(), p.name) for p in DEMO_PDFS])
-    elif st.session_state.get("demo") == "csv" and DEMO_CSV.exists():
-        lines = use_documents([(DEMO_CSV.read_bytes(), DEMO_CSV.name)])
-with tab_pdf:
-    st.write(_("Rechnungen und Auftragsbestätigungen als PDF (mit Textebene). Auftragsbestätigungen zählen als **geplante** Einfuhr, nicht als bereits eingeführt."))
-    pdfs = st.file_uploader(_("PDF-Dokumente"), type="pdf", accept_multiple_files=True)
-    if pdfs:
-        lines = use_documents([(f.getvalue(), f.name) for f in pdfs])
-with tab_csv:
-    st.write(_("Spalten: ") + ", ".join(f"`{c}`" for c in COLUMNS))
-    upload = st.file_uploader(_("Einkaufsliste (CSV)"), type="csv")
-    if upload:
-        lines = use_documents([(upload.getvalue(), upload.name)])
-    if DEMO_CSV.exists() and st.button(_("Demo-Rechnungen laden (CSV)")):
-        st.session_state["demo"] = "csv"
-        st.rerun()
+_pad_l, cta, _pad_r = st.columns([1, 1.3, 1])
+if DEMO_PDFS and cta.button(_("Demo starten"), type="primary", width="stretch"):
+    st.session_state["demo"] = "pdf"
+cta.markdown(f"<div style='text-align:center;color:#86868B;font-size:.85rem;line-height:1.4'>{_('Metallbau Gruber GmbH (Beispiel): Träger und Schrauben aus der Türkei, Alu-Profile aus China, Ventile.')}</div>",
+             unsafe_allow_html=True)
+uploads = st.file_uploader(_("Oder eigene Rechnungen hochladen — PDF oder CSV"), type=["pdf", "csv"], accept_multiple_files=True,
+                           help=_("Auftragsbestätigungen zählen als geplante Einfuhr, nicht als bereits eingeführt. CSV-Spalten: ") + ", ".join(COLUMNS))
+if uploads:
+    lines = use_documents([(f.getvalue(), f.name) for f in uploads])
+elif st.session_state.get("demo") == "pdf":
+    lines = use_documents([(p.read_bytes(), p.name) for p in DEMO_PDFS])
 
 if lines is None:
-    st.info(_("Laden Sie die Demo oder Ihre Rechnungen — das Ergebnis erscheint dann hier."))
+    f1, f2, f3 = st.columns(3)
+    for col, k, d in ((f1, "50 t", _("pro Jahr. Darunter sind Sie befreit, darüber brauchen Sie eine Zulassung.")),
+                      (f2, "€ 300–500", _("Strafe je Tonne CO₂ ohne Zulassung — auf alle Emissionen des Jahres.")),
+                      (f3, _("1 Minute"), _("von der Rechnung zur Entscheidung. Jede Zahl mit Quelle."))):
+        col.markdown(f"<div class='feat'><div class='k'>{k}</div><div class='d'>{d}</div></div>", unsafe_allow_html=True)
+    with st.expander(_("Was ist CBAM? (30 Sekunden)")):
+        st.markdown(_("Seit 1. Jänner 2026 kostet die Einfuhr von Stahl, Aluminium, Zement, Dünger, Strom und Wasserstoff in die EU einen CO₂-Preis. Wer mehr als **50 Tonnen** solcher Waren pro Jahr einführt, braucht vorher eine Zulassung. Ohne Zulassung drohen **€ 300–500 Strafe je Tonne CO₂**. Ob eine Ware zählt, entscheidet ihr Zolltarif-Code (KN-Code)."))
+    footer()
     st.stop()
 
 missing_cols = [c for c in COLUMNS if c not in lines.columns]
@@ -265,8 +292,7 @@ if default_values is not None and prices is not None:
     after = estimate_cost(year_cbam + planned_records, prices, default_values) if planned_records else cost
 
 # Step 2: the answer, in one sentence
-st.markdown(f"<div class='step'>{_('Schritt 2')}</div>", unsafe_allow_html=True)
-st.subheader(_("Ihr Ergebnis"))
+section(_("Schritt 2"), _("Ihr Ergebnis"))
 t = status["total_t"]
 headline = {
     "exempt": _("Sie sind befreit: {t:.1f} t von 50 t", t=t),
@@ -282,7 +308,7 @@ if crosses:
     headline = _("Achtung: Ihre geplante Lieferung bringt Sie auf {n:.1f} t von 50 t", n=total_after)
     sub = _("Heute sind Sie mit {t:.1f} t noch befreit. Die bestätigte Bestellung über {p:.1f} t würde die Schwelle überschreiten — entscheiden Sie vorher (Schritt 3).", t=t, p=planned_t)
 color = STATUS_COLOR["over" if crosses else status["status"]]
-st.markdown(f"<div class='hero' style='border-left:8px solid {color}'><div class='kicker'>{html.escape(importer)} · {year}</div>"
+st.markdown(f"<div class='hero-card'><div class='kicker'>{html.escape(importer)} · {year}</div>"
             f"<div class='title' style='color:{color}'>{headline}</div><div class='sub'>{sub}</div></div>",
             unsafe_allow_html=True)
 # Threshold bar: imported (solid) + planned (hatched), 50 t marker
@@ -317,10 +343,9 @@ if cost:
                   eur(cost["certificate_cost_eur"]) if not over_now else f"€ {n(lo / 1000, ',.0f')}–{n(hi / 1000, ',.0f')} k")
 
 # Step 3: details and actions
-st.markdown(f"<div class='step'>{_('Schritt 3')}</div>", unsafe_allow_html=True)
-st.subheader(_("Was jetzt?"))
-t_act, t_goods, t_cost, t_what, t_ask = st.tabs([_("✅ Nächste Schritte"), _("📦 Waren"), _("💶 Kosten"),
-                                                 _("🔮 Was wäre wenn"), _("💬 Fragen")])
+section(_("Schritt 3"), _("Was jetzt?"))
+t_act, t_goods, t_cost, t_what, t_ask = st.tabs([_("Nächste Schritte"), _("Waren"), _("Kosten"),
+                                                 _("Was wäre wenn"), _("Fragen")])
 
 with t_act:
     a, b, c = st.columns(3)
@@ -352,8 +377,9 @@ with t_act:
             st.markdown(CHECKLIST.read_text(encoding="utf-8"))
 
     st.markdown("#### " + _("Dokumente"))
+    importer = st.text_input(_("Ihr Unternehmen"), importer, key="importer")
     pdf = report_pdf(importer, year, status, records, cost)
-    st.download_button("📄 " + _("Bericht herunterladen (PDF)"), pdf, file_name=f"CBAM_Bericht_{year}.pdf",
+    st.download_button(_("Bericht herunterladen (PDF)"), pdf, file_name=f"CBAM_Bericht_{year}.pdf",
                        mime="application/pdf", type="primary")
     suppliers = sorted({r["supplier"] for r in records if r["cbam"] and isinstance(r.get("supplier"), str)})
     if suppliers:
@@ -363,7 +389,7 @@ with t_act:
         letter = supplier_letter(supplier, records, importer, lang)
         with st.expander(_("Brief")):
             st.text_area(_("Brief"), letter, height=320, label_visibility="collapsed")
-        st.download_button("✉ " + _("Brief herunterladen (.txt)"), letter, file_name=f"CBAM_Anfrage_{supplier[:20]}.txt")
+        st.download_button(_("Brief herunterladen (.txt)"), letter, file_name=f"CBAM_Anfrage_{supplier[:20]}.txt")
 
 with t_goods:
     yes = result[result["cbam"] == True]  # noqa: E712 (cbam may be None)
@@ -456,7 +482,7 @@ with t_ask:
         ctx = {"lines": records, "year": int(year), "values": default_values, "prices": prices}
         with st.spinner(_("Der Lotse rechnet …")):
             text, calls = answer(question, ctx, api_key=api_key,
-                                 language={"de": "Deutsch", "en": "Englisch", "ru": "Russisch"}[L])
+                                 language={"de": "Deutsch", "en": "Englisch"}[L])
         history.append((question, text, calls))
     for question, text, calls in reversed(history):
         st.chat_message("user").write(question)
@@ -464,3 +490,5 @@ with t_ask:
         for call in calls:
             with st.expander(f"{_('Werkzeug')}: {call['name']}({call['args'] or ''})"):
                 st.json(call["result"])
+
+footer()

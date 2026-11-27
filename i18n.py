@@ -1,6 +1,6 @@
 """UI translations. Key = the German text (the app's source language); missing entries fall back to German."""
 
-LANGS = {"Deutsch": "de", "English": "en", "Русский": "ru"}
+LANGS = {"DE": "de", "EN": "en"}
 
 T = {
     "Betrifft mich CBAM? Prüfung Ihrer Stahl- und Aluminiumimporte gegen Anhang I und die 50-Tonnen-Schwelle — jede Zahl mit Quelle.": {
@@ -252,6 +252,27 @@ T.update({
     'Portlandzement (grau) — Zementart prüfen': {'en': 'Portland cement (grey) — check cement type', 'ru': 'Портландцемент (серый) — проверьте тип цемента'},
 })
 
+
+# Minimal redesign (hero, sections, footer)
+T.update({
+    '1 Minute': {"en": '1 minute'},
+    'Auftragsbestätigungen zählen als geplante Einfuhr, nicht als bereits eingeführt. CSV-Spalten: ': {"en": 'Order confirmations count as planned imports, not as already imported. CSV columns: '},
+    'Betrifft mich CBAM?': {"en": 'Does CBAM apply to me?'},
+    'Demo starten': {"en": 'Start demo'},
+    'Entscheidung': {"en": 'Decision'},
+    'Ergebnis': {"en": 'Result'},
+    'Kosten': {"en": 'Cost'},
+    'Laden Sie Ihre Rechnungen. In einer Minute wissen Sie, ob die CO₂-Grenzabgabe der EU Sie trifft, was sie kostet und was jetzt zu tun ist.': {"en": 'Upload your invoices. In one minute you know whether the EU carbon border levy applies to you, what it costs and what to do next.'},
+    'Nächste Schritte': {"en": 'Next steps'},
+    'Oder eigene Rechnungen hochladen — PDF oder CSV': {"en": 'Or upload your own invoices — PDF or CSV'},
+    'Quellen: Verordnung (EU) 2023/956, (EU) 2025/2083, DVO (EU) 2025/2621, Europäische Kommission.': {"en": 'Sources: Regulation (EU) 2023/956, (EU) 2025/2083, Impl. Reg. (EU) 2025/2621, European Commission.'},
+    'Strafe je Tonne CO₂ ohne Zulassung — auf alle Emissionen des Jahres.': {"en": 'penalty per tonne of CO₂ without authorisation — on all emissions of the year.'},
+    'Waren': {"en": 'Goods'},
+    'Was wäre wenn': {"en": 'What if'},
+    'Wie prüfen wir uns selbst?': {"en": 'How do we test ourselves?'},
+    'pro Jahr. Darunter sind Sie befreit, darüber brauchen Sie eine Zulassung.': {"en": 'per year. Below it you are exempt, above it you need an authorisation.'},
+    'von der Rechnung zur Entscheidung. Jede Zahl mit Quelle.': {"en": 'from invoice to decision. Every number with a source.'},
+})
 
 def tr(text, lang, **kw):
     """Translate a German UI text and fill its {placeholders}."""

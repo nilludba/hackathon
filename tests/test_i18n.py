@@ -12,12 +12,12 @@ def ui_texts():
             and n.args and isinstance(n.args[0], ast.Constant)}
 
 
-def test_every_ui_text_has_en_and_ru():
-    missing = sorted(t for t in ui_texts() if set(T.get(t, {})) < {"en", "ru"})
+def test_every_ui_text_has_en():
+    missing = sorted(t for t in ui_texts() if set(T.get(t, {})) < {"en"})
     assert not missing, missing
 
 
 def test_cn_suggestion_labels_translated():
     from cbam.suggest import RULES
-    missing = sorted({r[3] for r in RULES if set(T.get(r[3], {})) < {"en", "ru"}})
+    missing = sorted({r[3] for r in RULES if set(T.get(r[3], {})) < {"en"}})
     assert not missing, missing
