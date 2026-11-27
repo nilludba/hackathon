@@ -142,6 +142,10 @@ a.subheader("A · Unter 50 t bleiben")
 a.write(f"Noch **{max(THRESHOLD_T - status['total_t'], 0):.1f} t** bis zur Schwelle. Käufe planen und dokumentieren.")
 b.subheader("B · Zulassung beantragen")
 b.write("Antrag als zugelassener CBAM-Anmelder beim AnEH (cbam@bmf.gv.at), bevor die Schwelle überschritten wird.")
+CHECKLIST = ROOT / "data" / "declarant_checklist.md"
+if CHECKLIST.exists():
+    with b.expander("Checkliste Antrag"):
+        st.markdown(CHECKLIST.read_text(encoding="utf-8"))
 c.subheader("C · Lieferant fragen")
 c.write("Echte Emissionsdaten beim Lieferanten anfordern — oft niedriger als die Standardwerte.")
 

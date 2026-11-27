@@ -126,5 +126,5 @@ def report_pdf(importer, year, status, lines, cost=None, today=None):
 
     text("Hinweis", 10, "B", 6)
     text("Automatisch erstellte Ersteinschätzung, keine Rechtsberatung. Zuständig in Österreich: "
-         "Amt für nationale Emissionshandelsangelegenheiten (AnEH), cbam@bmf.gv.at.", 8)
+         "Amt für den nationalen Emissionszertifikatehandel (AnEH), cbam@bmf.gv.at.", 8)
     return bytes(pdf.output())

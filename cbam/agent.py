@@ -22,7 +22,7 @@ SYSTEM = (
     "Nenne Zahlen NUR aus Tool-Ergebnissen, nie aus dem Gedächtnis, und gib die Quelle an. "
     "Für KN-Codes rufe check_cn auf, für die 50-Tonnen-Schwelle threshold, für Kosten und Strafen cost. "
     "Wenn ein Tool etwas nicht weiß, sag das. Du gibst keine Rechtsberatung; verweise bei Zweifeln auf "
-    "das Amt für nationale Emissionshandelsangelegenheiten (AnEH, cbam@bmf.gv.at)."
+    "das Amt für den nationalen Emissionszertifikatehandel (AnEH, cbam@bmf.gv.at)."
 )
 
 TOOLS = [{"function_declarations": [
