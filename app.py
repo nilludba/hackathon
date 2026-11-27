@@ -52,9 +52,12 @@ h1, h2, h3, h4 { letter-spacing: -0.022em; color: #1D1D1F; }
   margin: 4.2rem 0 1.2rem; color: #1D1D1F; }
 .section small { display: block; font-size: .95rem; font-weight: 600; color: #86868B; letter-spacing: 0; margin-bottom: .45rem; }
 .stButton > button, .stDownloadButton > button, .stFormSubmitButton > button {
-  border-radius: 980px; padding: .6rem 1.4rem; font-weight: 500; border: 1px solid #D2D2D7; }
-button[data-testid="stBaseButton-primary"] { background: #0071E3; border-color: #0071E3; color: #FFFFFF; }
-button[data-testid="stBaseButton-primary"]:hover { background: #0077ED; border-color: #0077ED; color: #FFFFFF; }
+  border-radius: 4px; min-height: 40px; padding: .5rem 1.6rem; font-size: .9rem; font-weight: 500; letter-spacing: .01em;
+  border: none; background: rgba(23,26,32,.06); color: #171A20; transition: background .25s ease; }
+.stButton > button:hover, .stDownloadButton > button:hover, .stFormSubmitButton > button:hover { background: rgba(23,26,32,.12); color: #171A20; }
+[data-testid="stButtonGroup"] button { border-radius: 4px; }
+button[data-testid="stBaseButton-primary"] { background: #3E6AE1; border: none; color: #FFFFFF; }
+button[data-testid="stBaseButton-primary"]:hover { background: #3457B1; color: #FFFFFF; }
 .hero-card { background: var(--glass); border: 1px solid rgba(255,255,255,.7); box-shadow: var(--lift); backdrop-filter: blur(18px) saturate(160%); border-radius: 24px; padding: 2.3rem 2.3rem 2rem; margin: .4rem 0 1.1rem; }
 .hero-card .kicker { font-size: .88rem; color: #6E6E73; font-weight: 500; }
 .hero-card .title { font-size: clamp(1.7rem, 3.8vw, 2.6rem); font-weight: 700; letter-spacing: -0.032em; line-height: 1.1; margin: .45rem 0 .7rem; }
@@ -118,8 +121,6 @@ div[data-testid="stMetric"], .option { transition: transform .25s ease, box-shad
 div[data-testid="stMetric"]:hover, .option:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(0,0,0,.08); }
 .tbar .imp, .tbar .plan { transform-origin: left center; animation: grow 1.1s cubic-bezier(.2,.8,.2,1) both; }
 .tbar .plan { animation-delay: .85s; }
-button[data-testid="stBaseButton-primary"] { transition: transform .2s ease, box-shadow .2s ease; box-shadow: 0 8px 22px rgba(0,113,227,.28); }
-button[data-testid="stBaseButton-primary"]:hover { transform: translateY(-1px) scale(1.015); box-shadow: 0 12px 28px rgba(0,113,227,.36); }
 [data-testid="InputInstructions"] { display: none; }
 @media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
 </style>""", unsafe_allow_html=True)
@@ -207,7 +208,8 @@ INTRO_CSS = """<style>
 [data-testid="stExpander"] summary, [data-testid="stExpander"] p, [data-testid="stExpander"] li { color: #E8E8ED; }
 [data-testid="stButtonGroup"] button { background: rgba(255,255,255,.08); color: #F5F5F7; border-color: rgba(255,255,255,.2); }
 [data-testid="stButtonGroup"] button p { color: #F5F5F7; }
-button[data-testid="stBaseButton-primary"] { font-size: 1.05rem; padding: .8rem 1.6rem; box-shadow: 0 10px 34px rgba(0,113,227,.55); }
+button[data-testid="stBaseButton-primary"] { min-height: 44px; }
+.stButton > button:not([data-testid="stBaseButton-primary"]) { background: rgba(244,244,244,.65); color: #171A20; }
 </style>"""
 
 
