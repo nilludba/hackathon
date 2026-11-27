@@ -40,6 +40,19 @@ st.markdown("""
 .step { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: #A8451A; font-weight: 700; margin-top: 1.2rem; }
 .option { background: #FFFFFF; border: 1px solid #E4DED2; border-radius: 12px; padding: 14px 16px; height: 100%; }
 .option b { display: block; margin-bottom: 4px; }
+div[data-testid="stColumn"] > div:has(.option) { height: 100%; }
+.option { min-height: 132px; box-shadow: 0 1px 2px rgba(31,36,48,.06); }
+.tbar { position: relative; height: 22px; border-radius: 11px; background: #E9E3D7; margin: 14px 0 8px; }
+.tbar .imp { position: absolute; left: 0; top: 0; height: 22px; border-radius: 11px; }
+.tbar .plan { position: absolute; top: 0; height: 22px; border-radius: 0 11px 11px 0;
+  background: repeating-linear-gradient(45deg, #C2541E 0 6px, #F2D3C2 6px 12px); }
+.tbar .lim { position: absolute; top: -8px; width: 3px; height: 38px; background: #1F2430; border-radius: 2px; }
+.tbar .lim span { position: absolute; top: -22px; left: -14px; font-size: .78rem; font-weight: 700; color: #1F2430; white-space: nowrap; }
+.tlegend { display: flex; gap: 22px; flex-wrap: wrap; font-size: .85rem; color: #4A4F5C; margin-bottom: 14px; }
+.tlegend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.tlegend i.hatch { background: repeating-linear-gradient(45deg, #C2541E 0 3px, #F2D3C2 3px 6px); }
+div[data-testid="stMetric"] { background: #FFFFFF; border: 1px solid #E4DED2; border-radius: 12px; padding: 12px 16px; }
+div[data-testid="stMetricValue"] { font-size: 1.55rem; }
 </style>""", unsafe_allow_html=True)
 
 
@@ -59,7 +72,28 @@ with st.sidebar:
     L = LANGS[st.radio("Sprache / Language / Язык", list(LANGS), key="ui_lang")]
 
 
+def _loc(s):
+    """Number separators for the UI language: 1,234.5 (en) · 1.234,5 (de) · 1 234,5 (ru)."""
+    if L == "en":
+        return s
+    return s.replace(",", "\0").replace(".", ",").replace("\0", "." if L == "de" else " ")
+
+
+class _Num(float):
+    def __format__(self, spec):
+        return _loc(format(float(self), spec))
+
+
+def n(x, spec=",.1f"):
+    return _loc(format(x, spec))
+
+
+def eur(x):
+    return "€ " + n(x, ",.0f")
+
+
 def _(text, **kw):
+    kw = {k: _Num(v) if isinstance(v, float) else v for k, v in kw.items()}
     return tr(text, L, **kw)
 
 
@@ -221,9 +255,14 @@ def _is_cbam(cn):
 
 planned_cbam = [l for l in planned_lines if str(l.get("date", "")).startswith(year) and _is_cbam(l.get("cn"))]
 planned_t = sum(l["net_mass_kg"] for l in planned_cbam) / 1000
-cost = None
+cost = after = None
+total_after = status["total_t"] + planned_t
+crosses = planned_t > 0 and total_after > THRESHOLD_T >= status["total_t"]
 if default_values is not None and prices is not None:
-    cost = estimate_cost([r for r in records if r["cbam"] and str(r["date"]).startswith(year)], prices, default_values)
+    year_cbam = [r for r in records if r["cbam"] and str(r["date"]).startswith(year)]
+    cost = estimate_cost(year_cbam, prices, default_values)
+    planned_records = [{**l, "cbam": True, "sector": check_annex_i(l["cn"])["sector"]} for l in planned_cbam]
+    after = estimate_cost(year_cbam + planned_records, prices, default_values) if planned_records else cost
 
 # Step 2: the answer, in one sentence
 st.markdown(f"<div class='step'>{_('Schritt 2')}</div>", unsafe_allow_html=True)
@@ -239,21 +278,43 @@ sub = {
     "near": _("Noch {left:.1f} t, dann brauchen Sie eine Zulassung als CBAM-Anmelder — sonst drohen hohe Strafen.", left=max(THRESHOLD_T - t, 0)),
     "over": _("Sie brauchen den Status als zugelassener CBAM-Anmelder. Ohne Zulassung drohen hohe Strafen."),
 }[status["status"]]
-if planned_t and t + planned_t > THRESHOLD_T >= t:
-    sub += " " + _("Ihre geplanten Lieferungen ({p:.1f} t) würden die Schwelle überschreiten.", p=planned_t)
-color = STATUS_COLOR[status["status"]]
+if crosses:
+    headline = _("Achtung: Ihre geplante Lieferung bringt Sie auf {n:.1f} t von 50 t", n=total_after)
+    sub = _("Heute sind Sie mit {t:.1f} t noch befreit. Die bestätigte Bestellung über {p:.1f} t würde die Schwelle überschreiten — entscheiden Sie vorher (Schritt 3).", t=t, p=planned_t)
+color = STATUS_COLOR["over" if crosses else status["status"]]
 st.markdown(f"<div class='hero' style='border-left:8px solid {color}'><div class='kicker'>{html.escape(importer)} · {year}</div>"
             f"<div class='title' style='color:{color}'>{headline}</div><div class='sub'>{sub}</div></div>",
             unsafe_allow_html=True)
-st.progress(min(t / THRESHOLD_T, 1.0), text=_("{t:.1f} t von {max:.0f} t CBAM-Waren im Jahr {year}", t=t, max=THRESHOLD_T, year=year))
+# Threshold bar: imported (solid) + planned (hatched), 50 t marker
+scale = max(THRESHOLD_T * 1.2, total_after * 1.05)
+w_imp, w_plan, x_lim = t / scale * 100, planned_t / scale * 100, THRESHOLD_T / scale * 100
+bar_color = STATUS_COLOR["over" if t > THRESHOLD_T else ("near" if t >= 0.8 * THRESHOLD_T else "exempt")]
+st.markdown(
+    f"<div class='tbar' role='img' aria-label='{html.escape(_('{t:.1f} t von {max:.0f} t CBAM-Waren im Jahr {year}', t=t, max=THRESHOLD_T, year=year))}'>"
+    f"<div class='imp' style='width:{w_imp:.1f}%;background:{bar_color}'></div>"
+    f"<div class='plan' style='left:{w_imp:.1f}%;width:{w_plan:.1f}%'></div>"
+    f"<div class='lim' style='left:{x_lim:.1f}%'><span>50 t</span></div></div>"
+    f"<div class='tlegend'><span><i style='background:{bar_color}'></i>{_('Eingeführt {year}: {t:.1f} t', year=year, t=t)}</span>"
+    + (f"<span><i class='hatch'></i>{_('Geplant: {p:.1f} t', p=planned_t)}</span>" if planned_t else "")
+    + "</div>", unsafe_allow_html=True)
 if status["forecast_crossing"]:
     st.caption(_("Prognose beim bisherigen Tempo: Schwelle erreicht am **{d}**.", d=status["forecast_crossing"]))
 if cost:
-    lo, hi = cost["penalty_range_eur"]
+    over_now = t > THRESHOLD_T
     m1, m2, m3 = st.columns(3)
-    m1.metric(_("Graue Emissionen"), f"{cost['total_emissions_t']:.0f} t CO₂e")
-    m2.metric(_("Zertifikate (Quartalspreise)"), f"€ {cost['certificate_cost_eur']:,.0f}")
-    m3.metric(_("Strafe ohne Zulassung"), f"€ {lo / 1000:,.0f}–{hi / 1000:,.0f} k")
+    m1.metric(_("Heute zu zahlen"), eur(cost["certificate_cost_eur"]) if over_now else _("€ 0 (befreit)"),
+              help=_("Zertifikate für alle CBAM-Waren des Jahres, sobald Sie über 50 t liegen."))
+    if crosses:
+        lo, hi = after["penalty_range_eur"]
+        m2.metric(_("Nach der Lieferung: Zertifikate"), eur(after["certificate_cost_eur"]),
+                  help=_("Mit Zulassung: Menge × EU-Standardwert × Zertifikatspreis des Quartals, für alle Waren des Jahres."))
+        m3.metric(_("Nach der Lieferung ohne Zulassung"), f"€ {n(lo / 1000, ',.0f')}–{n(hi / 1000, ',.0f')} k",
+                  help=_("Strafe 3–5 × € 100 je fehlendem Zertifikat (Art. 26 Abs. 2a)."))
+    else:
+        lo, hi = cost["penalty_range_eur"]
+        m2.metric(_("Graue Emissionen"), f"{n(cost['total_emissions_t'], ',.0f')} t CO₂e")
+        m3.metric(_("Falls über 50 t: Zertifikate") if not over_now else _("Strafe ohne Zulassung"),
+                  eur(cost["certificate_cost_eur"]) if not over_now else f"€ {n(lo / 1000, ',.0f')}–{n(hi / 1000, ',.0f')} k")
 
 # Step 3: details and actions
 st.markdown(f"<div class='step'>{_('Schritt 3')}</div>", unsafe_allow_html=True)
@@ -273,23 +334,16 @@ with t_act:
                f"{_('Echte Emissionsdaten beim Lieferanten anfordern — oft niedriger als die Standardwerte.')}</div>",
                unsafe_allow_html=True)
     if cost is not None and (planned_t or status["status"] != "exempt"):
-        planned_records = []
-        for l in planned_cbam:
-            v = check_annex_i(l["cn"])
-            planned_records.append({**l, "cbam": True, "sector": v["sector"]})
-        year_cbam = [r for r in records if r["cbam"] and str(r["date"]).startswith(year)]
-        after = estimate_cost(year_cbam + planned_records, prices, default_values) if planned_records else cost
-        total_after = t + planned_t
-        now_eur = _("€ 0 (befreit)") if t <= THRESHOLD_T else f"€ {cost['certificate_cost_eur']:,.0f}"
-        rows = [{_("Szenario"): _("Ohne geplante Lieferung"), _("Menge"): f"{t:.1f} t", _("Kosten im Jahr"): now_eur}]
-        if planned_records:
-            rows.append({_("Szenario"): _("Mit geplanter Lieferung und Zulassung"), _("Menge"): f"{total_after:.1f} t",
-                         _("Kosten im Jahr"): (f"€ {after['certificate_cost_eur']:,.0f}" if total_after > THRESHOLD_T
+        now_eur = _("€ 0 (befreit)") if t <= THRESHOLD_T else eur(cost["certificate_cost_eur"])
+        rows = [{_("Szenario"): _("Ohne geplante Lieferung"), _("Menge"): f"{n(t)} t", _("Kosten im Jahr"): now_eur}]
+        if planned_t:
+            rows.append({_("Szenario"): _("Mit geplanter Lieferung und Zulassung"), _("Menge"): f"{n(total_after)} t",
+                         _("Kosten im Jahr"): (eur(after["certificate_cost_eur"]) if total_after > THRESHOLD_T
                                                else _("€ 0 (befreit)"))})
         if total_after > THRESHOLD_T:
             lo_a, hi_a = after["penalty_range_eur"]
-            rows.append({_("Szenario"): _("Über 50 t ohne Zulassung"), _("Menge"): f"{total_after:.1f} t",
-                         _("Kosten im Jahr"): f"€ {lo_a:,.0f} – {hi_a:,.0f}"})
+            rows.append({_("Szenario"): _("Über 50 t ohne Zulassung"), _("Menge"): f"{n(total_after)} t",
+                         _("Kosten im Jahr"): f"{eur(lo_a)} – {eur(hi_a)}"})
         st.markdown("#### " + _("Was kostet welche Entscheidung?"))
         st.table(pd.DataFrame(rows))
         st.caption(_("Wird die Schwelle überschritten, zählen alle CBAM-Waren des Jahres, nicht nur die Menge über 50 t. Lieferung später planen ist zulässig; Lieferungen künstlich aufzuteilen, um unter 50 t zu bleiben, ist es nicht."))
@@ -377,8 +431,8 @@ with t_what:
                 c = estimate_cost([{**line, "origin": ctry}], prices, default_values)
                 if c["lines"]:
                     r = c["lines"][0]
-                    comp.append({_("Herkunft"): ctry, _("t CO₂ je t Ware"): r["factor_tco2_per_t"],
-                                 "t CO₂e": round(r["emissions_t"], 1), _("Zertifikate"): f"€ {r['certificate_eur']:,.0f}"})
+                    comp.append({_("Herkunft"): ctry, _("t CO₂ je t Ware"): n(r["factor_tco2_per_t"], ",.3f"),
+                                 "t CO₂e": n(r["emissions_t"]), _("Zertifikate"): eur(r["certificate_eur"])})
             if comp:
                 st.markdown(_("Dieselbe Menge aus verschiedenen Ländern (EU-Standardwerte, Preis des Einfuhrquartals):"))
                 st.table(pd.DataFrame(comp))

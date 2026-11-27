@@ -217,6 +217,21 @@ T.update({
 })
 
 
+T.update({
+    'Achtung: Ihre geplante Lieferung bringt Sie auf {n:.1f} t von 50 t': {'en': 'Careful: your planned delivery takes you to {n:.1f} t of 50 t', 'ru': 'Внимание: запланированная поставка доведёт вас до {n:.1f} т из 50 т'},
+    'Eingeführt {year}: {t:.1f} t': {'en': 'Imported {year}: {t:.1f} t', 'ru': 'Ввезено в {year}: {t:.1f} т'},
+    'Falls über 50 t: Zertifikate': {'en': 'If above 50 t: certificates', 'ru': 'Если выше 50 т: сертификаты'},
+    'Geplant: {p:.1f} t': {'en': 'Planned: {p:.1f} t', 'ru': 'Запланировано: {p:.1f} т'},
+    'Heute sind Sie mit {t:.1f} t noch befreit. Die bestätigte Bestellung über {p:.1f} t würde die Schwelle überschreiten — entscheiden Sie vorher (Schritt 3).': {'en': 'Today you are still exempt with {t:.1f} t. The confirmed order of {p:.1f} t would cross the threshold — decide before it arrives (step 3).', 'ru': 'Сейчас у вас {t:.1f} т и вы освобождены. Подтверждённый заказ на {p:.1f} т превысит порог — решите заранее (шаг 3).'},
+    'Heute zu zahlen': {'en': 'To pay today', 'ru': 'К оплате сейчас'},
+    'Mit Zulassung: Menge × EU-Standardwert × Zertifikatspreis des Quartals, für alle Waren des Jahres.': {'en': 'With authorisation: quantity × EU default value × certificate price of the quarter, for all goods of the year.', 'ru': 'Со статусом декларанта: количество × стандартное значение ЕС × цена сертификата квартала, по всем товарам за год.'},
+    'Nach der Lieferung ohne Zulassung': {'en': 'After the delivery, without authorisation', 'ru': 'После поставки без статуса декларанта'},
+    'Nach der Lieferung: Zertifikate': {'en': 'After the delivery: certificates', 'ru': 'После поставки: сертификаты'},
+    'Strafe 3–5 × € 100 je fehlendem Zertifikat (Art. 26 Abs. 2a).': {'en': 'Fine of 3–5 × €100 per missing certificate (Art. 26(2a)).', 'ru': 'Штраф 3–5 × €100 за каждый недостающий сертификат (ст. 26(2a)).'},
+    'Zertifikate für alle CBAM-Waren des Jahres, sobald Sie über 50 t liegen.': {'en': 'Certificates for all CBAM goods of the year once you are above 50 t.', 'ru': 'Сертификаты на все товары CBAM за год, как только вы выше 50 т.'},
+})
+
+
 def tr(text, lang, **kw):
     """Translate a German UI text and fill its {placeholders}."""
     s = T.get(text, {}).get(lang, text)
