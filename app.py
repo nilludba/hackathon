@@ -79,6 +79,33 @@ div[data-testid="stMetricLabel"] p { color: #6E6E73; }
 [data-testid="stExpander"] details { border: none; background: #F5F5F7; border-radius: 14px; }
 [data-testid="stFileUploaderDropzone"] { background: #F5F5F7; border: 1px dashed #C7C7CC; border-radius: 18px; }
 .foot { color: #86868B; font-size: .8rem; text-align: center; margin-top: 4.5rem; line-height: 1.6; }
+/* Motion and detail */
+.stApp { background: radial-gradient(1100px 520px at 50% -12%, rgba(0,113,227,.09), rgba(122,90,248,.04) 45%, transparent 70%), #FFFFFF; }
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes shine { to { background-position: 200% center; } }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0,113,227,.45); } 70% { box-shadow: 0 0 0 9px rgba(0,113,227,0); } 100% { box-shadow: 0 0 0 0 rgba(0,113,227,0); } }
+.pill { display: table; margin: 2.4rem auto 0; padding: .38rem .95rem; border-radius: 980px; background: rgba(245,245,247,.85);
+  border: 1px solid #E8E8ED; font-size: .85rem; font-weight: 500; color: #1D1D1F; animation: rise .7s both; }
+.pill .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #0071E3; margin-right: .55rem;
+  vertical-align: 1px; animation: pulse 2.2s infinite; }
+.hero-t { margin-top: 1.1rem; animation: rise .8s .06s both; }
+.hero-s { animation: rise .8s .16s both; }
+.grad { background: linear-gradient(90deg, #0071E3, #7A5AF8, #E5007D, #0071E3); background-size: 200% auto;
+  -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 7s linear infinite; }
+.feat { animation: rise .8s both; }
+.feat .k.grad { display: inline-block; color: transparent; }
+.section, .hero-card { animation: rise .7s both; }
+.hero-card { position: relative; overflow: hidden; box-shadow: 0 1px 0 rgba(0,0,0,.02); }
+.hero-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--c, #0071E3); }
+div[data-testid="stMetric"], .option { transition: transform .25s ease, box-shadow .25s ease; animation: rise .7s .12s both; }
+div[data-testid="stMetric"]:hover, .option:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(0,0,0,.08); }
+.tbar .imp, .tbar .plan { transform-origin: left center; animation: grow 1.1s cubic-bezier(.2,.8,.2,1) both; }
+.tbar .plan { animation-delay: .85s; }
+button[data-testid="stBaseButton-primary"] { transition: transform .2s ease, box-shadow .2s ease; box-shadow: 0 8px 22px rgba(0,113,227,.28); }
+button[data-testid="stBaseButton-primary"]:hover { transform: translateY(-1px) scale(1.015); box-shadow: 0 12px 28px rgba(0,113,227,.36); }
+[data-testid="InputInstructions"] { display: none; }
+@media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
 </style>""", unsafe_allow_html=True)
 
 
@@ -149,7 +176,8 @@ def footer():
 importer = st.session_state.get("importer", "Metallbau Gruber GmbH")
 
 # Hero
-st.markdown(f"<div class='hero-t'>{_('Betrifft mich CBAM?')}</div>"
+st.markdown(f"<div class='pill'><span class='dot'></span>{_('CBAM-Pflicht seit 1. Jänner 2026')}</div>"
+            f"<div class='hero-t'>{_('Betrifft mich CBAM?').replace('CBAM', '<span class=grad>CBAM</span>')}</div>"
             f"<div class='hero-s'>{_('Laden Sie Ihre Rechnungen. In einer Minute wissen Sie, ob die CO₂-Grenzabgabe der EU Sie trifft, was sie kostet und was jetzt zu tun ist.')}</div>",
             unsafe_allow_html=True)
 
@@ -195,7 +223,7 @@ if lines is None:
     for col, k, d in ((f1, "50 t", _("pro Jahr. Darunter sind Sie befreit, darüber brauchen Sie eine Zulassung.")),
                       (f2, "€ 300–500", _("Strafe je Tonne CO₂ ohne Zulassung — auf alle Emissionen des Jahres.")),
                       (f3, _("1 Minute"), _("von der Rechnung zur Entscheidung. Jede Zahl mit Quelle."))):
-        col.markdown(f"<div class='feat'><div class='k'>{k}</div><div class='d'>{d}</div></div>", unsafe_allow_html=True)
+        col.markdown(f"<div class='feat'><div class='k grad'>{k}</div><div class='d'>{d}</div></div>", unsafe_allow_html=True)
     with st.expander(_("Was ist CBAM? (30 Sekunden)")):
         st.markdown(_("Seit 1. Jänner 2026 kostet die Einfuhr von Stahl, Aluminium, Zement, Dünger, Strom und Wasserstoff in die EU einen CO₂-Preis. Wer mehr als **50 Tonnen** solcher Waren pro Jahr einführt, braucht vorher eine Zulassung. Ohne Zulassung drohen **€ 300–500 Strafe je Tonne CO₂**. Ob eine Ware zählt, entscheidet ihr Zolltarif-Code (KN-Code)."))
     footer()
@@ -310,7 +338,7 @@ if crosses:
     headline = _("Achtung: Ihre geplante Lieferung bringt Sie auf {n:.1f} t von 50 t", n=total_after)
     sub = _("Heute sind Sie mit {t:.1f} t noch befreit. Die bestätigte Bestellung über {p:.1f} t würde die Schwelle überschreiten — entscheiden Sie vorher (Schritt 3).", t=t, p=planned_t)
 color = STATUS_COLOR["over" if crosses else status["status"]]
-st.markdown(f"<div class='hero-card'><div class='kicker'>{html.escape(importer)} · {year}</div>"
+st.markdown(f"<div class='hero-card' style='--c:{color}'><div class='kicker'>{html.escape(importer)} · {year}</div>"
             f"<div class='title' style='color:{color}'>{headline}</div><div class='sub'>{sub}</div></div>",
             unsafe_allow_html=True)
 # Threshold bar: imported (solid) + planned (hatched), 50 t marker

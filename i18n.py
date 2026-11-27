@@ -274,6 +274,8 @@ T.update({
     'von der Rechnung zur Entscheidung. Jede Zahl mit Quelle.': {"en": 'from invoice to decision. Every number with a source.'},
 })
 
+T.update({'CBAM-Pflicht seit 1. Jänner 2026': {'en': 'CBAM obligations since 1 January 2026'}})
+
 def tr(text, lang, **kw):
     """Translate a German UI text and fill its {placeholders}."""
     s = T.get(text, {}).get(lang, text)
