@@ -11,6 +11,7 @@ import streamlit as st
 from cbam.agent import answer
 
 from cbam.annex import check_annex_i, load_annex
+from cbam.documents import report_pdf, supplier_letter
 from cbam.cost import estimate_cost, load_default_values, load_prices
 from cbam.threshold import THRESHOLD_T, threshold_status
 
@@ -71,7 +72,7 @@ if missing_cols:
     st.stop()
 
 st.write("Bitte KN-Codes und Gewichte prüfen — Sie können jede Zelle korrigieren.")
-lines = st.data_editor(lines[COLUMNS], num_rows="dynamic", width="stretch")
+lines = st.data_editor(lines[COLUMNS + [c for c in lines.columns if c not in COLUMNS]], num_rows="dynamic", width="stretch")
 
 # 2. Anhang I prüfen
 st.header("2. Welche Waren sind CBAM-Waren?")
@@ -114,6 +115,7 @@ st.caption(f"Quelle: [Verordnung (EU) 2025/2083 (CBAM-Omnibus)]({OMNIBUS_URL}), 
 
 # 4. Kosten und Risiko
 st.header("4. Kosten und Risiko")
+cost = None
 if default_values is None or prices is None:
     st.info("Standardwerte oder Zertifikatspreise fehlen noch (data/default_values.csv, data/cbam_prices.json).")
 else:
@@ -143,8 +145,22 @@ b.write("Antrag als zugelassener CBAM-Anmelder beim AnEH (cbam@bmf.gv.at), bevor
 c.subheader("C · Lieferant fragen")
 c.write("Echte Emissionsdaten beim Lieferanten anfordern — oft niedriger als die Standardwerte.")
 
-# 6. Fragen an den Lotsen (KI)
-st.header("6. Fragen an den Lotsen")
+# 6. Dokumente
+st.header("6. Dokumente")
+importer = st.text_input("Ihr Unternehmen", "Metallbau Gruber GmbH")
+suppliers = sorted({r["supplier"] for r in records if r["cbam"] and isinstance(r.get("supplier"), str)})
+if suppliers:
+    s1, s2 = st.columns([3, 1])
+    supplier = s1.selectbox("Brief an Lieferanten (Anfrage echter Emissionsdaten)", suppliers)
+    lang = s2.radio("Sprache", ["de", "en"], horizontal=True)
+    letter = supplier_letter(supplier, records, importer, lang)
+    st.text_area("Brief", letter, height=320)
+    st.download_button("Brief herunterladen (.txt)", letter, file_name=f"CBAM_Anfrage_{supplier[:20]}.txt")
+pdf = report_pdf(importer, year, status, records, cost)
+st.download_button("Bericht herunterladen (PDF)", pdf, file_name=f"CBAM_Bericht_{year}.pdf", mime="application/pdf")
+
+# 7. Fragen an den Lotsen (KI)
+st.header("7. Fragen an den Lotsen")
 try:
     api_key = st.secrets.get("GEMINI_API_KEY")
 except Exception:  # no secrets.toml locally

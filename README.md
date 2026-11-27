@@ -25,8 +25,8 @@ cbam/agent.py       Gemini agent: tool calling over the deterministic functions
 cbam/annex.py       check_annex_i: CN code -> CBAM good or not
 cbam/threshold.py   50 t threshold status and forecast
 cbam/cost.py        embedded emissions, certificate cost, penalty scenario
-cbam/extract.py     invoice PDF/CSV -> lines (planned)
-cbam/documents.py   supplier letter and PDF report (planned)
+cbam/extract.py     invoice PDF/CSV -> lines
+cbam/documents.py   supplier letter (DE/EN) and PDF report
 data/               annex_i.json, default_values.csv, cbam_prices.json
 demo/               demo invoices for "Metallbau Gruber GmbH"
 tests/              pytest suite
