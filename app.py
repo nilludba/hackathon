@@ -273,6 +273,8 @@ BAND_CSS = """<style>
 .st-key-band_faq [data-testid="stExpander"] details { background: #F7F8FB; border: 1px solid rgba(29,29,31,.1); }
 .st-key-band_faq [data-testid="stExpander"] p, .st-key-band_faq [data-testid="stExpander"] li,
 .st-key-band_faq .foot { color: #1D1D1F !important; }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; align-items: stretch; }
+@media (max-width: 640px) { .steps { grid-template-columns: 1fr; } }
 .step-card { background: #FFFFFF; border-radius: 4px; padding: 1.6rem 1.4rem; min-height: 170px; }
 .step-card .no { font-size: .85rem; font-weight: 600; color: #3E6AE1; }
 .step-card b { display: block; font-size: 1.15rem; margin: .35rem 0 .4rem; color: #171A20; }
@@ -309,12 +311,11 @@ if page == "home":
     st.markdown(BAND_CSS, unsafe_allow_html=True)
     with st.container(key="band_how"):
         section(_("In drei Schritten"), _("So funktioniert's"))
-        for col, (no, title, text) in zip(st.columns(3), (
+        cards = "".join(f"<div class='step-card'><div class='no'>{no}</div><b>{title}</b><span>{text}</span></div>" for no, title, text in (
                 ("01", _("Rechnungen hochladen"), _("PDF oder CSV — oder die Demo starten. Codes, Gewichte und Herkunft werden erkannt.")),
                 ("02", _("Ergebnis lesen"), _("Welche Waren zählen, wie nah Sie an 50 t sind und was es kosten würde.")),
-                ("03", _("Entscheiden"), _("Unter 50 t bleiben, Zulassung beantragen oder echte Daten beim Lieferanten anfragen — mit fertigen Dokumenten.")))):
-            col.markdown(f"<div class='step-card'><div class='no'>{no}</div><b>{title}</b><span>{text}</span></div>",
-                         unsafe_allow_html=True)
+                ("03", _("Entscheiden"), _("Unter 50 t bleiben, Zulassung beantragen oder echte Daten beim Lieferanten anfragen — mit fertigen Dokumenten."))))
+        st.markdown(f"<div class='steps'>{cards}</div>", unsafe_allow_html=True)
     with st.container(key="band_faq"):
         section(_("Hilfe"), _("Fragen & Antworten"))
         faq()
