@@ -377,7 +377,14 @@ def use_documents(blobs):
     return pd.DataFrame(imported) if imported else None
 
 
-own_mode = st.session_state.get("own_mode", False)  # came via "Eigene Rechnungen prüfen": no demo offer
+# Came via "Eigene Rechnungen prüfen": no demo offer. Kept in the URL (?mode=own) so it survives a reload.
+if st.query_params.get("mode") == "own":
+    st.session_state["own_mode"] = True
+own_mode = st.session_state.get("own_mode", False)
+if own_mode:
+    st.query_params["mode"] = "own"
+elif "mode" in st.query_params:
+    del st.query_params["mode"]
 if not own_mode:
     _pad_l, cta, _pad_r = st.columns([1, 1.3, 1])
     if DEMO_PDFS:
