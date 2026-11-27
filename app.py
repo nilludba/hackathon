@@ -194,22 +194,22 @@ importer = st.session_state.get("importer", "Metallbau Gruber GmbH")
 
 INTRO_CSS = """<style>
 .stApp { background:
-  radial-gradient(55% 50% at 18% 18%, rgba(35,85,145,.50), transparent 62%),
-  radial-gradient(50% 45% at 85% 25%, rgba(70,95,125,.45), transparent 62%),
-  radial-gradient(60% 50% at 50% 108%, rgba(255,106,19,.30), transparent 62%), #06080B !important;
+  radial-gradient(55% 50% at 18% 18%, rgba(62,106,225,.10), transparent 62%),
+  radial-gradient(50% 45% at 85% 25%, rgba(120,140,165,.12), transparent 62%),
+  radial-gradient(60% 50% at 50% 108%, rgba(255,106,19,.08), transparent 62%), #FBFBFD !important;
   background-size: 170% 170% !important; background-attachment: scroll !important;
   animation: drift 16s ease-in-out infinite alternate; }
-.nav, .hero-t { color: #F5F5F7; }
-.grad { background-image: linear-gradient(100deg, #D3DAE3 0%, #D3DAE3 38%, #FFFFFF 50%, #D3DAE3 62%, #D3DAE3 100%); }
+.nav, .hero-t { color: #1D1D1F; }
+.grad { background-image: linear-gradient(100deg, #3A4452 0%, #3A4452 38%, #8A97A8 50%, #3A4452 62%, #3A4452 100%); }
 .hero-t { margin-top: 4.5rem; font-size: clamp(3rem, 8.5vw, 5.8rem); }
-.hero-s, .feat .d, .foot, .demo-note { color: #D2D2D7 !important; }
-.pill { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); color: #F5F5F7; backdrop-filter: blur(12px); }
-[data-testid="stExpander"] details { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.12); }
-[data-testid="stExpander"] summary, [data-testid="stExpander"] p, [data-testid="stExpander"] li { color: #E8E8ED; }
-[data-testid="stButtonGroup"] button { background: rgba(255,255,255,.08); color: #F5F5F7; border-color: rgba(255,255,255,.2); }
-[data-testid="stButtonGroup"] button p { color: #F5F5F7; }
+.hero-s, .feat .d, .foot, .demo-note { color: #424245 !important; }
+.pill { background: rgba(255,255,255,.85); border-color: rgba(29,29,31,.12); color: #1D1D1F; backdrop-filter: blur(12px); }
+[data-testid="stExpander"] details { background: rgba(255,255,255,.8); border-color: rgba(29,29,31,.1); }
+[data-testid="stExpander"] summary, [data-testid="stExpander"] p, [data-testid="stExpander"] li { color: #1D1D1F; }
+[data-testid="stButtonGroup"] button { background: #FFFFFF; color: #1D1D1F; border-color: rgba(29,29,31,.15); }
+[data-testid="stButtonGroup"] button p { color: #1D1D1F; }
 button[data-testid="stBaseButton-primary"] { min-height: 44px; }
-.stButton > button:not([data-testid="stBaseButton-primary"]) { background: rgba(244,244,244,.65); color: #171A20; }
+.stButton > button:not([data-testid="stBaseButton-primary"]) { background: rgba(23,26,32,.06); color: #171A20; }
 </style>"""
 
 
