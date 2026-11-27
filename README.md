@@ -20,7 +20,7 @@ deterministic Python code covered by tests. Numbers come only from the files in
 ## Project layout
 
 ```
-app.py              Streamlit user interface (German)
+app.py              Streamlit user interface (DE/EN/RU, texts in i18n.py)
 cbam/agent.py       Gemini agent: tool calling over the deterministic functions
 cbam/annex.py       check_annex_i: CN code -> CBAM good or not
 cbam/threshold.py   50 t threshold status and forecast
@@ -32,30 +32,46 @@ demo/               demo invoices for "Metallbau Gruber GmbH"
 tests/              pytest suite
 ```
 
-## Run locally
+## Run locally (about 2 minutes)
 
-```bash
+Needs Python 3.11+ and git.
+
+**Windows (PowerShell)**
+
+```powershell
+git clone https://github.com/nilludba/hackathon
+cd hackathon
 python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-pytest
+.venv\Scripts\python -m pip install -r requirements.txt
+.venv\Scripts\python -m streamlit run app.py
 ```
 
-Start the web app:
+**macOS / Linux**
 
 ```bash
-streamlit run app.py
+git clone https://github.com/nilludba/hackathon
+cd hackathon
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/streamlit run app.py
 ```
 
-The AI assistant (section 6) uses the Google Gemini API. It is optional: without a key the app still runs
-and shows a fixed summary. To turn it on, set the key yourself, never commit it:
+The app opens at http://localhost:8501. Click **"Demo-PDFs einlesen"** to run the full flow on the
+demo company. The language switch (Deutsch / English / Русский) is in the sidebar.
+
+Tests: `.venv/bin/pytest` (Windows: `.venv\Scripts\python -m pytest`).
+
+### Optional: AI assistant
+
+The "Questions" tab uses the Google Gemini API. Without a key the app still works and answers with a
+fixed summary. To turn it on, set the key in your shell (never commit it):
 
 ```bash
-export GEMINI_API_KEY=...                       # or .streamlit/secrets.toml: GEMINI_API_KEY = "..."
+export GEMINI_API_KEY=...          # PowerShell: $env:GEMINI_API_KEY="..."
 ```
 
-The model only calls our tools (`check_cn`, `threshold`, `cost`); every number in its answer comes from them.
-The hosted demo link will be added here.
+or put `GEMINI_API_KEY = "..."` into `.streamlit/secrets.toml`. The model only calls our tools
+(`check_cn`, `threshold`, `cost`); every number in its answer comes from them.
 
 ## Disclaimer
 
