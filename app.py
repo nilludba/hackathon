@@ -254,12 +254,12 @@ importer = st.session_state.setdefault("importer", DEMO_IMPORTER)
 
 
 def start_demo():
-    st.session_state.update(demo="pdf", importer=DEMO_IMPORTER, cn_fixes={})
+    st.session_state.update(demo="pdf", importer=DEMO_IMPORTER, cn_fixes={}, own_mode=False)
 
 
 def start_own():
     """'Eigene Rechnungen prüfen': empty tool, no example data and no example company."""
-    st.session_state.update(demo=None, importer="", cn_fixes={})
+    st.session_state.update(demo=None, importer="", cn_fixes={}, own_mode=True)
 
 
 def own_files_changed():
@@ -377,12 +377,15 @@ def use_documents(blobs):
     return pd.DataFrame(imported) if imported else None
 
 
-_pad_l, cta, _pad_r = st.columns([1, 1.3, 1])
-if DEMO_PDFS:
-    cta.button(_("Demo starten"), type="primary", width="stretch", on_click=start_demo)
-cta.markdown(f"<div class='demo-note' style='text-align:center;color:#86868B;font-size:.85rem;line-height:1.4'>{_('Metallbau Gruber GmbH (Beispiel): Träger und Schrauben aus der Türkei, Alu-Profile aus China, Ventile.')}</div>",
-             unsafe_allow_html=True)
-uploads = st.file_uploader(_("Oder eigene Rechnungen hochladen — PDF oder CSV"), type=["pdf", "csv"], accept_multiple_files=True,
+own_mode = st.session_state.get("own_mode", False)  # came via "Eigene Rechnungen prüfen": no demo offer
+if not own_mode:
+    _pad_l, cta, _pad_r = st.columns([1, 1.3, 1])
+    if DEMO_PDFS:
+        cta.button(_("Demo starten"), type="primary", width="stretch", on_click=start_demo)
+    cta.markdown(f"<div class='demo-note' style='text-align:center;color:#86868B;font-size:.85rem;line-height:1.4'>{_('Metallbau Gruber GmbH (Beispiel): Träger und Schrauben aus der Türkei, Alu-Profile aus China, Ventile.')}</div>",
+                 unsafe_allow_html=True)
+uploads = st.file_uploader(_("Eigene Rechnungen hochladen — PDF oder CSV") if own_mode
+                           else _("Oder eigene Rechnungen hochladen — PDF oder CSV"), type=["pdf", "csv"], accept_multiple_files=True,
                            key="uploads", on_change=own_files_changed, help=_("Auftragsbestätigungen zählen als geplante Einfuhr, nicht als bereits eingeführt. CSV-Spalten: ") + ", ".join(COLUMNS))
 if uploads:
     lines = use_documents([(f.getvalue(), f.name) for f in uploads])
@@ -390,7 +393,8 @@ elif st.session_state.get("demo") == "pdf":
     lines = use_documents([(p.read_bytes(), p.name) for p in DEMO_PDFS])
 
 if lines is None:
-    st.info(_("Laden Sie die Demo oder Ihre Rechnungen — das Ergebnis erscheint dann hier."))
+    st.info(_("Laden Sie Ihre Rechnungen hoch — das Ergebnis erscheint dann hier.") if own_mode
+            else _("Laden Sie die Demo oder Ihre Rechnungen — das Ergebnis erscheint dann hier."))
     footer()
     st.stop()
 

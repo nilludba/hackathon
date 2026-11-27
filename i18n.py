@@ -333,6 +333,11 @@ T.update({
     "Lieferant": {"en": "Supplier"},
 })
 
+T.update({
+    "Eigene Rechnungen hochladen — PDF oder CSV": {"en": "Upload your invoices — PDF or CSV"},
+    "Laden Sie Ihre Rechnungen hoch — das Ergebnis erscheint dann hier.": {"en": "Upload your invoices — the result will appear here."},
+})
+
 def tr(text, lang, **kw):
     """Translate a German UI text and fill its {placeholders}."""
     s = T.get(text, {}).get(lang, text)
