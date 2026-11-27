@@ -57,3 +57,8 @@ def test_api_error_falls_back():
         raise OSError("quota")
     text, _ = answer("?", CTX, api_key="test", post=broken)
     assert "45.0 t" in text and "nicht erreichbar" in text
+
+
+def test_fallback_in_russian():
+    text, _ = answer("?", CTX, language="Russisch")
+    assert "45.0 t" in text and "близко к порогу" in text

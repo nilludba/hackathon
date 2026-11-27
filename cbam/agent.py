@@ -63,28 +63,45 @@ def _post(body, api_key):
         return json.load(resp)
 
 
-def fallback_answer(ctx, reason="kein GEMINI_API_KEY gesetzt"):
+FALLBACK = {
+    "Deutsch": ("Im Jahr {year} haben Sie {t:.1f} t CBAM-Waren importiert ({share:.0%} der 50-t-Schwelle). ",
+                {"exempt": "Sie sind derzeit befreit.", "near": "Sie liegen nahe an der Schwelle.",
+                 "over": "Die Schwelle ist überschritten — Sie brauchen die Zulassung als CBAM-Anmelder."},
+                " (KI-Assistent nicht verfügbar: {r}.)",
+                {"no_key": "kein GEMINI_API_KEY gesetzt", "api": "Gemini-API nicht erreichbar", "steps": "zu viele Tool-Aufrufe"}),
+    "Englisch": ("In {year} you imported {t:.1f} t of CBAM goods ({share:.0%} of the 50 t threshold). ",
+                 {"exempt": "You are currently exempt.", "near": "You are close to the threshold.",
+                  "over": "The threshold is exceeded — you need authorisation as a CBAM declarant."},
+                 " (AI assistant unavailable: {r}.)",
+                 {"no_key": "no GEMINI_API_KEY set", "api": "Gemini API not reachable", "steps": "too many tool calls"}),
+    "Russisch": ("В {year} году вы ввезли {t:.1f} t товаров CBAM ({share:.0%} от порога 50 t). ",
+                 {"exempt": "Сейчас вы освобождены.", "near": "Вы близко к порогу.",
+                  "over": "Порог превышен — нужен статус уполномоченного декларанта CBAM."},
+                 " (ИИ-помощник недоступен: {r}.)",
+                 {"no_key": "не задан GEMINI_API_KEY", "api": "Gemini API недоступен", "steps": "слишком много вызовов инструментов"}),
+}
+
+
+def fallback_answer(ctx, reason="no_key", language="Deutsch"):
     """Deterministic summary used when no API key is set or the API fails."""
+    head, verdicts, tail, reasons = FALLBACK.get(language, FALLBACK["Deutsch"])
     s = run_tool("threshold", {}, ctx)
-    text = f"Im Jahr {ctx['year']} haben Sie {s['total_t']:.1f} t CBAM-Waren importiert ({s['share']:.0%} der 50-t-Schwelle). "
-    text += {"exempt": "Sie sind derzeit befreit.",
-             "near": "Sie liegen nahe an der Schwelle.",
-             "over": "Die Schwelle ist überschritten — Sie brauchen die Zulassung als CBAM-Anmelder."}[s["status"]]
-    return text + f" (KI-Assistent nicht verfügbar: {reason}.)"
+    return (head.format(year=ctx["year"], t=s["total_t"], share=s["share"]) + verdicts[s["status"]]
+            + tail.format(r=reasons[reason]))
 
 
-def answer(question, ctx, api_key=None, post=_post):
+def answer(question, ctx, api_key=None, post=_post, language="Deutsch"):
     """Answer a user question with Gemini tool calling. Returns (text, list of tool calls made)."""
     if not api_key:
-        return fallback_answer(ctx), []
+        return fallback_answer(ctx, "no_key", language), []
     contents = [{"role": "user", "parts": [{"text": question}]}]
     calls = []
     for _ in range(MAX_STEPS):
-        body = {"system_instruction": {"parts": [{"text": SYSTEM}]}, "contents": contents, "tools": TOOLS}
+        body = {"system_instruction": {"parts": [{"text": SYSTEM.replace("Antworte auf Deutsch", f"Antworte auf {language}")}]}, "contents": contents, "tools": TOOLS}
         try:
             content = post(body, api_key)["candidates"][0]["content"]
         except Exception:  # network, quota or malformed reply: the app must keep working
-            return fallback_answer(ctx, "Gemini-API nicht erreichbar"), calls
+            return fallback_answer(ctx, "api", language), calls
         parts = content.get("parts", [])
         fcalls = [p["functionCall"] for p in parts if "functionCall" in p]
         if not fcalls:
@@ -96,4 +113,4 @@ def answer(question, ctx, api_key=None, post=_post):
             calls.append({"name": fc["name"], "args": fc.get("args", {}), "result": result})
             responses.append({"functionResponse": {"name": fc["name"], "response": {"result": result}}})
         contents.append({"role": "user", "parts": responses})
-    return fallback_answer(ctx, "zu viele Tool-Aufrufe"), calls
+    return fallback_answer(ctx, "steps", language), calls
