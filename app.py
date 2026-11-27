@@ -12,11 +12,13 @@ from cbam.agent import answer
 
 from cbam.annex import check_annex_i, load_annex
 from cbam.documents import report_pdf, supplier_letter
+from cbam.extract import read_documents
 from cbam.cost import estimate_cost, load_default_values, load_prices
 from cbam.threshold import THRESHOLD_T, threshold_status
 
 ROOT = Path(__file__).resolve().parent
 DEMO_CSV = ROOT / "demo" / "purchases_2026.csv"
+DEMO_PDFS = sorted((ROOT / "demo").glob("*.pdf"))
 COLUMNS = ["description", "cn", "net_mass_kg", "origin", "date", "supplier"]
 
 OMNIBUS_URL = "https://eur-lex.europa.eu/eli/reg/2025/2083/oj"
@@ -47,8 +49,28 @@ if annex is None:
 
 # 1. Importe erfassen
 st.header("1. Importe erfassen")
-tab_csv, tab_demo = st.tabs(["CSV hochladen", "Demo: Metallbau Gruber GmbH"])
+tab_pdf, tab_csv, tab_demo = st.tabs(["Rechnungen (PDF) hochladen", "CSV hochladen", "Demo: Metallbau Gruber GmbH"])
 lines = None
+planned_lines = []  # order confirmations: planned imports, never counted as imported
+
+
+def use_documents(files):
+    """Read PDFs with cbam.extract; returns invoice lines as DataFrame (or None)."""
+    global planned_lines
+    imported, planned_lines, errors = read_documents(files)
+    for e in errors:
+        st.warning(e)
+    st.caption(f"{len(files)} Dokument(e) gelesen: {len(imported)} Rechnungszeile(n), "
+               f"{len(planned_lines)} geplante Zeile(n) aus Auftragsbestätigungen.")
+    return pd.DataFrame(imported) if imported else None
+
+
+with tab_pdf:
+    st.write("Rechnungen und Auftragsbestätigungen als PDF (mit Textebene). Auftragsbestätigungen "
+             "zählen als **geplante** Einfuhr, nicht als bereits eingeführt.")
+    pdfs = st.file_uploader("PDF-Dokumente", type="pdf", accept_multiple_files=True)
+    if pdfs:
+        lines = use_documents([(f, f.name) for f in pdfs])
 with tab_csv:
     st.write("Spalten: " + ", ".join(f"`{c}`" for c in COLUMNS))
     upload = st.file_uploader("Einkaufsliste (CSV)", type="csv")
@@ -56,10 +78,15 @@ with tab_csv:
         lines = pd.read_csv(upload, dtype={"cn": str})
 with tab_demo:
     if DEMO_CSV.exists():
-        if st.button("Demo-Rechnungen laden"):
-            st.session_state["demo"] = True
-        if st.session_state.get("demo"):
+        d1, d2 = st.columns(2)
+        if d1.button("Demo-Rechnungen laden (CSV)"):
+            st.session_state["demo"] = "csv"
+        if DEMO_PDFS and d2.button(f"Demo-PDFs einlesen ({len(DEMO_PDFS)} Dokumente)"):
+            st.session_state["demo"] = "pdf"
+        if st.session_state.get("demo") == "csv":
             lines = pd.read_csv(DEMO_CSV, dtype={"cn": str})
+        elif st.session_state.get("demo") == "pdf":
+            lines = use_documents([(p, p.name) for p in DEMO_PDFS])
     else:
         st.info("Demo-Daten fehlen (demo/purchases_2026.csv).")
 
@@ -111,6 +138,26 @@ else:
              "als zugelassener CBAM-Anmelder.")
 if status["forecast_crossing"]:
     st.write(f"Prognose beim bisherigen Tempo: Schwelle erreicht am **{status['forecast_crossing']}**.")
+
+
+def _is_cbam(cn):
+    try:
+        return check_annex_i(cn)["cbam"]
+    except (ValueError, TypeError):
+        return False
+
+
+planned_cbam = [l for l in planned_lines if str(l.get("date", "")).startswith(year) and _is_cbam(l.get("cn"))]
+if planned_cbam:
+    planned_t = sum(l["net_mass_kg"] for l in planned_cbam) / 1000
+    after_t = status["total_t"] + planned_t
+    msg = (f"Geplante Lieferungen laut Auftragsbestätigung: **{planned_t:.1f} t** CBAM-Waren → danach "
+           f"**{after_t:.1f} t** von {THRESHOLD_T:.0f} t.")
+    if after_t > THRESHOLD_T and status["status"] != "over":
+        st.error(msg + " Diese Lieferung würde die Schwelle überschreiten — Zulassung vorher beantragen (Option B) "
+                 "oder Menge reduzieren (Option A).")
+    else:
+        st.info(msg)
 st.caption(f"Quelle: [Verordnung (EU) 2025/2083 (CBAM-Omnibus)]({OMNIBUS_URL}), Anhang I der [Verordnung (EU) 2023/956]({CBAM_REG_URL}).")
 
 # 4. Kosten und Risiko
