@@ -106,9 +106,7 @@ div[data-testid="stMetricLabel"] p { color: #6E6E73; }
   vertical-align: 1px; animation: pulse 2.2s infinite; }
 .hero-t { margin-top: 1.1rem; animation: rise .8s .06s both; }
 .hero-s { animation: rise .8s .16s both; }
-.grad { color: #3A4452; }
 .feat { animation: rise .8s both; }
-.feat .k.grad { display: inline-block; color: #3A4452; }
 .section, .hero-card { animation: rise .7s both; }
 .hero-card { position: relative; overflow: hidden; box-shadow: 0 1px 0 rgba(0,0,0,.02); }
 .hero-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--c, #0071E3); }
@@ -117,6 +115,9 @@ div[data-testid="stMetric"]:hover, .option:hover { transform: translateY(-3px); 
 .tbar .imp, .tbar .plan { transform-origin: left center; animation: grow 1.1s cubic-bezier(.2,.8,.2,1) both; }
 .tbar .plan { animation-delay: .85s; }
 [data-testid="InputInstructions"] { display: none; }
+button[data-testid="stBaseButton-tertiary"] { background: transparent !important; min-height: auto; padding: .25rem .1rem;
+  color: #171A20 !important; font-weight: 500; }
+button[data-testid="stBaseButton-tertiary"]:hover { color: #3E6AE1 !important; }
 @media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
 </style>""", unsafe_allow_html=True)
 
@@ -132,9 +133,11 @@ annex = try_load(load_annex)
 default_values = try_load(load_default_values)
 prices = try_load(load_prices)
 
-# Top bar: wordmark left, language right
-nav_l, nav_r = st.columns([4, 1], vertical_alignment="center")
-nav_l.markdown("<div class='nav'>CBAM-Lotse</div>", unsafe_allow_html=True)
+# Top bar: wordmark · Home · Prüfen · Fragen & Antworten · language
+page = st.session_state.setdefault("page", "home")
+nav = st.columns([2.1, .8, .9, 1.9, 1.5], vertical_alignment="center")
+nav[0].markdown("<div class='nav'>CBAM-Lotse</div>", unsafe_allow_html=True)
+nav_r = nav[4]
 FLAGS = {"DE": "🇦🇹 DE", "EN": "🇬🇧 EN"}  # Austrian German, British English
 L = LANGS[nav_r.segmented_control("Sprache", list(LANGS), default=list(LANGS)[0], key="ui_lang",
                                   format_func=lambda k: FLAGS.get(k, k),
@@ -166,6 +169,29 @@ def _(text, **kw):
     return tr(text, L, **kw)
 
 
+for col, key, label in ((nav[1], "home", "Home"), (nav[2], "tool", "Prüfen"), (nav[3], "faq", "Fragen & Antworten")):
+    if col.button(_(label), type="tertiary", key=f"nav_{key}"):
+        st.session_state["page"] = key
+        st.rerun()
+st.markdown(f"<style>.st-key-nav_{page} button p {{ font-weight: 700; border-bottom: 2px solid #171A20; }}</style>",
+            unsafe_allow_html=True)
+
+
+def faq():
+    for q, a in (
+        ("Was ist CBAM?", "Seit 1. Jänner 2026 kostet die Einfuhr von Stahl, Aluminium, Zement, Dünger, Strom und Wasserstoff in die EU einen CO₂-Preis. Wer mehr als **50 Tonnen** solcher Waren pro Jahr einführt, braucht vorher eine Zulassung. Ohne Zulassung drohen **€ 300–500 Strafe je Tonne CO₂**. Ob eine Ware zählt, entscheidet ihr Zolltarif-Code (KN-Code)."),
+        ("Betrifft mich das?", "Ja, wenn Sie pro Kalenderjahr mehr als 50 t Waren aus Anhang I einführen — z. B. Träger, Rohre, Schrauben aus Stahl oder Profile aus Aluminium. Alle CBAM-Waren des Jahres werden zusammengezählt. Für Strom und Wasserstoff gibt es keine Schwelle."),
+        ("Was kostet es?", "Pro Tonne Ware: Standardwert der EU (t CO₂ je t Ware) × Preis eines CBAM-Zertifikats des Einfuhrquartals. Zertifikate für Einfuhren 2026 werden ab 1. Februar 2027 verkauft, die erste Jahreserklärung ist bis 30. September 2027 fällig."),
+        ("Was passiert ohne Zulassung?", "Wer über 50 t kommt, ohne zugelassener CBAM-Anmelder zu sein, zahlt das 3- bis 5-Fache der Strafe von € 100 je fehlendem Zertifikat — auf alle Emissionen des Jahres, nicht nur auf die Menge über 50 t."),
+        ("Wie beantrage ich die Zulassung?", "In Österreich beim Amt für den nationalen Emissionszertifikatehandel (AnEH), cbam@bmf.gv.at, über das CBAM-Register der EU — bevor Sie die Schwelle überschreiten. Die Checkliste dafür finden Sie unter „Prüfen“ → „Nächste Schritte“."),
+        ("Woher kommen die Zahlen?", "Aus Anhang I der Verordnung (EU) 2023/956, dem CBAM-Omnibus (EU) 2025/2083, den Standardwerten der DVO (EU) 2025/2621 und den Zertifikatspreisen der Europäischen Kommission. Die KI liest nur Rechnungen und erklärt — gerechnet wird mit geprüftem Code."),
+        ("Werden meine Rechnungen gespeichert?", "Nein, wir legen sie in keiner Datenbank ab; sie werden nur für die Berechnung verarbeitet. Stellen Sie der KI eine Frage, werden Ihre Positionen dafür an Google Gemini gesendet."),
+        ("Ist das Rechtsberatung?", "Nein. CBAM-Lotse ist eine Ersteinschätzung und bereitet Unterlagen vor. Die Entscheidung treffen Sie bzw. die Behörde."),
+    ):
+        with st.expander(_(q)):
+            st.markdown(_(a))
+
+
 def section(step, title):
     st.markdown(f"<div class='section'><small>{step}</small>{title}</div>", unsafe_allow_html=True)
 
@@ -190,7 +216,6 @@ importer = st.session_state.get("importer", "Metallbau Gruber GmbH")
 INTRO_CSS = """<style>
 .stApp { background: #F7F8FB !important; animation: none !important; }
 .nav, .hero-t { color: #1D1D1F; }
-.grad { color: #3A4452; background: none; }
 .hero-t { margin-top: 4.5rem; font-size: clamp(3rem, 8.5vw, 5.8rem); }
 .hero-s, .feat .d, .foot, .demo-note { color: #424245 !important; }
 .pill { background: rgba(255,255,255,.85); border-color: rgba(29,29,31,.12); color: #1D1D1F; backdrop-filter: blur(12px); }
@@ -205,29 +230,61 @@ button[data-testid="stBaseButton-primary"] { min-height: 44px; }
 
 def hero():
     st.markdown(f"<div class='pill'><span class='dot'></span>{_('CBAM-Pflicht seit 1. Jänner 2026')}</div>"
-                f"<div class='hero-t'>{_('Betrifft mich CBAM?').replace('CBAM', '<span class=grad>CBAM</span>')}</div>"
+                f"<div class='hero-t'>{_('Betrifft mich CBAM?')}</div>"
                 f"<div class='hero-s'>{_('Laden Sie Ihre Rechnungen. In einer Minute wissen Sie, ob die CO₂-Grenzabgabe der EU Sie trifft, was sie kostet und was jetzt zu tun ist.')}</div>",
                 unsafe_allow_html=True)
 
 
-# Intro: a landing page first; the tool opens after "Los geht's"
-if not st.session_state.get("started"):
+BAND_CSS = """<style>
+.st-key-band_how, .st-key-band_faq { padding: 1rem 0 3.5rem; clip-path: inset(0 -100vmax); }
+.st-key-band_how { background: #F2F3F5; box-shadow: 0 0 0 100vmax #F2F3F5; margin-top: 4rem; }
+.st-key-band_faq { background: #171A20; box-shadow: 0 0 0 100vmax #171A20; }
+.st-key-band_faq .section, .st-key-band_faq .section small { color: #F5F5F7; }
+.st-key-band_faq [data-testid="stExpander"] details { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); }
+.st-key-band_faq [data-testid="stExpander"] summary p, .st-key-band_faq [data-testid="stExpander"] p,
+.st-key-band_faq [data-testid="stExpander"] li, .st-key-band_faq .foot { color: #E8E8ED !important; }
+.st-key-band_faq [data-testid="stExpander"] svg { color: #E8E8ED; fill: #E8E8ED; }
+.step-card { background: #FFFFFF; border-radius: 4px; padding: 1.6rem 1.4rem; min-height: 170px; }
+.step-card .no { font-size: .85rem; font-weight: 600; color: #3E6AE1; }
+.step-card b { display: block; font-size: 1.15rem; margin: .35rem 0 .4rem; color: #171A20; }
+.step-card span { color: #5C5E62; line-height: 1.45; }
+.block-container { padding-bottom: 0; }
+</style>"""
+
+if page == "faq":
+    section(_("Hilfe"), _("Fragen & Antworten"))
+    faq()
+    footer()
+    st.stop()
+
+# Home: landing page; the tool opens with "Los geht's" or "Prüfen"
+if page == "home":
     st.markdown(INTRO_CSS, unsafe_allow_html=True)
     hero()
     _pad_l, go, _pad_r = st.columns([1, 1, 1])
     if go.button(_("Los geht's"), type="primary", width="stretch"):
-        st.session_state["started"] = True
+        st.session_state["page"] = "tool"
         st.rerun()
     st.markdown("<div style='height:2.5rem'></div>", unsafe_allow_html=True)
     f1, f2, f3 = st.columns(3)
     for i, (col, k, d) in enumerate(((f1, "50 t", _("pro Jahr. Darunter sind Sie befreit, darüber brauchen Sie eine Zulassung.")),
                                      (f2, "€ 300–500", _("Strafe je Tonne CO₂ ohne Zulassung — auf alle Emissionen des Jahres.")),
                                      (f3, _("1 Minute"), _("von der Rechnung zur Entscheidung. Jede Zahl mit Quelle.")))):
-        col.markdown(f"<div class='feat' style='animation-delay:{.35 + .12 * i:.2f}s'><div class='k grad'>{k}</div>"
+        col.markdown(f"<div class='feat' style='animation-delay:{.35 + .12 * i:.2f}s'><div class='k'>{k}</div>"
                      f"<div class='d'>{d}</div></div>", unsafe_allow_html=True)
-    with st.expander(_("Was ist CBAM? (30 Sekunden)")):
-        st.markdown(_("Seit 1. Jänner 2026 kostet die Einfuhr von Stahl, Aluminium, Zement, Dünger, Strom und Wasserstoff in die EU einen CO₂-Preis. Wer mehr als **50 Tonnen** solcher Waren pro Jahr einführt, braucht vorher eine Zulassung. Ohne Zulassung drohen **€ 300–500 Strafe je Tonne CO₂**. Ob eine Ware zählt, entscheidet ihr Zolltarif-Code (KN-Code)."))
-    footer()
+    st.markdown(BAND_CSS, unsafe_allow_html=True)
+    with st.container(key="band_how"):
+        section(_("In drei Schritten"), _("So funktioniert's"))
+        for col, (no, title, text) in zip(st.columns(3), (
+                ("01", _("Rechnungen hochladen"), _("PDF oder CSV — oder die Demo starten. Codes, Gewichte und Herkunft werden erkannt.")),
+                ("02", _("Ergebnis lesen"), _("Welche Waren zählen, wie nah Sie an 50 t sind und was es kosten würde.")),
+                ("03", _("Entscheiden"), _("Unter 50 t bleiben, Zulassung beantragen oder echte Daten beim Lieferanten anfragen — mit fertigen Dokumenten.")))):
+            col.markdown(f"<div class='step-card'><div class='no'>{no}</div><b>{title}</b><span>{text}</span></div>",
+                         unsafe_allow_html=True)
+    with st.container(key="band_faq"):
+        section(_("Hilfe"), _("Fragen & Antworten"))
+        faq()
+        footer()
     st.stop()
 
 section(_("Schritt 1"), _("Ihre Einkäufe"))

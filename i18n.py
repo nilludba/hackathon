@@ -285,6 +285,36 @@ T.update({
     '+{o:.1f} t über dem Limit': {"en": '+{o:.1f} t over the limit'},
 })
 
+T.update({
+    'Home': {"en": 'Home'},
+    'Prüfen': {"en": 'Check'},
+    'Fragen & Antworten': {"en": 'Questions & answers'},
+    'Hilfe': {"en": 'Help'},
+    'In drei Schritten': {"en": 'In three steps'},
+    "So funktioniert's": {"en": 'How it works'},
+    'Rechnungen hochladen': {"en": 'Upload invoices'},
+    'Ergebnis lesen': {"en": 'Read the result'},
+    'Entscheiden': {"en": 'Decide'},
+    'PDF oder CSV — oder die Demo starten. Codes, Gewichte und Herkunft werden erkannt.': {"en": 'PDF or CSV — or start the demo. Codes, weights and origin are recognised.'},
+    'Welche Waren zählen, wie nah Sie an 50 t sind und was es kosten würde.': {"en": 'Which goods count, how close you are to 50 t and what it would cost.'},
+    'Unter 50 t bleiben, Zulassung beantragen oder echte Daten beim Lieferanten anfragen — mit fertigen Dokumenten.': {"en": 'Stay below 50 t, apply for authorisation or ask your supplier for real data — with ready-made documents.'},
+    'Was ist CBAM?': {"en": 'What is CBAM?'},
+    'Betrifft mich das?': {"en": 'Does it apply to me?'},
+    'Ja, wenn Sie pro Kalenderjahr mehr als 50 t Waren aus Anhang I einführen — z. B. Träger, Rohre, Schrauben aus Stahl oder Profile aus Aluminium. Alle CBAM-Waren des Jahres werden zusammengezählt. Für Strom und Wasserstoff gibt es keine Schwelle.': {"en": 'Yes, if you import more than 50 t of Annex I goods per calendar year — e.g. steel beams, tubes, screws or aluminium profiles. All CBAM goods of the year are added up. Electricity and hydrogen have no threshold.'},
+    'Was kostet es?': {"en": 'What does it cost?'},
+    'Pro Tonne Ware: Standardwert der EU (t CO₂ je t Ware) × Preis eines CBAM-Zertifikats des Einfuhrquartals. Zertifikate für Einfuhren 2026 werden ab 1. Februar 2027 verkauft, die erste Jahreserklärung ist bis 30. September 2027 fällig.': {"en": 'Per tonne of goods: EU default value (t CO₂ per t of goods) × price of a CBAM certificate in the import quarter. Certificates for 2026 imports are sold from 1 February 2027; the first annual declaration is due by 30 September 2027.'},
+    'Was passiert ohne Zulassung?': {"en": 'What happens without authorisation?'},
+    'Wer über 50 t kommt, ohne zugelassener CBAM-Anmelder zu sein, zahlt das 3- bis 5-Fache der Strafe von € 100 je fehlendem Zertifikat — auf alle Emissionen des Jahres, nicht nur auf die Menge über 50 t.': {"en": 'Anyone above 50 t without being an authorised CBAM declarant pays 3 to 5 times the € 100 penalty per missing certificate — on all emissions of the year, not only on the quantity above 50 t.'},
+    'Wie beantrage ich die Zulassung?': {"en": 'How do I apply for authorisation?'},
+    'In Österreich beim Amt für den nationalen Emissionszertifikatehandel (AnEH), cbam@bmf.gv.at, über das CBAM-Register der EU — bevor Sie die Schwelle überschreiten. Die Checkliste dafür finden Sie unter „Prüfen“ → „Nächste Schritte“.': {"en": 'In Austria with the Amt für den nationalen Emissionszertifikatehandel (AnEH), cbam@bmf.gv.at, through the EU CBAM Registry — before you exceed the threshold. The checklist is under “Check” → “Next steps”.'},
+    'Woher kommen die Zahlen?': {"en": 'Where do the numbers come from?'},
+    'Aus Anhang I der Verordnung (EU) 2023/956, dem CBAM-Omnibus (EU) 2025/2083, den Standardwerten der DVO (EU) 2025/2621 und den Zertifikatspreisen der Europäischen Kommission. Die KI liest nur Rechnungen und erklärt — gerechnet wird mit geprüftem Code.': {"en": "From Annex I of Regulation (EU) 2023/956, the CBAM Omnibus (EU) 2025/2083, the default values of Implementing Regulation (EU) 2025/2621 and the European Commission's certificate prices. The AI only reads invoices and explains — the calculations are tested code."},
+    'Werden meine Rechnungen gespeichert?': {"en": 'Are my invoices stored?'},
+    'Nein, wir legen sie in keiner Datenbank ab; sie werden nur für die Berechnung verarbeitet. Stellen Sie der KI eine Frage, werden Ihre Positionen dafür an Google Gemini gesendet.': {"en": 'No, we keep them in no database; they are only processed for the calculation. If you ask the AI a question, your line items are sent to Google Gemini for that.'},
+    'Ist das Rechtsberatung?': {"en": 'Is this legal advice?'},
+    'Nein. CBAM-Lotse ist eine Ersteinschätzung und bereitet Unterlagen vor. Die Entscheidung treffen Sie bzw. die Behörde.': {"en": "No. CBAM-Lotse is a first assessment and prepares documents. The decision is yours and the authority's."},
+})
+
 def tr(text, lang, **kw):
     """Translate a German UI text and fill its {placeholders}."""
     s = T.get(text, {}).get(lang, text)
