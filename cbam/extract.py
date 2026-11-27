@@ -215,3 +215,22 @@ def extract_lines(path, name=None):
     if suffix in (".csv", ".txt"):
         return extract_csv(path, Path(name).name)
     raise ExtractionError(f"unsupported file type: {suffix}")
+
+
+def read_documents(files):
+    """Read several uploaded documents.
+
+    `files` is a list of (path_or_file_object, name). Returns (imported, planned, errors):
+    invoice lines, order-confirmation lines (planned imports, not yet imported) and
+    error messages for documents that could not be read.
+    """
+    imported, planned, errors = [], [], []
+    for f, name in files:
+        try:
+            for line in extract_lines(f, name=name):
+                (planned if line.get("doc_type") == "order" else imported).append(line)
+        except ExtractionError as e:
+            errors.append(str(e))
+        except Exception as e:  # broken or encrypted file: report, do not crash the UI
+            errors.append(f"{name}: Datei nicht lesbar ({type(e).__name__})")
+    return imported, planned, errors

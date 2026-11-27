@@ -87,3 +87,14 @@ def test_unsupported_type(tmp_path):
     f.write_text("x")
     with pytest.raises(ExtractionError):
         extract_lines(f)
+
+
+def test_read_documents_splits_orders_and_collects_errors(tmp_path):
+    bad = tmp_path / "scan.pdf"
+    bad.write_bytes(b"not a pdf")
+    files = [(DEMO / f, f) for f in ["invoice_01_TR.pdf", "invoice_02_CN.pdf", "invoice_03_TR.pdf", "order_04_CN.pdf"]]
+    from cbam.extract import read_documents
+    imported, planned, errors = read_documents(files + [(DEMO / "missing.docx", "x.docx"), (bad, "scan.pdf")])
+    assert len(imported) == 6 and len(planned) == 1
+    assert planned[0]["net_mass_kg"] == 12000.0
+    assert len(errors) == 2
