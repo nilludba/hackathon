@@ -249,6 +249,11 @@ def start_demo():
     st.session_state.update(demo="pdf", importer=DEMO_IMPORTER, cn_fixes={})
 
 
+def start_own():
+    """'Eigene Rechnungen prüfen': empty tool, no example data and no example company."""
+    st.session_state.update(demo=None, importer="", cn_fixes={})
+
+
 def own_files_changed():
     """Own upload replaces the demo for good: removing the file later must not bring the example back."""
     if st.session_state.get("uploads"):
@@ -308,6 +313,7 @@ if page == "home":
     hero()
     _pad_l, own, demo, _pad_r = st.columns([0.5, 1, 1, 0.5])
     if own.button(_("Eigene Rechnungen prüfen"), type="primary", width="stretch", key="cta_own"):
+        start_own()
         st.session_state["page"] = "tool"
         st.rerun()
     if demo.button(_("Beispiel ansehen – 30 Sekunden"), width="stretch", key="cta_demo"):
