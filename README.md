@@ -1,0 +1,50 @@
+# CBAM-Lotse
+
+AI agent that helps small Austrian importers of steel and aluminium handle the EU
+Carbon Border Adjustment Mechanism (CBAM): it reads import invoices, checks every
+CN code against Annex I of Regulation (EU) 2023/956, tracks the 50-tonne annual
+exemption threshold introduced by the CBAM Omnibus (Regulation (EU) 2025/2083),
+estimates certificate cost and penalty risk, and drafts the supplier request and a
+report in which every number links to its legal source.
+
+Built at the AAU Hackathon, Klagenfurt, 27–29 November 2026
+(University Challenge "The $15-an-Hour Expert").
+
+## Principle
+
+The language model extracts data from invoices and explains results. Every legal
+decision (is this a CBAM good? is the threshold crossed?) and every calculation is
+deterministic Python code covered by tests. Numbers come only from the files in
+`data/`, each with a `source` link.
+
+## Project layout
+
+```
+app.py              Streamlit user interface (planned)
+agent.py            agent loop and tool definitions (planned)
+cbam/annex.py       check_annex_i: CN code -> CBAM good or not
+cbam/threshold.py   50 t threshold status and forecast
+cbam/cost.py        embedded emissions, certificate cost, penalty scenario
+cbam/extract.py     invoice PDF/CSV -> lines (planned)
+cbam/documents.py   supplier letter and PDF report (planned)
+data/               annex_i.json, default_values.csv, cbam_prices.json
+demo/               demo invoices for "Metallbau Gruber GmbH"
+tests/              pytest suite
+```
+
+## Run locally
+
+```bash
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+pytest
+```
+
+The web app (`streamlit run app.py`) and the hosted demo link will be added here.
+
+## Disclaimer
+
+CBAM-Lotse is a pre-check and document-preparation tool, not legal advice. The
+importer and the competent authority (in Austria: Amt für den nationalen
+Emissionszertifikatehandel, AnEH) remain responsible for the final decision.

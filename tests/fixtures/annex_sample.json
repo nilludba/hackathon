@@ -1,0 +1,11 @@
+[
+  {"cn": "72", "sector": "iron_steel", "description_de": "Kapitel 72 (Auszug fuer Tests)", "exclude": ["7202", "7204"], "include_back": ["72021", "72024", "72026"], "source": "test fixture"},
+  {"cn": "7318", "sector": "iron_steel", "description_de": "Schrauben, Bolzen, Muttern", "exclude": [], "source": "test fixture"},
+  {"cn": "7308", "sector": "iron_steel", "description_de": "Konstruktionen aus Eisen oder Stahl", "exclude": [], "source": "test fixture"},
+  {"cn": "7604", "sector": "aluminium", "description_de": "Stangen und Profile aus Aluminium", "exclude": [], "source": "test fixture"},
+  {"cn": "7616", "sector": "aluminium", "description_de": "Andere Waren aus Aluminium", "exclude": [], "source": "test fixture"},
+  {"cn": "25070080", "sector": "cement", "description_de": "kalzinierter Ton", "exclude": [], "source": "test fixture"},
+  {"cn": "3105", "sector": "fertilisers", "description_de": "Duengemittel", "exclude": ["310560"], "source": "test fixture"},
+  {"cn": "28041000", "sector": "hydrogen", "description_de": "Wasserstoff", "exclude": [], "source": "test fixture"},
+  {"cn": "27160000", "sector": "electricity", "description_de": "Elektrischer Strom", "exclude": [], "source": "test fixture"}
+]
