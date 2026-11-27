@@ -148,7 +148,7 @@ s.addNotes("Placeholders: replace with two quotes from the validation calls, wit
 s = pres.addSlide({ masterName: "DARK", sectionTitle: "Criteria" });
 T(s, "CBAM-LOTSE", { x: M, y: 1.2, w: CW, h: 0.4, fontSize: 14, bold: true, charSpacing: 3, color: "E8956A" });
 T(s, "Upload your invoices. Know your tonnes. Decide before the next order.", { x: M, y: 1.8, w: 11, h: 2.4, fontSize: 44, bold: true, fontFace: "Arial", color: C.background1 });
-T(s, "Try it: [Streamlit link]", { x: M, y: 5.3, w: CW / 2, h: 0.4, fontSize: 18, color: C.accent4 });
+T(s, "Try it: cbam-lotse.streamlit.app", { x: M, y: 5.3, w: CW / 2, h: 0.4, fontSize: 18, color: C.accent4 });
 T(s, "Code: github.com/nilludba/hackathon", { x: M + CW / 2, y: 5.3, w: CW / 2, h: 0.4, fontSize: 18, color: C.accent4 });
 T(s, "First assessment, not legal advice. Competent authority in Austria: AnEH, cbam@bmf.gv.at.", { x: M, y: 6.3, w: CW, h: 0.4, fontSize: 12, color: C.accent4 });
 s.addNotes("Thank you. Questions?");
