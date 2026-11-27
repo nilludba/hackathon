@@ -4,7 +4,11 @@ from datetime import date
 from pathlib import Path
 
 import pandas as pd
+import os
+
 import streamlit as st
+
+from cbam.agent import answer
 
 from cbam.annex import check_annex_i, load_annex
 from cbam.cost import estimate_cost, latest_price, load_default_values, load_prices
@@ -138,3 +142,24 @@ b.subheader("B · Zulassung beantragen")
 b.write("Antrag als zugelassener CBAM-Anmelder beim AnEH (cbam@bmf.gv.at), bevor die Schwelle überschritten wird.")
 c.subheader("C · Lieferant fragen")
 c.write("Echte Emissionsdaten beim Lieferanten anfordern — oft niedriger als die Standardwerte.")
+
+# 6. Fragen an den Lotsen (KI)
+st.header("6. Fragen an den Lotsen")
+try:
+    api_key = st.secrets.get("GEMINI_API_KEY")
+except Exception:  # no secrets.toml locally
+    api_key = None
+api_key = api_key or os.environ.get("GEMINI_API_KEY")
+if not api_key:
+    st.caption("KI-Assistent aus (kein GEMINI_API_KEY) — Sie erhalten eine feste Zusammenfassung.")
+question = st.chat_input("z. B. Was passiert, wenn ich im Herbst noch 20 t Profile kaufe?")
+if question:
+    ctx = {"lines": records, "year": int(year), "values": default_values,
+           "price_eur": latest_price(prices)[1] if prices else None}
+    with st.spinner("Der Lotse rechnet …"):
+        text, calls = answer(question, ctx, api_key=api_key)
+    st.chat_message("user").write(question)
+    st.chat_message("assistant").write(text)
+    for c in calls:
+        with st.expander(f"Werkzeug: {c['name']}({c['args'] or ''})"):
+            st.json(c["result"])

@@ -20,8 +20,8 @@ deterministic Python code covered by tests. Numbers come only from the files in
 ## Project layout
 
 ```
-app.py              Streamlit user interface (planned)
-agent.py            agent loop and tool definitions (planned)
+app.py              Streamlit user interface (German)
+cbam/agent.py       Gemini agent: tool calling over the deterministic functions
 cbam/annex.py       check_annex_i: CN code -> CBAM good or not
 cbam/threshold.py   50 t threshold status and forecast
 cbam/cost.py        embedded emissions, certificate cost, penalty scenario
@@ -41,7 +41,21 @@ pip install -r requirements.txt
 pytest
 ```
 
-The web app (`streamlit run app.py`) and the hosted demo link will be added here.
+Start the web app:
+
+```bash
+streamlit run app.py
+```
+
+The AI assistant (section 6) uses the Google Gemini API. It is optional: without a key the app still runs
+and shows a fixed summary. To turn it on, set the key yourself, never commit it:
+
+```bash
+export GEMINI_API_KEY=...                       # or .streamlit/secrets.toml: GEMINI_API_KEY = "..."
+```
+
+The model only calls our tools (`check_cn`, `threshold`, `cost`); every number in its answer comes from them.
+The hosted demo link will be added here.
 
 ## Disclaimer
 
