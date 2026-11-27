@@ -7,7 +7,7 @@ exemption threshold introduced by the CBAM Omnibus (Regulation (EU) 2025/2083),
 estimates certificate cost and penalty risk, and drafts the supplier request and a
 report in which every number links to its legal source.
 
-**Live demo: https://cbam-lotse.streamlit.app/?embed=true** — click "Demo-PDFs einlesen", language switch in the sidebar.
+**Live demo: https://cbam-lotse.streamlit.app/?embed=true** — click "Demo starten" (DE/EN switch top right).
 
 Built at the AAU Hackathon, Klagenfurt, 27–29 November 2026
 (University Challenge "The $15-an-Hour Expert").
@@ -58,8 +58,8 @@ python3 -m venv .venv
 .venv/bin/streamlit run app.py
 ```
 
-The app opens at http://localhost:8501. Click **"Demo-PDFs einlesen"** to run the full flow on the
-demo company. The language switch (Deutsch / English / Русский) is in the sidebar.
+The app opens at http://localhost:8501. Click **"Demo starten"** to run the full flow on the
+demo company. The DE/EN switch is at the top right.
 
 Tests: `.venv/bin/pytest` (Windows: `.venv\Scripts\python -m pytest`).
 
