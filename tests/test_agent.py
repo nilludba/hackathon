@@ -115,3 +115,18 @@ def test_threshold_tool_forecast_is_never_in_the_past():
                       "date": f"{date.today().year}-01-15"}]}
     f = run_tool("threshold", {}, ctx)["forecast_crossing"]
     assert f is None or f >= date.today().isoformat()
+
+
+def test_post_moves_on_after_timeout(monkeypatch):
+    import io
+    import cbam.agent as agent
+    tried = []
+
+    def fake_urlopen(req, timeout):
+        tried.append(req.full_url)
+        if len(tried) == 1:
+            raise TimeoutError("timed out")
+        return io.BytesIO(b'{"ok": 1}')
+
+    monkeypatch.setattr(agent.urllib.request, "urlopen", fake_urlopen)
+    assert agent._post({}, "k") == {"ok": 1} and len(tried) == 2

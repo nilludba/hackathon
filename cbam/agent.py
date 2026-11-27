@@ -19,6 +19,7 @@ from cbam.threshold import threshold_status
 # Newest first; if a model is retired (404), rate-limited (429) or overloaded (5xx), the next one is tried.
 # See https://ai.google.dev/gemini-api/docs/deprecations
 MODELS = ("gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite")
+TIMEOUT_S = 25  # per model; the page must not hang for minutes
 URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 MAX_STEPS = 5
 
@@ -77,11 +78,15 @@ def _post(body, api_key):
     for i, model in enumerate(MODELS):
         req = urllib.request.Request(URL.format(model=model), data=data, method="POST",
                                      headers={"Content-Type": "application/json", "x-goog-api-key": api_key})
+        last = i == len(MODELS) - 1
         try:
-            with urllib.request.urlopen(req, timeout=60) as resp:
+            with urllib.request.urlopen(req, timeout=TIMEOUT_S) as resp:
                 return json.load(resp)
         except urllib.error.HTTPError as e:
-            if e.code not in (404, 429, 500, 503) or i == len(MODELS) - 1:
+            if e.code not in (404, 429, 500, 503) or last:
+                raise
+        except (TimeoutError, urllib.error.URLError) as e:  # slow model: try the next, faster one
+            if last or not isinstance(getattr(e, "reason", e), TimeoutError):
                 raise
 
 
