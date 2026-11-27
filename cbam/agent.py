@@ -6,7 +6,9 @@ Without GEMINI_API_KEY the app still works: `answer()` falls back to a fixed sum
 """
 
 import json
+import logging
 import math
+import urllib.error
 import urllib.request
 
 from cbam.annex import check_annex_i
@@ -92,12 +94,12 @@ FALLBACK = {
 }
 
 
-def fallback_answer(ctx, reason="no_key", language="Deutsch"):
+def fallback_answer(ctx, reason="no_key", language="Deutsch", detail=""):
     """Deterministic summary used when no API key is set or the API fails."""
     head, verdicts, tail, reasons = FALLBACK.get(language, FALLBACK["Deutsch"])
     s = run_tool("threshold", {}, ctx)
     return (head.format(year=ctx["year"], t=s["total_t"], share=s["share"]) + verdicts[s["status"]]
-            + tail.format(r=reasons[reason]))
+            + tail.format(r=reasons[reason] + (f" — {detail}" if detail else "")))
 
 
 def answer(question, ctx, api_key=None, post=_post, language="Deutsch"):
@@ -110,8 +112,12 @@ def answer(question, ctx, api_key=None, post=_post, language="Deutsch"):
         body = {"system_instruction": {"parts": [{"text": SYSTEM.replace("Antworte auf Deutsch", f"Antworte auf {language}")}]}, "contents": contents, "tools": TOOLS}
         try:
             content = post(body, api_key)["candidates"][0]["content"]
-        except Exception:  # network, quota or malformed reply: the app must keep working
-            return fallback_answer(ctx, "api", language), calls
+        except urllib.error.HTTPError as e:  # bad key, quota, bad request: show the code, log Google's message
+            logging.warning("Gemini HTTP %s: %s", e.code, e.read()[:1000].decode("utf-8", "replace"))
+            return fallback_answer(ctx, "api", language, f"HTTP {e.code}"), calls
+        except Exception as e:  # network or malformed reply: the app must keep working
+            logging.warning("Gemini call failed: %r", e)
+            return fallback_answer(ctx, "api", language, type(e).__name__), calls
         parts = content.get("parts", [])
         fcalls = [p["functionCall"] for p in parts if "functionCall" in p]
         if not fcalls:
