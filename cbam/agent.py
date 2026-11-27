@@ -39,7 +39,7 @@ TOOLS = [{"function_declarations": [
 
 
 def run_tool(name, args, ctx):
-    """Execute one tool call against the current import lines. ctx: lines, year, price_eur, values."""
+    """Execute one tool call against the current import lines. ctx: lines, year, prices, values."""
     cbam_lines = [r for r in ctx["lines"] if r.get("cbam")]
     if name == "check_cn":
         try:
@@ -49,10 +49,10 @@ def run_tool(name, args, ctx):
     if name == "threshold":
         return threshold_status(cbam_lines, ctx["year"])
     if name == "cost":
-        if ctx.get("values") is None or ctx.get("price_eur") is None:
+        if ctx.get("values") is None or ctx.get("prices") is None:
             return {"error": "Standardwerte oder Zertifikatspreis fehlen."}
         year_lines = [r for r in cbam_lines if str(r.get("date", "")).startswith(str(ctx["year"]))]
-        return estimate_cost(year_lines, ctx["price_eur"], ctx["values"])
+        return estimate_cost(year_lines, ctx["prices"], ctx["values"])
     return {"error": f"Unbekanntes Tool: {name}"}
 
 

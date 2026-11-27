@@ -9,7 +9,7 @@ from cbam.agent import answer, run_tool
 ENTRIES = json.loads((Path(__file__).parent / "fixtures" / "annex_sample.json").read_text(encoding="utf-8"))
 VALUES = [{"country_iso": "TR", "cn": "7318", "total_tco2_per_t": 2.5, "source": "test"}]
 CTX = {
-    "year": 2026, "price_eur": 80.0, "values": VALUES,
+    "year": 2026, "prices": 80.0, "values": VALUES,
     "lines": [
         {"cbam": True, "sector": "iron_steel", "cn": "7318 15 88", "origin": "TR", "net_mass_kg": 45_000, "date": "2026-03-01"},
         {"cbam": False, "sector": None, "cn": "8481 80 85", "origin": "CN", "net_mass_kg": 9_000, "date": "2026-04-01"},

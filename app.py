@@ -11,11 +11,11 @@ import streamlit as st
 from cbam.agent import answer
 
 from cbam.annex import check_annex_i, load_annex
-from cbam.cost import estimate_cost, latest_price, load_default_values, load_prices
+from cbam.cost import estimate_cost, load_default_values, load_prices
 from cbam.threshold import THRESHOLD_T, threshold_status
 
 ROOT = Path(__file__).resolve().parent
-DEMO_CSV = ROOT / "demo" / "demo_lines.csv"
+DEMO_CSV = ROOT / "demo" / "purchases_2026.csv"
 COLUMNS = ["description", "cn", "net_mass_kg", "origin", "date", "supplier"]
 
 OMNIBUS_URL = "https://eur-lex.europa.eu/eli/reg/2025/2083/oj"
@@ -60,7 +60,7 @@ with tab_demo:
         if st.session_state.get("demo"):
             lines = pd.read_csv(DEMO_CSV, dtype={"cn": str})
     else:
-        st.info("Demo-Daten folgen (demo/demo_lines.csv).")
+        st.info("Demo-Daten fehlen (demo/purchases_2026.csv).")
 
 if lines is None:
     st.stop()
@@ -117,20 +117,20 @@ st.header("4. Kosten und Risiko")
 if default_values is None or prices is None:
     st.info("Standardwerte oder Zertifikatspreise fehlen noch (data/default_values.csv, data/cbam_prices.json).")
 else:
-    quarter, price = latest_price(prices)
     year_lines = [r for r in records if r["cbam"] and str(r["date"]).startswith(year)]
-    cost = estimate_cost(year_lines, price, default_values)
+    cost = estimate_cost(year_lines, prices, default_values)
     c1, c2, c3 = st.columns(3)
     c1.metric("Graue Emissionen", f"{cost['total_emissions_t']:.1f} t CO₂e")
-    c2.metric(f"Zertifikate ({quarter}: € {price:.2f}/t)", f"€ {cost['certificate_cost_eur']:,.0f}")
+    c2.metric("Zertifikate (Quartalspreise)", f"€ {cost['certificate_cost_eur']:,.0f}")
     lo, hi = cost["penalty_range_eur"]
     c3.metric("Strafe ohne Zulassung", f"€ {lo:,.0f} – {hi:,.0f}")
     if cost["lines"]:
-        st.dataframe(pd.DataFrame(cost["lines"])[["description", "cn", "origin", "formula", "emissions_t", "certificate_eur", "factor_source"]],
-                     width="stretch", column_config={"factor_source": st.column_config.LinkColumn("Quelle")})
+        st.dataframe(pd.DataFrame(cost["lines"])[["description", "cn", "origin", "quarter", "formula", "emissions_t", "certificate_eur", "factor_source"]],
+                     width="stretch", column_config={"factor_source": "Quelle"})
     if cost["missing_default_value"]:
         st.warning(f"{len(cost['missing_default_value'])} Zeile(n) ohne Standardwert für Herkunftsland/KN — nicht geschätzt.")
-    st.caption(f"Zertifikatspreis: [Europäische Kommission]({PRICE_URL}). Strafe: 3–5 × € 100 je fehlendem Zertifikat, "
+    st.caption(f"Standardwerte inkl. Aufschlag des Jahres (DVO (EU) 2025/2621). Zertifikatspreis des Einfuhrquartals: "
+               f"[Europäische Kommission]({PRICE_URL}). Strafe: 3–5 × € 100 je fehlendem Zertifikat, "
                "auf alle Emissionen des Jahres (Art. 26 Abs. 2a, vor Indexierung).")
 
 # 5. Entscheidung
@@ -155,7 +155,7 @@ if not api_key:
 question = st.chat_input("z. B. Was passiert, wenn ich im Herbst noch 20 t Profile kaufe?")
 if question:
     ctx = {"lines": records, "year": int(year), "values": default_values,
-           "price_eur": latest_price(prices)[1] if prices else None}
+           "prices": prices}
     with st.spinner("Der Lotse rechnet …"):
         text, calls = answer(question, ctx, api_key=api_key)
     st.chat_message("user").write(question)
