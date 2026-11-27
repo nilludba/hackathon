@@ -14,6 +14,7 @@ from cbam.annex import check_annex_i, load_annex
 from cbam.cost import estimate_cost, load_default_values, load_prices
 from cbam.documents import report_pdf, supplier_letter
 from cbam.extract import read_documents
+from cbam.suggest import TARIC_URL, suggest_cn
 from cbam.threshold import THRESHOLD_T, threshold_status
 from i18n import LANGS, tr
 
@@ -67,6 +68,15 @@ with st.sidebar:
     st.divider()
     st.markdown(_("**So funktioniert es**\n\n1. Rechnungen hochladen oder Demo laden\n2. Ergebnis lesen: Betrifft mich CBAM?\n3. Nächsten Schritt wählen und Dokumente herunterladen"))
     st.caption(_("Ersteinschätzung, keine Rechtsberatung. Zuständig in Österreich: AnEH, cbam@bmf.gv.at."))
+    with st.expander(_("🧪 Wie prüfen wir uns selbst?")):
+        st.markdown(_("Die KI liest nur und erklärt. Anhang I, Schwelle und Kosten rechnet geprüfter Code. Sie können die automatischen Tests hier selbst laufen lassen."))
+        if st.button(_("Tests ausführen")):
+            import subprocess
+            import sys
+            run = subprocess.run([sys.executable, "-m", "pytest", "-q", "--no-header", "-p", "no:cacheprovider"],
+                                 cwd=ROOT, capture_output=True, text=True, timeout=120)
+            summary = (run.stdout.strip().splitlines() or ["?"])[-1]
+            (st.success if run.returncode == 0 else st.error)(summary)
 
 st.title("🏭 CBAM-Lotse")
 st.markdown(_("Betrifft mich CBAM? Prüfung Ihrer Stahl- und Aluminiumimporte gegen Anhang I und die 50-Tonnen-Schwelle — jede Zahl mit Quelle."))
@@ -132,6 +142,41 @@ missing_cols = [c for c in COLUMNS if c not in lines.columns]
 if missing_cols:
     st.error(_("Fehlende Spalten: ") + ", ".join(missing_cols))
     st.stop()
+
+
+
+def _valid_cn(cn):
+    try:
+        check_annex_i(cn)
+        return True
+    except (ValueError, TypeError):
+        return False
+
+
+# Lines without a CN code: propose one (deterministic rules), the user confirms with one click.
+lines = lines.reset_index(drop=True)
+fixes = st.session_state.setdefault("cn_fixes", {})
+for i, desc in fixes.items():
+    if i < len(lines) and lines.loc[i, "description"] == desc[0]:
+        lines.loc[i, "cn"] = desc[1]
+for i, row in lines.iterrows():
+    if _valid_cn(row["cn"]):
+        continue
+    with st.container(border=True):
+        st.markdown(_("**Kein KN-Code** bei „{d}“", d=row["description"]))
+        options = suggest_cn(row["description"])
+        if not options:
+            st.caption(_("Kein Vorschlag möglich — bitte Code in der Tabelle unten eintragen ([Zolltarif TARIC]({u})).", u=TARIC_URL))
+        for k, s in enumerate(options):
+            verdict = _("CBAM-Ware") if s["cbam"] else _("keine CBAM-Ware")
+            col1, col2 = st.columns([4, 1])
+            col1.markdown(_("Vorschlag: **{cn}** — {label} · {v} · Sicherheit: {c}",
+                            cn=s["cn"], label=s["label"], v=verdict, c=_(s["confidence"])))
+            if col2.button(_("Übernehmen"), key=f"fix_{i}_{k}"):
+                fixes[i] = (row["description"], s["cn"])
+                st.rerun()
+        if options:
+            st.caption(_("Vorschlag nach Warenbeschreibung, bitte prüfen ([Zolltarif TARIC]({u})).", u=TARIC_URL))
 
 with st.expander(_("Erkannte Positionen prüfen und korrigieren ({n})", n=len(lines))):
     st.caption(_("Bitte KN-Codes und Gewichte prüfen — Sie können jede Zelle korrigieren."))
@@ -213,7 +258,8 @@ if cost:
 # Step 3: details and actions
 st.markdown(f"<div class='step'>{_('Schritt 3')}</div>", unsafe_allow_html=True)
 st.subheader(_("Was jetzt?"))
-t_act, t_goods, t_cost, t_ask = st.tabs([_("✅ Nächste Schritte"), _("📦 Waren"), _("💶 Kosten"), _("💬 Fragen")])
+t_act, t_goods, t_cost, t_what, t_ask = st.tabs([_("✅ Nächste Schritte"), _("📦 Waren"), _("💶 Kosten"),
+                                                 _("🔮 Was wäre wenn"), _("💬 Fragen")])
 
 with t_act:
     a, b, c = st.columns(3)
@@ -226,6 +272,27 @@ with t_act:
     c.markdown(f"<div class='option'><b>{_('C · Lieferant fragen')}</b>"
                f"{_('Echte Emissionsdaten beim Lieferanten anfordern — oft niedriger als die Standardwerte.')}</div>",
                unsafe_allow_html=True)
+    if cost is not None and (planned_t or status["status"] != "exempt"):
+        planned_records = []
+        for l in planned_cbam:
+            v = check_annex_i(l["cn"])
+            planned_records.append({**l, "cbam": True, "sector": v["sector"]})
+        year_cbam = [r for r in records if r["cbam"] and str(r["date"]).startswith(year)]
+        after = estimate_cost(year_cbam + planned_records, prices, default_values) if planned_records else cost
+        total_after = t + planned_t
+        now_eur = _("€ 0 (befreit)") if t <= THRESHOLD_T else f"€ {cost['certificate_cost_eur']:,.0f}"
+        rows = [{_("Szenario"): _("Ohne geplante Lieferung"), _("Menge"): f"{t:.1f} t", _("Kosten im Jahr"): now_eur}]
+        if planned_records:
+            rows.append({_("Szenario"): _("Mit geplanter Lieferung und Zulassung"), _("Menge"): f"{total_after:.1f} t",
+                         _("Kosten im Jahr"): (f"€ {after['certificate_cost_eur']:,.0f}" if total_after > THRESHOLD_T
+                                               else _("€ 0 (befreit)"))})
+        if total_after > THRESHOLD_T:
+            lo_a, hi_a = after["penalty_range_eur"]
+            rows.append({_("Szenario"): _("Über 50 t ohne Zulassung"), _("Menge"): f"{total_after:.1f} t",
+                         _("Kosten im Jahr"): f"€ {lo_a:,.0f} – {hi_a:,.0f}"})
+        st.markdown("#### " + _("Was kostet welche Entscheidung?"))
+        st.table(pd.DataFrame(rows))
+        st.caption(_("Wird die Schwelle überschritten, zählen alle CBAM-Waren des Jahres, nicht nur die Menge über 50 t. Lieferung später planen ist zulässig; Lieferungen künstlich aufzuteilen, um unter 50 t zu bleiben, ist es nicht."))
     if CHECKLIST.exists():
         with st.expander(_("Checkliste Antrag")):
             st.markdown(CHECKLIST.read_text(encoding="utf-8"))
@@ -267,14 +334,57 @@ with t_cost:
     else:
         st.markdown(_("So rechnen wir: **Menge × Standardwert der EU (t CO₂ je t Ware) × Zertifikatspreis des Quartals**."))
         if cost["lines"]:
-            st.dataframe(pd.DataFrame(cost["lines"])[["description", "origin", "formula", "emissions_t", "certificate_eur"]],
+            st.dataframe(pd.DataFrame(cost["lines"])[["description", "origin", "formula", "emissions_t", "certificate_eur",
+                                                      "factor_source"]],
                          width="stretch", hide_index=True, column_config={
                              "description": _("Ware"), "origin": _("Land"), "formula": _("Rechnung"),
                              "emissions_t": st.column_config.NumberColumn("t CO₂e", format="%.1f"),
-                             "certificate_eur": st.column_config.NumberColumn("€", format="%.0f")})
+                             "certificate_eur": st.column_config.NumberColumn("€", format="%.0f"),
+                             "factor_source": st.column_config.LinkColumn(_("Standardwert"), display_text=_("EU-Tabelle"))})
         if cost["missing_default_value"]:
             st.warning(_("{n} Zeile(n) ohne Standardwert für Herkunftsland/KN — nicht geschätzt.", n=len(cost["missing_default_value"])))
         st.caption(_("Standardwerte inkl. Aufschlag des Jahres (DVO (EU) 2025/2621). Zertifikatspreis des Einfuhrquartals: [Europäische Kommission]({u}). Strafe: 3–5 × € 100 je fehlendem Zertifikat, auf alle Emissionen des Jahres (Art. 26 Abs. 2a, vor Indexierung).", u=PRICE_URL))
+
+with t_what:
+    st.markdown(_("Was passiert mit einer zusätzlichen Bestellung? Und was kostet dieselbe Ware aus einem anderen Land?"))
+    if cost is None:
+        st.info(_("Standardwerte oder Zertifikatspreise fehlen noch (data/default_values.csv, data/cbam_prices.json)."))
+    else:
+        w1, w2, w3 = st.columns([2, 1, 1])
+        w_cn = w1.text_input(_("KN-Code der Ware"), "7604 29 90")
+        w_t = w2.number_input(_("Menge (t)"), min_value=0.0, value=10.0, step=1.0)
+        countries = sorted({v["country_iso"] for v in default_values})
+        w_country = w3.selectbox(_("Herkunft"), countries, index=countries.index("CN") if "CN" in countries else 0)
+        try:
+            w_verdict = check_annex_i(w_cn)
+        except (ValueError, TypeError):
+            w_verdict = None
+        if w_verdict is None:
+            st.warning(_("Bitte einen gültigen KN-Code eingeben (mindestens 4 Ziffern)."))
+        elif not w_verdict["cbam"]:
+            st.success(_("Keine CBAM-Ware — zählt nicht zur 50-t-Schwelle."))
+        else:
+            w_date = f"{year}-12-01" if int(year) != date.today().year else date.today().isoformat()
+            base = t + planned_t
+            new_t = base + w_t
+            line = {"cn": w_cn, "net_mass_kg": w_t * 1000, "date": w_date, "cbam": True, "sector": w_verdict["sector"],
+                    "description": w_verdict["description"]}
+            msg = _("Danach: **{n:.1f} t** von 50 t (bisher {b:.1f} t inkl. geplanter Lieferungen).", n=new_t, b=base)
+            (st.error if new_t > THRESHOLD_T else st.success)(
+                msg + " " + (_("Schwelle überschritten — Zulassung nötig.") if new_t > THRESHOLD_T else _("Weiter befreit.")))
+            comp = []
+            for ctry in countries:
+                c = estimate_cost([{**line, "origin": ctry}], prices, default_values)
+                if c["lines"]:
+                    r = c["lines"][0]
+                    comp.append({_("Herkunft"): ctry, _("t CO₂ je t Ware"): r["factor_tco2_per_t"],
+                                 "t CO₂e": round(r["emissions_t"], 1), _("Zertifikate"): f"€ {r['certificate_eur']:,.0f}"})
+            if comp:
+                st.markdown(_("Dieselbe Menge aus verschiedenen Ländern (EU-Standardwerte, Preis des Einfuhrquartals):"))
+                st.table(pd.DataFrame(comp))
+                st.caption(_("Zahlen gelten, wenn Sie über 50 t liegen. Echte Lieferantendaten können niedriger sein (Option C)."))
+            else:
+                st.info(_("Für diesen KN-Code gibt es in unseren Daten keinen Standardwert."))
 
 with t_ask:
     try:

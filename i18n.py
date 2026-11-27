@@ -175,6 +175,48 @@ T = {
 }
 
 
+# --- added by Matvey + Claude: CN suggestions, decision costs, what-if, self-check ---
+T.update({
+    '**Kein KN-Code** bei „{d}“': {'en': '**No CN code** for “{d}”', 'ru': '**Нет кода КН** у «{d}»'},
+    'Bitte einen gültigen KN-Code eingeben (mindestens 4 Ziffern).': {'en': 'Please enter a valid CN code (at least 4 digits).', 'ru': 'Введите корректный код КН (не меньше 4 цифр).'},
+    'Danach: **{n:.1f} t** von 50 t (bisher {b:.1f} t inkl. geplanter Lieferungen).': {'en': 'Afterwards: **{n:.1f} t** of 50 t (so far {b:.1f} t incl. planned deliveries).', 'ru': 'После этого: **{n:.1f} т** из 50 т (сейчас {b:.1f} т с учётом запланированных поставок).'},
+    'Die KI liest nur und erklärt. Anhang I, Schwelle und Kosten rechnet geprüfter Code. Sie können die automatischen Tests hier selbst laufen lassen.': {'en': 'The AI only reads and explains. Annex I, the threshold and the costs are computed by tested code. You can run the automated tests here yourself.', 'ru': 'ИИ только читает и объясняет. Приложение I, порог и стоимость считает проверенный код. Автоматические тесты можно запустить здесь самому.'},
+    'Dieselbe Menge aus verschiedenen Ländern (EU-Standardwerte, Preis des Einfuhrquartals):': {'en': 'The same quantity from different countries (EU default values, price of the import quarter):', 'ru': 'То же количество из разных стран (стандартные значения ЕС, цена квартала ввоза):'},
+    'EU-Tabelle': {'en': 'EU table', 'ru': 'Таблица ЕС'},
+    'Für diesen KN-Code gibt es in unseren Daten keinen Standardwert.': {'en': 'There is no default value for this CN code in our data.', 'ru': 'Для этого кода КН в наших данных нет стандартного значения.'},
+    'Herkunft': {'en': 'Origin', 'ru': 'Страна происхождения'},
+    'KN-Code der Ware': {'en': 'CN code of the goods', 'ru': 'Код КН товара'},
+    'Kein Vorschlag möglich — bitte Code in der Tabelle unten eintragen ([Zolltarif TARIC]({u})).': {'en': 'No suggestion possible — please enter the code in the table below ([TARIC tariff]({u})).', 'ru': 'Подсказать не получается — впишите код в таблицу ниже ([тариф TARIC]({u})).'},
+    'Keine CBAM-Ware — zählt nicht zur 50-t-Schwelle.': {'en': 'Not a CBAM good — does not count towards the 50 t threshold.', 'ru': 'Не товар CBAM — в порог 50 т не входит.'},
+    'Kosten im Jahr': {'en': 'Cost for the year', 'ru': 'Затраты за год'},
+    'Menge': {'en': 'Quantity', 'ru': 'Количество'},
+    'Mit geplanter Lieferung und Zulassung': {'en': 'With planned delivery and authorisation', 'ru': 'С запланированной поставкой и статусом декларанта'},
+    'Ohne geplante Lieferung': {'en': 'Without planned delivery', 'ru': 'Без запланированной поставки'},
+    'Schwelle überschritten — Zulassung nötig.': {'en': 'Threshold exceeded — authorisation needed.', 'ru': 'Порог превышен — нужен статус декларанта.'},
+    'Standardwert': {'en': 'Default value', 'ru': 'Стандартное значение'},
+    'Szenario': {'en': 'Scenario', 'ru': 'Сценарий'},
+    'Tests ausführen': {'en': 'Run tests', 'ru': 'Запустить тесты'},
+    'Vorschlag nach Warenbeschreibung, bitte prüfen ([Zolltarif TARIC]({u})).': {'en': 'Suggestion based on the description, please check ([TARIC tariff]({u})).', 'ru': 'Подсказка по описанию товара, пожалуйста, проверьте ([тариф TARIC]({u})).'},
+    'Vorschlag: **{cn}** — {label} · {v} · Sicherheit: {c}': {'en': 'Suggestion: **{cn}** — {label} · {v} · confidence: {c}', 'ru': 'Подсказка: **{cn}** — {label} · {v} · уверенность: {c}'},
+    'Was kostet welche Entscheidung?': {'en': 'What does each decision cost?', 'ru': 'Сколько стоит каждое решение?'},
+    'Was passiert mit einer zusätzlichen Bestellung? Und was kostet dieselbe Ware aus einem anderen Land?': {'en': 'What happens with an extra order? And what does the same goods cost from another country?', 'ru': 'Что будет при дополнительном заказе? И сколько стоит тот же товар из другой страны?'},
+    'Weiter befreit.': {'en': 'Still exempt.', 'ru': 'По-прежнему освобождены.'},
+    'Wird die Schwelle überschritten, zählen alle CBAM-Waren des Jahres, nicht nur die Menge über 50 t. Lieferung später planen ist zulässig; Lieferungen künstlich aufzuteilen, um unter 50 t zu bleiben, ist es nicht.': {'en': 'Once the threshold is exceeded, all CBAM goods of the year count, not only the amount above 50 t. Planning a delivery later is allowed; artificially splitting deliveries to stay below 50 t is not.', 'ru': 'При превышении порога считаются все товары CBAM за год, а не только то, что сверх 50 т. Перенести поставку можно; искусственно дробить поставки, чтобы остаться ниже 50 т, нельзя.'},
+    'Zahlen gelten, wenn Sie über 50 t liegen. Echte Lieferantendaten können niedriger sein (Option C).': {'en': 'These figures apply if you are above 50 t. Real supplier data may be lower (option C).', 'ru': 'Цифры действуют, если вы выше 50 т. Реальные данные поставщика могут быть ниже (вариант C).'},
+    'Zertifikate': {'en': 'Certificates', 'ru': 'Сертификаты'},
+    'keine CBAM-Ware': {'en': 'not a CBAM good', 'ru': 'не товар CBAM'},
+    't CO₂ je t Ware': {'en': 't CO₂ per t of goods', 'ru': 'т CO₂ на т товара'},
+    'Über 50 t ohne Zulassung': {'en': 'Above 50 t without authorisation', 'ru': 'Выше 50 т без статуса декларанта'},
+    'Übernehmen': {'en': 'Apply', 'ru': 'Принять'},
+    '€ 0 (befreit)': {'en': '€ 0 (exempt)', 'ru': '€ 0 (освобождены)'},
+    '🔮 Was wäre wenn': {'en': '🔮 What if', 'ru': '🔮 Что если'},
+    '🧪 Wie prüfen wir uns selbst?': {'en': '🧪 How do we check ourselves?', 'ru': '🧪 Как мы себя проверяем?'},
+    'hoch': {'en': 'high', 'ru': 'высокая'},
+    'mittel': {'en': 'medium', 'ru': 'средняя'},
+    'niedrig': {'en': 'low', 'ru': 'низкая'},
+})
+
+
 def tr(text, lang, **kw):
     """Translate a German UI text and fill its {placeholders}."""
     s = T.get(text, {}).get(lang, text)
