@@ -83,8 +83,8 @@ div[data-testid="stMetricLabel"] p { color: #6E6E73; }
 :root { --glass: rgba(255,255,255,.72); --lift: 0 10px 30px rgba(17,17,26,.06); }
 .stApp { background:
   radial-gradient(48% 40% at 8% 0%, rgba(0,113,227,.16), transparent 62%),
-  radial-gradient(42% 38% at 96% 8%, rgba(122,90,248,.14), transparent 62%),
-  radial-gradient(50% 45% at 50% 105%, rgba(229,0,125,.08), transparent 62%), #F7F8FB;
+  radial-gradient(42% 38% at 96% 8%, rgba(120,135,155,.16), transparent 62%),
+  radial-gradient(50% 45% at 50% 105%, rgba(120,135,155,.10), transparent 62%), #F7F8FB;
   background-attachment: fixed; }
 @keyframes drift { 0% { background-position: 0% 0%; } 100% { background-position: 100% 100%; } }
 .chip { display: inline-block; padding: .3rem .8rem; border-radius: 980px; font-size: .85rem; font-weight: 600; margin: .55rem 0 .2rem; }
@@ -107,7 +107,7 @@ div[data-testid="stMetricLabel"] p { color: #6E6E73; }
   vertical-align: 1px; animation: pulse 2.2s infinite; }
 .hero-t { margin-top: 1.1rem; animation: rise .8s .06s both; }
 .hero-s { animation: rise .8s .16s both; }
-.grad { background: linear-gradient(90deg, #0071E3, #7A5AF8, #E5007D, #0071E3); background-size: 200% auto;
+.grad { background: linear-gradient(100deg, #6B7685 0%, #6B7685 38%, #EEF2F6 50%, #6B7685 62%, #6B7685 100%); background-size: 250% auto;
   -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 7s linear infinite; }
 .feat { animation: rise .8s both; }
 .feat .k.grad { display: inline-block; color: transparent; }
@@ -193,12 +193,13 @@ importer = st.session_state.get("importer", "Metallbau Gruber GmbH")
 
 INTRO_CSS = """<style>
 .stApp { background:
-  radial-gradient(55% 50% at 18% 18%, rgba(0,113,227,.55), transparent 62%),
-  radial-gradient(50% 45% at 85% 25%, rgba(122,90,248,.45), transparent 62%),
-  radial-gradient(60% 55% at 50% 100%, rgba(229,0,125,.32), transparent 62%), #05060A !important;
+  radial-gradient(55% 50% at 18% 18%, rgba(35,85,145,.50), transparent 62%),
+  radial-gradient(50% 45% at 85% 25%, rgba(70,95,125,.45), transparent 62%),
+  radial-gradient(60% 50% at 50% 108%, rgba(255,106,19,.30), transparent 62%), #06080B !important;
   background-size: 170% 170% !important; background-attachment: scroll !important;
   animation: drift 16s ease-in-out infinite alternate; }
 .nav, .hero-t { color: #F5F5F7; }
+.grad { background-image: linear-gradient(100deg, #9AA5B4 0%, #9AA5B4 38%, #FFFFFF 50%, #9AA5B4 62%, #9AA5B4 100%); }
 .hero-t { margin-top: 4.5rem; font-size: clamp(3rem, 8.5vw, 5.8rem); }
 .hero-s, .feat .d, .foot { color: #A1A1A6; }
 .pill { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); color: #F5F5F7; backdrop-filter: blur(12px); }
