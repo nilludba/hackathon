@@ -1,5 +1,7 @@
 # Demo script and slide numbers (3 minutes)
 
+Jury criteria (updated 27.11 23:25): **Creativity of solution · Quality of user interaction · Problem fit & practical impact** (10 each).
+
 All numbers below were computed with the project code (`read_documents` → `check_annex_i` →
 `threshold_status` → `estimate_cost`) on the four demo PDFs in `demo/`. Re-run after data changes:
 `python demo/compute_demo_numbers.py`.
@@ -46,7 +48,17 @@ not "split to dodge".
 1. **0:00–0:30 Problem.** "Since 1 January 2026 every company importing steel or aluminium into the EU has a new duty. 182,000 importers are exempt — but only as long as they stay under 50 tonnes a year. Cross it unnoticed and the fine is € 300–500 per tonne of CO₂ for the whole year."
 2. **0:30–2:00 Live demo.** Herr Gruber, Metallbau in Klagenfurt, 15 employees. Upload 4 PDFs (tab "Rechnungen (PDF) hochladen" or "Demo-PDFs einlesen") → 6 lines, 4 CBAM goods, each with its Annex I entry → **41 of 50 t** → the order confirmation: **"this delivery pushes you to 53 t"** → three options with euros → supplier letter + PDF report.
 3. **2:00–2:30 Trust.** Click a number → formula, default value from the Commission's Excel, EUR-Lex link. "The AI reads and explains; every legal decision is tested code — over 110 automated tests."
-4. **2:30–3:00 Market.** ~200,000 EU importers of CBAM goods (182,000 exempt, Commission). SME tools exist from € 79/month (CbamTrack) and € 145/month (CBAM Desk) — we read invoices, watch the threshold and warn before the order that tips you over, Austria-specific (AnEH checklist). Free check, € 19–49/month monitoring, white-label for freight forwarders and tax advisers.
+4. **2:30–3:00 Problem fit & impact.** Who has this problem: ~200,000 EU importers of CBAM goods, 182,000 of them exempt only while below 50 t (Commission) — mostly SMEs like Herr Gruber. Impact in the demo: one order decides between **€ 0**, **€ 19k** of certificates or a **€ 72k–121k** fine — and he sees it *before* ordering. Validation quotes from Kärnten go here (interviews pending).
+
+## How the demo shows each criterion
+
+| Criterion | Show on stage |
+|---|---|
+| Creativity | AI only reads invoices and explains; law and maths are tested code — no hallucinated numbers. The order confirmation is checked *before* the goods arrive. |
+| Quality of user interaction | One sentence result on top, 3 steps, PDF upload instead of typing CN codes, plain-language explanation, DE/EN/RU, every number clickable → formula + source. Nails without a code: the app asks instead of guessing. |
+| Problem fit & practical impact | Real professional task (customs/climate law) for a non-expert; verifiable outcome: report + supplier letter + AnEH checklist; € 0 vs € 19k vs € 72–121k decision. |
+
+(Competitor prices for questions only: SME tools from € 79/month (CbamTrack), € 145/month (CBAM Desk) — see `data/market_facts.md`.)
 
 ## Slide one-liners
 
