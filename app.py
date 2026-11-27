@@ -118,6 +118,9 @@ div[data-testid="stMetric"]:hover, .option:hover { transform: translateY(-3px); 
 button[data-testid="stBaseButton-tertiary"] { background: transparent !important; min-height: auto; padding: .25rem .1rem;
   color: #171A20 !important; font-weight: 500; }
 button[data-testid="stBaseButton-tertiary"]:hover { color: #3E6AE1 !important; }
+.st-key-nav_logo button { transition: transform .2s ease; transform-origin: left center; }
+.st-key-nav_logo button p { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.01em; }
+.st-key-nav_logo button:hover { transform: scale(1.08); color: #171A20 !important; }
 @media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
 </style>""", unsafe_allow_html=True)
 
@@ -136,7 +139,9 @@ prices = try_load(load_prices)
 # Top bar: wordmark · Home · Prüfen · Fragen & Antworten · language
 page = st.session_state.setdefault("page", "home")
 nav = st.columns([2.1, .8, .9, 1.9, 1.5], vertical_alignment="center")
-nav[0].markdown("<div class='nav'>CBAM-Lotse</div>", unsafe_allow_html=True)
+if nav[0].button("CBAM-Lotse", type="tertiary", key="nav_logo"):  # wordmark = home link
+    st.session_state["page"] = "home"
+    st.rerun()
 nav_r = nav[4]
 FLAGS = {"DE": "🇦🇹 DE", "EN": "🇬🇧 EN"}  # Austrian German, British English
 L = LANGS[nav_r.segmented_control("Sprache", list(LANGS), default=list(LANGS)[0], key="ui_lang",
