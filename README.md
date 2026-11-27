@@ -22,7 +22,7 @@ deterministic Python code covered by tests. Numbers come only from the files in
 ## Project layout
 
 ```
-app.py              Streamlit user interface (DE/EN/RU, texts in i18n.py)
+app.py              Streamlit user interface (DE/EN, texts in i18n.py)
 cbam/agent.py       Gemini agent: tool calling over the deterministic functions
 cbam/annex.py       check_annex_i: CN code -> CBAM good or not
 cbam/threshold.py   50 t threshold status and forecast
