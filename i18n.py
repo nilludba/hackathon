@@ -338,6 +338,10 @@ T.update({
     "Laden Sie Ihre Rechnungen hoch — das Ergebnis erscheint dann hier.": {"en": "Upload your invoices — the result will appear here."},
 })
 
+T.update({
+    "PDF oder CSV — oder erst das Beispiel ansehen. Codes, Gewichte und Herkunft werden erkannt.": {"en": "PDF or CSV — or look at the example first. Codes, weights and origin are recognised."},
+})
+
 def tr(text, lang, **kw):
     """Translate a German UI text and fill its {placeholders}."""
     s = T.get(text, {}).get(lang, text)
