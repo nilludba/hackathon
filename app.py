@@ -241,7 +241,21 @@ def footer():
             (st.success if run.returncode == 0 else st.error)(summary)
 
 
-importer = st.session_state.get("importer", "Metallbau Gruber GmbH")
+DEMO_IMPORTER = "Metallbau Gruber GmbH"
+importer = st.session_state.setdefault("importer", DEMO_IMPORTER)
+
+
+def start_demo():
+    st.session_state.update(demo="pdf", importer=DEMO_IMPORTER, cn_fixes={})
+
+
+def own_files_changed():
+    """Own upload replaces the demo for good: removing the file later must not bring the example back."""
+    if st.session_state.get("uploads"):
+        st.session_state["demo"] = None
+        st.session_state["cn_fixes"] = {}
+        if st.session_state.get("importer", DEMO_IMPORTER) == DEMO_IMPORTER:
+            st.session_state["importer"] = ""
 
 INTRO_CSS = """<style>
 .stApp { background: #F7F8FB !important; animation: none !important; }
@@ -297,7 +311,8 @@ if page == "home":
         st.session_state["page"] = "tool"
         st.rerun()
     if demo.button(_("Beispiel ansehen – 30 Sekunden"), width="stretch", key="cta_demo"):
-        st.session_state.update(page="tool", demo="pdf", scroll_to_result=True)
+        start_demo()
+        st.session_state.update(page="tool", scroll_to_result=True)
         st.rerun()
     st.markdown(f"<div class='cta-trust'>{_('Kostenlos · ohne Anmeldung · Ihre Rechnungen werden nicht gespeichert')}</div>",
                 unsafe_allow_html=True)
@@ -350,12 +365,12 @@ def use_documents(blobs):
 
 
 _pad_l, cta, _pad_r = st.columns([1, 1.3, 1])
-if DEMO_PDFS and cta.button(_("Demo starten"), type="primary", width="stretch"):
-    st.session_state["demo"] = "pdf"
+if DEMO_PDFS:
+    cta.button(_("Demo starten"), type="primary", width="stretch", on_click=start_demo)
 cta.markdown(f"<div class='demo-note' style='text-align:center;color:#86868B;font-size:.85rem;line-height:1.4'>{_('Metallbau Gruber GmbH (Beispiel): Träger und Schrauben aus der Türkei, Alu-Profile aus China, Ventile.')}</div>",
              unsafe_allow_html=True)
 uploads = st.file_uploader(_("Oder eigene Rechnungen hochladen — PDF oder CSV"), type=["pdf", "csv"], accept_multiple_files=True,
-                           help=_("Auftragsbestätigungen zählen als geplante Einfuhr, nicht als bereits eingeführt. CSV-Spalten: ") + ", ".join(COLUMNS))
+                           key="uploads", on_change=own_files_changed, help=_("Auftragsbestätigungen zählen als geplante Einfuhr, nicht als bereits eingeführt. CSV-Spalten: ") + ", ".join(COLUMNS))
 if uploads:
     lines = use_documents([(f.getvalue(), f.name) for f in uploads])
 elif st.session_state.get("demo") == "pdf":
@@ -477,7 +492,7 @@ if planned_t:
     nums += f"<span class='arrow'>→</span><span class='big' style='color:{STATUS_COLOR['over'] if end_t > THRESHOLD_T else '#1D1D1F'}'>{n(end_t)} t</span>"
 if end_t > THRESHOLD_T:
     nums += f"<span class='over'>{_('+{o:.1f} t über dem Limit', o=end_t - THRESHOLD_T)}</span>"
-st.markdown(f"<div class='hero-card' style='--c:{color}'><div class='kicker'>{html.escape(importer)} · {year}</div>"
+st.markdown(f"<div class='hero-card' style='--c:{color}'><div class='kicker'>{html.escape(importer or _("Ihr Unternehmen"))} · {year}</div>"
             f"<span class='chip' style='color:{color};background:{color}1A'>{chip}</span>"
             f"<div class='nums'>{nums}</div><div class='sub'>{sub}</div></div>",
             unsafe_allow_html=True)
@@ -526,7 +541,7 @@ def checklist_dialog():
 def letter_dialog():
     sup = st.selectbox(_("Lieferant"), cbam_suppliers)
     lg = st.radio(_("Sprache des Briefs"), ["de", "en"], horizontal=True, key="dlg_lang")
-    txt = supplier_letter(sup, records, importer, lg)
+    txt = supplier_letter(sup, records, importer or _("Ihr Unternehmen"), lg)
     st.text_area(_("Brief"), txt, height=300, label_visibility="collapsed")
     st.download_button(_("Brief herunterladen (.txt)"), txt, file_name=f"CBAM_Anfrage_{sup[:20]}.txt", type="primary")
 
@@ -554,7 +569,7 @@ elif ns_kind == "letter":
     if ns_col.button(_("Brief erstellen"), type="primary", width="stretch", key="ns_letter"):
         letter_dialog()
 else:
-    ns_col.download_button(_("Bericht herunterladen (PDF)"), report_pdf(importer, year, status, records, cost),
+    ns_col.download_button(_("Bericht herunterladen (PDF)"), report_pdf(importer or _("Ihr Unternehmen"), year, status, records, cost),
                            file_name=f"CBAM_Bericht_{year}.pdf", mime="application/pdf", type="primary",
                            width="stretch", key="ns_report")
 
@@ -598,8 +613,8 @@ with t_act:
             st.markdown(CHECKLIST.read_text(encoding="utf-8"))
 
     st.markdown("#### " + _("Dokumente"))
-    importer = st.text_input(_("Ihr Unternehmen"), importer, key="importer")
-    pdf = report_pdf(importer, year, status, records, cost)
+    importer = st.text_input(_("Ihr Unternehmen"), key="importer")
+    pdf = report_pdf(importer or _("Ihr Unternehmen"), year, status, records, cost)
     st.download_button(_("Bericht herunterladen (PDF)"), pdf, file_name=f"CBAM_Bericht_{year}.pdf",
                        mime="application/pdf")
     suppliers = sorted({r["supplier"] for r in records if r["cbam"] and isinstance(r.get("supplier"), str)})
@@ -607,7 +622,7 @@ with t_act:
         s1, s2 = st.columns([3, 1])
         supplier = s1.selectbox(_("Brief an Lieferanten (Anfrage echter Emissionsdaten)"), suppliers)
         lang = s2.radio(_("Sprache des Briefs"), ["de", "en"], horizontal=True)
-        letter = supplier_letter(supplier, records, importer, lang)
+        letter = supplier_letter(supplier, records, importer or _("Ihr Unternehmen"), lang)
         with st.expander(_("Brief")):
             st.text_area(_("Brief"), letter, height=320, label_visibility="collapsed")
         st.download_button(_("Brief herunterladen (.txt)"), letter, file_name=f"CBAM_Anfrage_{supplier[:20]}.txt")
