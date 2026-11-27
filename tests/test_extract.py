@@ -19,7 +19,8 @@ def test_parse_number(s, v):
 
 @pytest.mark.parametrize("s, iso", [
     ("Türkei (TR)", "TR"), ("Turkey", "TR"), ("cn", "CN"), ("Volksrepublik China", "CN"),
-    ("Indien", "IN"), ("Atlantis", None),
+    ("Indien", "IN"), ("Atlantis", None), ("Ukraine", "UA"), ("Made in UK", "GB"),
+    ("Indiana, USA", "US"), ("Russland", None),
 ])
 def test_normalize_origin(s, iso):
     assert normalize_origin(s) == iso
@@ -39,6 +40,16 @@ def test_invoice_01():
     assert lines[0]["date"] == "2026-02-12"
     assert lines[0]["supplier"].startswith("Anadolu Demo")
     assert lines[0]["doc_type"] == "invoice"
+    assert lines[0]["invoice"] == "EXP-2026-0147"          # number, not the file path
+    assert lines[0]["file"] == "invoice_01_TR.pdf"
+
+
+def test_uploaded_file_object():
+    with open(DEMO / "invoice_02_CN.pdf", "rb") as f:
+        lines = extract_lines(f, name="upload.pdf")
+    assert lines[0]["invoice"] == "NBHX-26-0388" and lines[0]["file"] == "upload.pdf"
+    with open(DEMO / "purchases_2026.csv", "rb") as f:
+        assert len(extract_lines(f, name="p.csv")) == 6
 
 
 def test_missing_code_stays_none():
@@ -68,6 +79,7 @@ def test_csv_matches_pdfs():
     assert len(csv_lines) == 6
     assert sum(l["net_mass_kg"] for l in csv_lines) == pytest.approx(41830.0)
     assert csv_lines[5]["cn"] is None
+    assert csv_lines[0]["invoice"] == "EXP-2026-0147"
 
 
 def test_unsupported_type(tmp_path):

@@ -1,7 +1,8 @@
 """Invoice PDF / purchase CSV -> invoice lines.
 
 Each line is a dict:
-    {"description", "cn", "net_mass_kg", "origin", "date", "supplier", "invoice", "doc_type"}
+    {"description", "cn", "net_mass_kg", "origin", "date", "supplier", "invoice", "doc_type", "file"}
+`invoice` is the invoice number (falls back to the file name if none is printed).
 `cn` is None when the document carries no code (the agent then proposes one and the
 user confirms). `origin` is ISO-2. `doc_type` is "invoice" or "order" (an order
 confirmation is a planned import and must not be counted as already imported).
@@ -69,9 +70,9 @@ def normalize_origin(s):
         return m.group(1)
     if re.fullmatch(r"[A-Za-z]{2}", s):
         return s.upper()
-    low = s.lower()
+    words = " " + re.sub(r"[^\wäöüß]+", " ", s.lower()).strip() + " "
     for iso, names in COUNTRIES.items():
-        if any(n in low for n in names):
+        if any(f" {n} " in words for n in names):
             return iso
     return None
 
@@ -141,21 +142,22 @@ def _lines_from_table(table, meta):
     return lines
 
 
-def extract_pdf(path):
-    path = Path(path)
+def extract_pdf(path, name=None):
+    """`path` may be a file path or a binary file-like object (then pass `name`)."""
+    name = name or Path(getattr(path, "name", str(path))).name
     with pdfplumber.open(path) as pdf:
         text = "\n".join(p.extract_text() or "" for p in pdf.pages)
         if not text.strip():
-            raise ExtractionError(f"{path.name}: no text layer (scanned PDF?) - use vision fallback")
+            raise ExtractionError(f"{name}: no text layer (scanned PDF?) - use vision fallback")
         date, number, supplier, doc_type = _header_fields(text)
-        meta = {"date": date, "supplier": supplier, "invoice": str(path.as_posix()),
-                "invoice_number": number, "doc_type": doc_type}
+        meta = {"date": date, "supplier": supplier, "invoice": number or name,
+                "doc_type": doc_type, "file": name}
         lines = []
         for page in pdf.pages:
             for table in page.extract_tables():
                 lines += _lines_from_table(table, meta)
     if not lines:
-        raise ExtractionError(f"{path.name}: no line-item table found")
+        raise ExtractionError(f"{name}: no line-item table found")
     return lines
 
 
@@ -170,15 +172,20 @@ CSV_ALIASES = {
 }
 
 
-def extract_csv(path):
-    path = Path(path)
-    raw = path.read_text(encoding="utf-8-sig")
+def extract_csv(path, name=None):
+    """`path` may be a file path or a binary file-like object (then pass `name`)."""
+    if hasattr(path, "read"):
+        raw = path.read()
+        raw = raw.decode("utf-8-sig") if isinstance(raw, bytes) else raw
+    else:
+        raw = Path(path).read_text(encoding="utf-8-sig")
+    name = name or Path(getattr(path, "name", str(path))).name
     dialect = csv.Sniffer().sniff(raw.splitlines()[0], delimiters=",;\t")
     reader = csv.DictReader(raw.splitlines(), dialect=dialect)
     cols = {c.strip().lower(): c for c in reader.fieldnames}
     pick = {f: next((cols[a] for a in al if a in cols), None) for f, al in CSV_ALIASES.items()}
     if not pick["description"] or not pick["net_mass_kg"]:
-        raise ExtractionError(f"{path.name}: needs at least description and net mass columns")
+        raise ExtractionError(f"{name}: needs at least description and net mass columns")
     lines = []
     for r in reader:
         g = lambda f: (r.get(pick[f]) or "").strip() if pick[f] else ""
@@ -192,17 +199,19 @@ def extract_csv(path):
             "origin": normalize_origin(g("origin")),
             "date": parse_date(g("date")) if g("date") else None,
             "supplier": g("supplier") or None,
-            "invoice": g("invoice") or str(path.as_posix()),
+            "invoice": g("invoice") or name,
             "doc_type": "invoice",
+            "file": name,
         })
     return lines
 
 
-def extract_lines(path):
-    """PDF or CSV -> list of invoice lines."""
-    suffix = Path(path).suffix.lower()
+def extract_lines(path, name=None):
+    """PDF or CSV (path or uploaded file object) -> list of invoice lines."""
+    name = name or getattr(path, "name", str(path))
+    suffix = Path(name).suffix.lower()
     if suffix == ".pdf":
-        return extract_pdf(path)
+        return extract_pdf(path, Path(name).name)
     if suffix in (".csv", ".txt"):
-        return extract_csv(path)
+        return extract_csv(path, Path(name).name)
     raise ExtractionError(f"unsupported file type: {suffix}")
