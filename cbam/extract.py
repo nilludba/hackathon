@@ -41,7 +41,15 @@ HEADER_KEYS = [
     ("description", ["beschreibung", "description", "warenbezeichnung", "artikel", "bezeichnung"]),
     ("cn", ["kn-code", "kn code", "kn", "hs", "cn code", "zolltarif", "taric", "warennummer"]),
     ("origin", ["ursprung", "origin", "herkunft", "ursprungsland"]),
-    ("net_mass_kg", ["netto kg", "nettogewicht", "net weight", "netto", "net kg", "net mass"]),
+    ("net_mass_kg", ["netto kg", "nettogewicht", "net weight", "netto", "net kg", "net mass", "gewicht", "weight"]),
+]
+
+# Fallback for invoices whose table has no ruling lines: columns from text positions
+TEXT_TABLES = [
+    {"vertical_strategy": "text", "horizontal_strategy": "text", "snap_tolerance": 4, "join_tolerance": 4,
+     "intersection_tolerance": 4, "text_x_tolerance": 2},
+    {"vertical_strategy": "text", "horizontal_strategy": "text", "snap_tolerance": 4, "join_tolerance": 4,
+     "intersection_tolerance": 4, "text_x_tolerance": 2, "min_words_vertical": 2, "min_words_horizontal": 1},
 ]
 
 
@@ -161,6 +169,12 @@ def extract_pdf(path, name=None):
         for page in pdf.pages:
             for table in page.extract_tables():
                 lines += _lines_from_table(table, meta)
+        for settings in TEXT_TABLES:  # no ruled table found: columns from text positions
+            if lines:
+                break
+            for page in pdf.pages:
+                for table in page.extract_tables(settings):
+                    lines += _lines_from_table(table, meta)
     if not lines:
         raise ExtractionError(f"{name}: no line-item table found")
     return lines

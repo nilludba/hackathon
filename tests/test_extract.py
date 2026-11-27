@@ -111,3 +111,19 @@ def test_header_ignores_uid_supplier_no_and_delivery_date():
             "Rechnungsnummer: R-77\nDatum: 01.02.2026\nLieferant: Çelik A.Ş.\n")
     date, number, supplier, _ = _header_fields(text)
     assert (date, number, supplier) == ("2026-02-01", "R-77", "Çelik A.Ş.")
+
+
+FIX = Path(__file__).resolve().parent / "fixtures"
+
+
+def test_invoice_without_ruling_lines_english():
+    lines = extract_lines(FIX / "invoice_no_grid_en.pdf")
+    assert [(l["cn"], l["net_mass_kg"], l["origin"]) for l in lines] == [
+        ("7208 39 00", 24500.0, "IN"), ("7606 12", 3200.5, "CN"), ("9401 30", 300.0, "CN")]
+    assert lines[0]["invoice"] == "INV-77812" and lines[0]["date"] == "2026-03-05"
+    assert lines[0]["supplier"] == "Demo Steel Exports Pvt Ltd"
+
+
+def test_invoice_without_ruling_lines_single_row_weight_column():
+    lines = extract_lines(FIX / "invoice_no_grid_de_one_line.pdf")
+    assert len(lines) == 1 and lines[0]["net_mass_kg"] == 1200.0 and lines[0]["cn"] is None
