@@ -161,12 +161,21 @@ default_values = try_load(load_default_values)
 prices = try_load(load_prices)
 
 # Top bar: wordmark · Home · Prüfen · Fragen & Antworten · language
-page = st.session_state.setdefault("page", "home")
+# One URL per page (/, /tool, /faq), so the browser's back button returns to the previous page
+PAGES = {k: st.Page(lambda: None, title="CBAM Helper", url_path=k, default=k == "home")
+         for k in ("home", "tool", "faq")}
+_current = st.navigation(list(PAGES.values()), position="hidden")
+page = next(k for k, p in PAGES.items() if p is _current or p.url_path == _current.url_path)
+
+
+def go(key):
+    st.switch_page(PAGES[key])
+
+
 with st.container(key="topnav"):
     nav = st.columns([2.1, .8, .9, 1.9, 1.5], vertical_alignment="center")
 if nav[0].button("CBAM Helper", type="tertiary", key="nav_logo"):  # wordmark = home link
-    st.session_state["page"] = "home"
-    st.rerun()
+    go("home")
 nav_r = nav[4]
 FLAGS = {"DE": "🇦🇹 DE", "EN": "🇬🇧 EN"}  # Austrian German, British English
 L = LANGS[nav_r.segmented_control("Sprache", list(LANGS), default=list(LANGS)[0], key="ui_lang",
@@ -201,8 +210,7 @@ def _(text, **kw):
 
 for col, key, label in ((nav[1], "home", "Home"), (nav[2], "tool", "Prüfen"), (nav[3], "faq", "Fragen & Antworten")):
     if col.button(_(label), type="tertiary", key=f"nav_{key}"):
-        st.session_state["page"] = key
-        st.rerun()
+        go(key)
 st.markdown(f"<style>.st-key-nav_{page} button p {{ font-weight: 700; border-bottom: 2px solid #171A20; }}</style>",
             unsafe_allow_html=True)
 
@@ -314,12 +322,11 @@ if page == "home":
     _pad_l, own, demo, _pad_r = st.columns([0.5, 1, 1, 0.5])
     if own.button(_("Eigene Rechnungen prüfen"), type="primary", width="stretch", key="cta_own"):
         start_own()
-        st.session_state["page"] = "tool"
-        st.rerun()
+        go("tool")
     if demo.button(_("Beispiel ansehen – 30 Sekunden"), width="stretch", key="cta_demo"):
         start_demo()
-        st.session_state.update(page="tool", scroll_to_result=True)
-        st.rerun()
+        st.session_state["scroll_to_result"] = True
+        go("tool")
     st.markdown(f"<div class='cta-trust'>{_('Kostenlos · ohne Anmeldung · Ihre Rechnungen werden nicht gespeichert')}</div>",
                 unsafe_allow_html=True)
     st.markdown("<div style='height:2.5rem'></div>", unsafe_allow_html=True)
