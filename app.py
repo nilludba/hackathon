@@ -84,11 +84,7 @@ div[data-testid="stMetricLabel"] p { color: #6E6E73; }
 .foot { color: #86868B; font-size: .8rem; text-align: center; margin-top: 4.5rem; line-height: 1.6; }
 /* Motion and detail */
 :root { --glass: rgba(255,255,255,.72); --lift: 0 10px 30px rgba(17,17,26,.06); }
-.stApp { background:
-  radial-gradient(48% 40% at 8% 0%, rgba(0,113,227,.16), transparent 62%),
-  radial-gradient(42% 38% at 96% 8%, rgba(120,135,155,.16), transparent 62%),
-  radial-gradient(50% 45% at 50% 105%, rgba(120,135,155,.10), transparent 62%), #F7F8FB;
-  background-attachment: fixed; }
+.stApp { background: #F7F8FB; }
 @keyframes drift { 0% { background-position: 0% 0%; } 100% { background-position: 100% 100%; } }
 .chip { display: inline-block; padding: .3rem .8rem; border-radius: 980px; font-size: .85rem; font-weight: 600; margin: .55rem 0 .2rem; }
 .nums { display: flex; align-items: baseline; flex-wrap: wrap; gap: .5rem .8rem; margin: .5rem 0 .8rem; }
@@ -110,10 +106,9 @@ div[data-testid="stMetricLabel"] p { color: #6E6E73; }
   vertical-align: 1px; animation: pulse 2.2s infinite; }
 .hero-t { margin-top: 1.1rem; animation: rise .8s .06s both; }
 .hero-s { animation: rise .8s .16s both; }
-.grad { background: linear-gradient(100deg, #6B7685 0%, #6B7685 38%, #EEF2F6 50%, #6B7685 62%, #6B7685 100%); background-size: 250% auto;
-  -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 7s linear infinite; }
+.grad { color: #3A4452; }
 .feat { animation: rise .8s both; }
-.feat .k.grad { display: inline-block; color: transparent; }
+.feat .k.grad { display: inline-block; color: #3A4452; }
 .section, .hero-card { animation: rise .7s both; }
 .hero-card { position: relative; overflow: hidden; box-shadow: 0 1px 0 rgba(0,0,0,.02); }
 .hero-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--c, #0071E3); }
@@ -193,14 +188,9 @@ def footer():
 importer = st.session_state.get("importer", "Metallbau Gruber GmbH")
 
 INTRO_CSS = """<style>
-.stApp { background:
-  radial-gradient(55% 50% at 18% 18%, rgba(62,106,225,.10), transparent 62%),
-  radial-gradient(50% 45% at 85% 25%, rgba(120,140,165,.12), transparent 62%),
-  radial-gradient(60% 50% at 50% 108%, rgba(255,106,19,.08), transparent 62%), #FBFBFD !important;
-  background-size: 170% 170% !important; background-attachment: scroll !important;
-  animation: drift 16s ease-in-out infinite alternate; }
+.stApp { background: #F7F8FB !important; animation: none !important; }
 .nav, .hero-t { color: #1D1D1F; }
-.grad { background-image: linear-gradient(100deg, #3A4452 0%, #3A4452 38%, #8A97A8 50%, #3A4452 62%, #3A4452 100%); }
+.grad { color: #3A4452; background: none; }
 .hero-t { margin-top: 4.5rem; font-size: clamp(3rem, 8.5vw, 5.8rem); }
 .hero-s, .feat .d, .foot, .demo-note { color: #424245 !important; }
 .pill { background: rgba(255,255,255,.85); border-color: rgba(29,29,31,.12); color: #1D1D1F; backdrop-filter: blur(12px); }
