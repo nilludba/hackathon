@@ -205,7 +205,7 @@ for i, row in lines.iterrows():
             verdict = _("CBAM-Ware") if s["cbam"] else _("keine CBAM-Ware")
             col1, col2 = st.columns([4, 1])
             col1.markdown(_("Vorschlag: **{cn}** — {label} · {v} · Sicherheit: {c}",
-                            cn=s["cn"], label=s["label"], v=verdict, c=_(s["confidence"])))
+                            cn=s["cn"], label=_(s["label"]), v=verdict, c=_(s["confidence"])))
             if col2.button(_("Übernehmen"), key=f"fix_{i}_{k}"):
                 fixes[i] = (row["description"], s["cn"])
                 st.rerun()

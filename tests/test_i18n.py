@@ -15,3 +15,9 @@ def ui_texts():
 def test_every_ui_text_has_en_and_ru():
     missing = sorted(t for t in ui_texts() if set(T.get(t, {})) < {"en", "ru"})
     assert not missing, missing
+
+
+def test_cn_suggestion_labels_translated():
+    from cbam.suggest import RULES
+    missing = sorted({r[3] for r in RULES if set(T.get(r[3], {})) < {"en", "ru"}})
+    assert not missing, missing

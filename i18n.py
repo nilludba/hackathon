@@ -232,6 +232,27 @@ T.update({
 })
 
 
+# CN suggestion labels (cbam/suggest.py)
+T.update({
+    'Nägel, Drahtstifte, Krampen aus Eisen oder Stahl': {'en': 'Nails, tacks, staples of iron or steel', 'ru': 'Гвозди, кнопки, скобы из железа или стали'},
+    'Schrauben, Bolzen, Muttern … aus Aluminium': {'en': 'Screws, bolts, nuts … of aluminium', 'ru': 'Винты, болты, гайки … из алюминия'},
+    'Schrauben, Bolzen, Muttern … aus Eisen oder Stahl': {'en': 'Screws, bolts, nuts … of iron or steel', 'ru': 'Винты, болты, гайки … из железа или стали'},
+    'Armaturen, Hähne, Ventile': {'en': 'Taps, cocks, valves', 'ru': 'Арматура, краны, клапаны'},
+    'Konstruktionen und Konstruktionsteile aus Aluminium': {'en': 'Structures and parts of structures of aluminium', 'ru': 'Конструкции и их части из алюминия'},
+    'Konstruktionen und Konstruktionsteile aus Eisen oder Stahl': {'en': 'Structures and parts of structures of iron or steel', 'ru': 'Конструкции и их части из железа или стали'},
+    'Stangen (Stäbe) und Profile aus Aluminium': {'en': 'Aluminium bars, rods and profiles', 'ru': 'Прутки и профили из алюминия'},
+    'Profile aus Eisen oder nicht legiertem Stahl (Träger, Winkel)': {'en': 'Sections of iron or non-alloy steel (beams, angles)', 'ru': 'Профили из железа или нелегированной стали (балки, уголки)'},
+    'Rohre aus Aluminium': {'en': 'Aluminium tubes and pipes', 'ru': 'Трубы из алюминия'},
+    'Andere Rohre und Hohlprofile aus Eisen oder Stahl': {'en': 'Other tubes, pipes and hollow profiles of iron or steel', 'ru': 'Прочие трубы и полые профили из железа или стали'},
+    'Folien und dünne Bänder aus Aluminium': {'en': 'Aluminium foil and thin strip', 'ru': 'Алюминиевая фольга и тонкая лента'},
+    'Bleche und Bänder aus Aluminium (> 0,2 mm)': {'en': 'Aluminium plates, sheets and strip (> 0.2 mm)', 'ru': 'Листы и ленты из алюминия (> 0,2 мм)'},
+    'Flachgewalzte Erzeugnisse aus Stahl (warmgewalzt) — Breite/Behandlung prüfen': {'en': 'Flat-rolled steel products (hot-rolled) — check width/treatment', 'ru': 'Плоский прокат из стали (горячекатаный) — проверьте ширину и обработку'},
+    'Draht aus Aluminium': {'en': 'Aluminium wire', 'ru': 'Алюминиевая проволока'},
+    'Draht aus Eisen oder nicht legiertem Stahl': {'en': 'Wire of iron or non-alloy steel', 'ru': 'Проволока из железа или нелегированной стали'},
+    'Portlandzement (grau) — Zementart prüfen': {'en': 'Portland cement (grey) — check cement type', 'ru': 'Портландцемент (серый) — проверьте тип цемента'},
+})
+
+
 def tr(text, lang, **kw):
     """Translate a German UI text and fill its {placeholders}."""
     s = T.get(text, {}).get(lang, text)
