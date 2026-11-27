@@ -85,7 +85,7 @@ def report_pdf(importer, year, status, lines, cost=None, today=None):
         pdf.set_font("Helvetica", style, size)
         pdf.multi_cell(w, h, _latin1(s), new_x="LMARGIN", new_y="NEXT")
 
-    text("CBAM-Lotse - Bericht", 16, "B", 8)
+    text("CBAM Helper - Bericht", 16, "B", 8)
     text(f"{importer} · Kalenderjahr {year} · erstellt am {(today or date.today()).isoformat()}", 9)
     pdf.ln(3)
 

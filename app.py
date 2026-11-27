@@ -1,4 +1,4 @@
-"""CBAM-Lotse — Streamlit UI. Run: streamlit run app.py"""
+"""CBAM Helper — Streamlit UI. Run: streamlit run app.py"""
 
 import html
 import io
@@ -29,7 +29,7 @@ CBAM_REG_URL = "https://eur-lex.europa.eu/eli/reg/2023/956/oj"
 PRICE_URL = "https://taxation-customs.ec.europa.eu/carbon-border-adjustment-mechanism/price-cbam-certificates_en"
 STATUS_COLOR = {"exempt": "#248A3D", "near": "#BF4800", "over": "#D70015"}
 
-st.set_page_config(page_title="CBAM-Lotse", page_icon="◼", layout="centered", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="CBAM Helper", page_icon="◼", layout="centered", initial_sidebar_state="collapsed")
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Color+Emoji&display=swap');
@@ -145,7 +145,7 @@ prices = try_load(load_prices)
 # Top bar: wordmark · Home · Prüfen · Fragen & Antworten · language
 page = st.session_state.setdefault("page", "home")
 nav = st.columns([2.1, .8, .9, 1.9, 1.5], vertical_alignment="center")
-if nav[0].button("CBAM-Lotse", type="tertiary", key="nav_logo"):  # wordmark = home link
+if nav[0].button("CBAM Helper", type="tertiary", key="nav_logo"):  # wordmark = home link
     st.session_state["page"] = "home"
     st.rerun()
 nav_r = nav[4]
@@ -197,7 +197,7 @@ def faq():
         ("Wie beantrage ich die Zulassung?", "In Österreich beim Amt für den nationalen Emissionszertifikatehandel (AnEH), cbam@bmf.gv.at, über das CBAM-Register der EU — bevor Sie die Schwelle überschreiten. Die Checkliste dafür finden Sie unter „Prüfen“ → „Nächste Schritte“."),
         ("Woher kommen die Zahlen?", "Aus Anhang I der Verordnung (EU) 2023/956, dem CBAM-Omnibus (EU) 2025/2083, den Standardwerten der DVO (EU) 2025/2621 und den Zertifikatspreisen der Europäischen Kommission. Die KI liest nur Rechnungen und erklärt — gerechnet wird mit geprüftem Code."),
         ("Werden meine Rechnungen gespeichert?", "Nein, wir legen sie in keiner Datenbank ab; sie werden nur für die Berechnung verarbeitet. Stellen Sie der KI eine Frage, werden Ihre Positionen dafür an Google Gemini gesendet."),
-        ("Ist das Rechtsberatung?", "Nein. CBAM-Lotse ist eine Ersteinschätzung und bereitet Unterlagen vor. Die Entscheidung treffen Sie bzw. die Behörde."),
+        ("Ist das Rechtsberatung?", "Nein. CBAM Helper ist eine Ersteinschätzung und bereitet Unterlagen vor. Die Entscheidung treffen Sie bzw. die Behörde."),
     ):
         with st.expander(_(q)):
             st.markdown(_(a))
@@ -626,7 +626,7 @@ with t_ask:
     history = st.session_state.setdefault("chat", [])  # every click reruns the script; keep the answers
     if sent and question:
         ctx = {"lines": records, "year": int(year), "values": default_values, "prices": prices}
-        with st.spinner(_("Der Lotse rechnet …")):
+        with st.spinner(_("CBAM Helper rechnet …")):
             text, calls = answer(question, ctx, api_key=api_key,
                                  language={"de": "Deutsch", "en": "Englisch"}[L])
         history.append((question, text, calls))

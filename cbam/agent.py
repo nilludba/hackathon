@@ -1,4 +1,4 @@
-"""CBAM-Lotse agent: Gemini answers questions in the chosen language, but every number comes from our tools.
+"""CBAM Helper agent: Gemini answers questions in the chosen language, but every number comes from our tools.
 
 The LLM never decides legal questions or computes figures itself. It calls
 check_cn / threshold / cost, which wrap the tested deterministic functions.
@@ -24,7 +24,7 @@ URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateC
 MAX_STEPS = 5
 
 SYSTEM = (
-    "Du bist CBAM-Lotse, ein Assistent für kleine österreichische Importeure von Stahl und Aluminium. "
+    "Du bist CBAM Helper, ein Assistent für kleine österreichische Importeure von Stahl und Aluminium. "
     "Antworte auf Deutsch, kurz und klar, für Nicht-Juristen. "
     "Nenne Zahlen NUR aus Tool-Ergebnissen, nie aus dem Gedächtnis, und gib die Quelle an. "
     "Für KN-Codes rufe check_cn auf, für die 50-Tonnen-Schwelle threshold, für Kosten und Strafen cost. "

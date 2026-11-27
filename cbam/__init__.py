@@ -1,1 +1,1 @@
-"""CBAM-Lotse core logic: deterministic, tested, no language model inside."""
+"""CBAM Helper core logic: deterministic, tested, no language model inside."""

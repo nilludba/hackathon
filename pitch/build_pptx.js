@@ -1,14 +1,14 @@
 const pptxgen = require("pptxgenjs");
 const { applyTheme } = require(process.env.APPLY_THEME || "./apply_theme.js");
 
-const THEME = { name: "CBAM-Lotse", headFontFace: "Arial", bodyFontFace: "Calibri",
+const THEME = { name: "CBAM Helper", headFontFace: "Arial", bodyFontFace: "Calibri",
   colors: { dk1: "16222F", lt1: "FBFAF6", dk2: "1F3346", lt2: "F2EFE8", accent1: "B4501E", accent2: "2C6B45",
             accent3: "4A5563", accent4: "BFCCD8", accent5: "28405A", accent6: "D9D3C7", hlink: "B4501E", folHlink: "7A3A17" } };
 const HEX = THEME.colors;
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE"; // 13.333 x 7.5
 pres.theme = { headFontFace: THEME.headFontFace, bodyFontFace: THEME.bodyFontFace };
-pres.title = "CBAM-Lotse — Pitch"; pres.author = "Darmen & Matvey";
+pres.title = "CBAM Helper — Pitch"; pres.author = "Darmen & Matvey";
 const C = pres.SchemeColor;
 const W = 13.333, M = 0.8, CW = W - 2 * M;
 
@@ -38,11 +38,11 @@ function head(s, eyebrow, title) {
 pres.addSection({ title: "Problem" });
 let s = pres.addSlide({ masterName: "DARK", sectionTitle: "Problem" });
 T(s, "AAU HACKATHON 2026 · THE $15-AN-HOUR EXPERT", { x: M, y: 1.2, w: CW, h: 0.4, fontSize: 14, bold: true, charSpacing: 3, color: "E8956A" });
-T(s, "CBAM-Lotse", { x: M, y: 1.8, w: CW, h: 1.4, fontSize: 66, bold: true, color: C.background1, fontFace: "Arial" });
+T(s, "CBAM Helper", { x: M, y: 1.8, w: CW, h: 1.4, fontSize: 66, bold: true, color: C.background1, fontFace: "Arial" });
 T(s, "Know your tonnes before the next order. An assistant that turns a small importer’s invoices into a CBAM decision they can check.",
   { x: M, y: 3.4, w: 10.5, h: 1.4, fontSize: 22, color: C.accent4 });
 T(s, "Darmen & Matvey · Universität Klagenfurt", { x: M, y: 6.4, w: CW, h: 0.4, fontSize: 14, color: C.accent4 });
-s.addNotes("Hi, we are Darmen and Matvey. CBAM-Lotse helps a small metal workshop deal with the EU’s new carbon border duty without a customs lawyer.");
+s.addNotes("Hi, we are Darmen and Matvey. CBAM Helper helps a small metal workshop deal with the EU’s new carbon border duty without a customs lawyer.");
 
 // helper: 3 stat cards
 function cards3(s, y, h, items, dark) {
@@ -103,7 +103,7 @@ s.addTable([
   ["Do nothing", "53 t without authorisation", eur("€72k–121k fine", C.accent1)],
 ], { x: M, y: 2.4, w: CW, colW: [4.2, 5.2, 2.333], fontSize: 16, color: C.text1, fontFace: "Calibri",
      border: { type: "solid", color: HEX.accent6, pt: 1 }, rowH: 0.75, valign: "middle", margin: [0, 0.15, 0, 0.15] });
-T(s, "Computed by CBAM-Lotse on the demo invoices: EU default values incl. 2026 mark-up, certificate price of the import quarter.", { x: M, y: 6.75, w: CW, h: 0.3, fontSize: 11, color: C.accent3 });
+T(s, "Computed by CBAM Helper on the demo invoices: EU default values incl. 2026 mark-up, certificate price of the import quarter.", { x: M, y: 6.75, w: CW, h: 0.3, fontSize: 11, color: C.accent3 });
 s.addNotes("Option A means planning the delivery date, not splitting shipments to dodge the threshold. That is ruled out by anti-avoidance rules, and the app says so.");
 
 // 6 trust (creativity)
@@ -146,7 +146,7 @@ s.addNotes("Placeholders: replace with two quotes from the validation calls, wit
 
 // 9 close
 s = pres.addSlide({ masterName: "DARK", sectionTitle: "Criteria" });
-T(s, "CBAM-LOTSE", { x: M, y: 1.2, w: CW, h: 0.4, fontSize: 14, bold: true, charSpacing: 3, color: "E8956A" });
+T(s, "CBAM HELPER", { x: M, y: 1.2, w: CW, h: 0.4, fontSize: 14, bold: true, charSpacing: 3, color: "E8956A" });
 T(s, "Upload your invoices. Know your tonnes. Decide before the next order.", { x: M, y: 1.8, w: 11, h: 2.4, fontSize: 44, bold: true, fontFace: "Arial", color: C.background1 });
 T(s, "Try it: cbam-lotse.streamlit.app", { x: M, y: 5.3, w: CW / 2, h: 0.4, fontSize: 18, color: C.accent4 });
 T(s, "Code: github.com/nilludba/hackathon", { x: M + CW / 2, y: 5.3, w: CW / 2, h: 0.4, fontSize: 18, color: C.accent4 });
@@ -154,7 +154,7 @@ T(s, "First assessment, not legal advice. Competent authority in Austria: AnEH, 
 s.addNotes("Thank you. Questions?");
 
 (async () => {
-  await pres.writeFile({ fileName: "CBAM-Lotse_Pitch.pptx" });
-  await applyTheme("CBAM-Lotse_Pitch.pptx", THEME);
+  await pres.writeFile({ fileName: "CBAM-Helper_Pitch.pptx" });
+  await applyTheme("CBAM-Helper_Pitch.pptx", THEME);
   console.log("ok");
 })();

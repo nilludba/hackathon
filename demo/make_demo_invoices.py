@@ -119,7 +119,7 @@ def make_pdf(inv, regular, bold):
     story += [t, Spacer(1, 6 * mm),
               Paragraph("Gewichte = Nettomasse in kg. Zahlungsziel 30 Tage netto.", st),
               Spacer(1, 30 * mm),
-              Paragraph("Fiktive Demo-Rechnung – CBAM-Lotse, AAU Hackathon 2026. Alle Firmen und Daten sind erfunden.", small)]
+              Paragraph("Fiktive Demo-Rechnung – CBAM Helper, AAU Hackathon 2026. Alle Firmen und Daten sind erfunden.", small)]
     doc.build(story)
 
 

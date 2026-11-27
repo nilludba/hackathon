@@ -53,7 +53,7 @@ Customs authority, application process and language are national; we built the A
 - [ ] 07:30 open the hosted app on the presentation laptop **and** a phone; click "Demo-PDFs einlesen" once (warms the cache)
 - [ ] Backup: run locally (`streamlit run app.py`, see README) — works without internet except the AI chat
 - [ ] Backup 2: screen recording of the demo flow (Darmen, after deploy) on the laptop desktop
-- [ ] Slides: `pitch/CBAM-Lotse_Pitch.pptx`; fill in the 2 quotes and the Streamlit link
+- [ ] Slides: `pitch/CBAM Helper_Pitch.pptx`; fill in the 2 quotes and the Streamlit link
 - [ ] Language switch on **English** for the jury, German for the demo data is fine
 - [ ] Gemini key set in Streamlit secrets; if the AI fails, the app shows the fixed summary — do not demo the chat as the main feature
 - [ ] 09:45 submit: README with run instructions + link

@@ -97,14 +97,14 @@ T = {
     "Brief": {"en": "Letter", "ru": "Письмо"},
     "Brief herunterladen (.txt)": {"en": "Download letter (.txt)", "ru": "Скачать письмо (.txt)"},
     "Bericht herunterladen (PDF)": {"en": "Download report (PDF, German)", "ru": "Скачать отчёт (PDF, на немецком)"},
-    "7. Fragen an den Lotsen": {"en": "7. Ask the pilot", "ru": "7. Вопросы помощнику"},
+    "7. Fragen an CBAM Helper": {"en": "7. Ask CBAM Helper", "ru": "7. Вопросы помощнику"},
     "KI-Assistent aus (kein GEMINI_API_KEY) — Sie erhalten eine feste Zusammenfassung.": {
         "en": "AI assistant off (no GEMINI_API_KEY) — you get a fixed summary.",
         "ru": "ИИ-помощник выключен (нет GEMINI_API_KEY) — вы получите готовую сводку."},
     "z. B. Was passiert, wenn ich im Herbst noch 20 t Profile kaufe?": {
         "en": "e.g. What happens if I buy another 20 t of profiles in autumn?",
         "ru": "например: что будет, если осенью я куплю ещё 20 t профилей?"},
-    "Der Lotse rechnet …": {"en": "Calculating …", "ru": "Считаю …"},
+    "CBAM Helper rechnet …": {"en": "Calculating …", "ru": "Считаю …"},
     "Werkzeug": {"en": "Tool", "ru": "Инструмент"},
     "**So funktioniert es**\n\n1. Rechnungen hochladen oder Demo laden\n2. Ergebnis lesen: Betrifft mich CBAM?\n3. Nächsten Schritt wählen und Dokumente herunterladen": {
         "en": "**How it works**\n\n1. Upload invoices or load the demo\n2. Read the result: does CBAM apply to me?\n3. Pick the next step and download documents",
@@ -312,7 +312,7 @@ T.update({
     'Werden meine Rechnungen gespeichert?': {"en": 'Are my invoices stored?'},
     'Nein, wir legen sie in keiner Datenbank ab; sie werden nur für die Berechnung verarbeitet. Stellen Sie der KI eine Frage, werden Ihre Positionen dafür an Google Gemini gesendet.': {"en": 'No, we keep them in no database; they are only processed for the calculation. If you ask the AI a question, your line items are sent to Google Gemini for that.'},
     'Ist das Rechtsberatung?': {"en": 'Is this legal advice?'},
-    'Nein. CBAM-Lotse ist eine Ersteinschätzung und bereitet Unterlagen vor. Die Entscheidung treffen Sie bzw. die Behörde.': {"en": "No. CBAM-Lotse is a first assessment and prepares documents. The decision is yours and the authority's."},
+    'Nein. CBAM Helper ist eine Ersteinschätzung und bereitet Unterlagen vor. Die Entscheidung treffen Sie bzw. die Behörde.': {"en": "No. CBAM Helper is a first assessment and prepares documents. The decision is yours and the authority's."},
 })
 
 def tr(text, lang, **kw):

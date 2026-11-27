@@ -1,4 +1,4 @@
-# CBAM-Lotse
+# CBAM Helper
 
 AI agent that helps small Austrian importers of steel and aluminium handle the EU
 Carbon Border Adjustment Mechanism (CBAM): it reads import invoices, checks every
@@ -77,6 +77,6 @@ or put `GEMINI_API_KEY = "..."` into `.streamlit/secrets.toml`. The model only c
 
 ## Disclaimer
 
-CBAM-Lotse is a pre-check and document-preparation tool, not legal advice. The
+CBAM Helper is a pre-check and document-preparation tool, not legal advice. The
 importer and the competent authority (in Austria: Amt für den nationalen
 Emissionszertifikatehandel, AnEH) remain responsible for the final decision.
