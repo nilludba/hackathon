@@ -60,7 +60,10 @@ def parse_number(s):
         s = s.replace(",", "") if len(tail) == 3 and head else s.replace(",", ".")
     elif s.count(".") > 1 or (s.count(".") == 1 and len(s.split(".")[1]) == 3 and s.split(".")[0]):
         s = s.replace(".", "")                    # 1.234 / 1.234.567 as thousands separators
-    return float(s)
+    try:
+        return float(s)
+    except ValueError:                            # "-", "1.2.3" etc.: no usable number
+        return None
 
 
 def normalize_origin(s):
@@ -96,13 +99,15 @@ def parse_date(s):
 
 def _header_fields(text):
     date = number = supplier = None
-    m = re.search(r"(?:Datum|Date|Rechnungsdatum|Invoice date)[^:\n]*:\s*([\d./-]{8,10})", text, re.I)
+    # (?<![\w-]) and \b keep "Lieferdatum", "UID-Nr.", "Lieferanten-Nr." from matching
+    m = re.search(r"(?<![\w-])(?:Rechnungsdatum|Invoice date|Datum|Date)\b[^:\n]*:\s*([\d./-]{8,10})", text, re.I)
     if m:
         date = parse_date(m.group(1))
-    m = re.search(r"(?:Nr\.|No\.|Rechnungsnummer|Invoice No)[^:\n]*:\s*(\S+)", text, re.I)
+    m = (re.search(r"(?:Rechnungsnummer|Rechnungs-Nr\.?|Invoice No\.?)\s*[:#]\s*(\S+)", text, re.I)
+         or re.search(r"(?<![\w-])(?:Nr\.|No\.)(?:\s*/\s*(?:Nr\.|No\.))?\s*:\s*(\S+)", text, re.I))
     if m:
         number = m.group(1)
-    m = re.search(r"(?:Lieferant|Seller|Supplier|Verkäufer)[^:\n]*:\s*(.+)", text, re.I)
+    m = re.search(r"(?<![\w-])(?:Lieferant|Seller|Supplier|Verkäufer)\b[^:\n]*:\s*(.+)", text, re.I)
     supplier = m.group(1).strip() if m else (text.strip().splitlines() or [None])[0]
     doc_type = "order" if re.search(r"Auftragsbestätigung|Order Confirmation|Proforma", text, re.I) else "invoice"
     return date, number, supplier, doc_type

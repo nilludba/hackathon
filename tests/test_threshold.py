@@ -54,3 +54,9 @@ def test_forecast_crossing_date():
 def test_no_forecast_if_not_reached_this_year():
     s = threshold_status([line(5_000, "2026-06-30")], 2026, today=date(2026, 6, 30))
     assert s["forecast_crossing"] is None
+
+
+def test_lines_without_date_or_mass_do_not_crash():
+    s = threshold_status([line(None, "2026-03-01"), {"cbam": True, "sector": "iron_steel", "net_mass_kg": 5000, "date": None},
+                          line(1000, "2026-04-01")], 2026)
+    assert s["total_t"] == 1.0

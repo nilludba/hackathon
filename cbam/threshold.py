@@ -13,10 +13,10 @@ NO_THRESHOLD_SECTORS = {"electricity", "hydrogen"}
 
 def threshold_status(lines, year, today=None):
     """Lines need keys: cbam (bool), sector, net_mass_kg, date ('YYYY-MM-DD')."""
-    year_lines = [l for l in lines if l.get("cbam") and l["date"].startswith(str(year))]
+    year_lines = [l for l in lines if l.get("cbam") and str(l.get("date") or "").startswith(str(year))]
     no_threshold = [l for l in year_lines if l["sector"] in NO_THRESHOLD_SECTORS]
     counted = [l for l in year_lines if l["sector"] not in NO_THRESHOLD_SECTORS]
-    total_t = sum(l["net_mass_kg"] for l in counted) / 1000
+    total_t = sum(l.get("net_mass_kg") or 0 for l in counted) / 1000
 
     if no_threshold or total_t > THRESHOLD_T:
         status = "over"

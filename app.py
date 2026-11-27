@@ -1,5 +1,7 @@
 """CBAM-Lotse — Streamlit UI. Run: streamlit run app.py"""
 
+import html
+import io
 import os
 from datetime import date
 from pathlib import Path
@@ -82,14 +84,20 @@ lines = None
 planned_lines = []  # order confirmations: planned imports, never counted as imported
 
 
-def use_documents(files):
-    """Read PDFs with cbam.extract; returns invoice lines as DataFrame (or None)."""
+@st.cache_data(show_spinner=False)
+def _read(blobs):
+    """Parse each document once; Streamlit reruns the script on every click."""
+    return read_documents([(io.BytesIO(data), name) for data, name in blobs])
+
+
+def use_documents(blobs):
+    """blobs: list of (bytes, file name), PDF or CSV. Returns invoice lines as DataFrame (or None)."""
     global planned_lines
-    imported, planned_lines, errors = read_documents(files)
+    imported, planned_lines, errors = _read(tuple(blobs))
     for e in errors:
         st.warning(e)
     st.caption(_("{n} Dokument(e) gelesen: {inv} Rechnungszeile(n), {plan} geplante Zeile(n) aus Auftragsbestätigungen.",
-                 n=len(files), inv=len(imported), plan=len(planned_lines)))
+                 n=len(blobs), inv=len(imported), plan=len(planned_lines)))
     return pd.DataFrame(imported) if imported else None
 
 
@@ -99,19 +107,19 @@ with tab_demo:
     if DEMO_PDFS and st.button(_("Demo-PDFs einlesen ({n} Dokumente)", n=len(DEMO_PDFS)), type="primary"):
         st.session_state["demo"] = "pdf"
     if st.session_state.get("demo") == "pdf":
-        lines = use_documents([(p, p.name) for p in DEMO_PDFS])
+        lines = use_documents([(p.read_bytes(), p.name) for p in DEMO_PDFS])
     elif st.session_state.get("demo") == "csv" and DEMO_CSV.exists():
-        lines = pd.read_csv(DEMO_CSV, dtype={"cn": str})
+        lines = use_documents([(DEMO_CSV.read_bytes(), DEMO_CSV.name)])
 with tab_pdf:
     st.write(_("Rechnungen und Auftragsbestätigungen als PDF (mit Textebene). Auftragsbestätigungen zählen als **geplante** Einfuhr, nicht als bereits eingeführt."))
     pdfs = st.file_uploader(_("PDF-Dokumente"), type="pdf", accept_multiple_files=True)
     if pdfs:
-        lines = use_documents([(f, f.name) for f in pdfs])
+        lines = use_documents([(f.getvalue(), f.name) for f in pdfs])
 with tab_csv:
     st.write(_("Spalten: ") + ", ".join(f"`{c}`" for c in COLUMNS))
     upload = st.file_uploader(_("Einkaufsliste (CSV)"), type="csv")
     if upload:
-        lines = pd.read_csv(upload, dtype={"cn": str})
+        lines = use_documents([(upload.getvalue(), upload.name)])
     if DEMO_CSV.exists() and st.button(_("Demo-Rechnungen laden (CSV)")):
         st.session_state["demo"] = "csv"
         st.rerun()
@@ -131,6 +139,17 @@ with st.expander(_("Erkannte Positionen prüfen und korrigieren ({n})", n=len(li
                            width="stretch", column_config={
                                "description": _("Ware"), "cn": _("KN-Code"), "net_mass_kg": _("Nettomasse (kg)"),
                                "origin": _("Land"), "date": _("Datum"), "supplier": _("Lieferant")})
+
+# Rows from uploads or hand edits may lack a weight or date; NaN must not reach the logic or the AI.
+lines = lines.copy()
+lines["net_mass_kg"] = pd.to_numeric(lines["net_mass_kg"], errors="coerce")
+lines["date"] = pd.to_datetime(lines["date"], errors="coerce").dt.strftime("%Y-%m-%d")
+incomplete = lines["net_mass_kg"].isna() | lines["date"].isna()
+if incomplete.any():
+    st.warning(_("{n} Zeile(n) ohne Gewicht oder Datum werden nicht gezählt — bitte oben ergänzen.", n=int(incomplete.sum())))
+lines = lines[~incomplete].astype(object).where(lines[~incomplete].notna(), None)
+if lines.empty:
+    st.stop()
 
 records = []
 for row in lines.to_dict("records"):
@@ -178,7 +197,7 @@ sub = {
 if planned_t and t + planned_t > THRESHOLD_T >= t:
     sub += " " + _("Ihre geplanten Lieferungen ({p:.1f} t) würden die Schwelle überschreiten.", p=planned_t)
 color = STATUS_COLOR[status["status"]]
-st.markdown(f"<div class='hero' style='border-left:8px solid {color}'><div class='kicker'>{importer} · {year}</div>"
+st.markdown(f"<div class='hero' style='border-left:8px solid {color}'><div class='kicker'>{html.escape(importer)} · {year}</div>"
             f"<div class='title' style='color:{color}'>{headline}</div><div class='sub'>{sub}</div></div>",
             unsafe_allow_html=True)
 st.progress(min(t / THRESHOLD_T, 1.0), text=_("{t:.1f} t von {max:.0f} t CBAM-Waren im Jahr {year}", t=t, max=THRESHOLD_T, year=year))

@@ -6,6 +6,7 @@ Without GEMINI_API_KEY the app still works: `answer()` falls back to a fixed sum
 """
 
 import json
+import math
 import urllib.request
 
 from cbam.annex import check_annex_i
@@ -30,11 +31,9 @@ TOOLS = [{"function_declarations": [
      "description": "Prüft, ob ein KN-Code (Zolltarifnummer) unter Anhang I der CBAM-Verordnung fällt.",
      "parameters": {"type": "object", "properties": {"cn": {"type": "string"}}, "required": ["cn"]}},
     {"name": "threshold",
-     "description": "Summe der CBAM-Waren im Jahr, Anteil an der 50-t-Schwelle, Status und Prognose.",
-     "parameters": {"type": "object", "properties": {}}},
+     "description": "Summe der CBAM-Waren im Jahr, Anteil an der 50-t-Schwelle, Status und Prognose."},
     {"name": "cost",
-     "description": "Graue Emissionen, Kosten der CBAM-Zertifikate und Strafrahmen ohne Zulassung.",
-     "parameters": {"type": "object", "properties": {}}},
+     "description": "Graue Emissionen, Kosten der CBAM-Zertifikate und Strafrahmen ohne Zulassung."},
 ]}]
 
 
@@ -56,8 +55,19 @@ def run_tool(name, args, ctx):
     return {"error": f"Unbekanntes Tool: {name}"}
 
 
+def _json_safe(x):
+    """NaN/inf are not valid JSON; the API rejects them. Map them to null, other odd types to str."""
+    if isinstance(x, dict):
+        return {k: _json_safe(v) for k, v in x.items()}
+    if isinstance(x, (list, tuple)):
+        return [_json_safe(v) for v in x]
+    if isinstance(x, float) and not math.isfinite(x):
+        return None
+    return x if x is None or isinstance(x, (str, int, float, bool)) else str(x)
+
+
 def _post(body, api_key):
-    req = urllib.request.Request(URL, data=json.dumps(body).encode(), method="POST",
+    req = urllib.request.Request(URL, data=json.dumps(_json_safe(body), allow_nan=False).encode(), method="POST",
                                  headers={"Content-Type": "application/json", "x-goog-api-key": api_key})
     with urllib.request.urlopen(req, timeout=60) as resp:
         return json.load(resp)

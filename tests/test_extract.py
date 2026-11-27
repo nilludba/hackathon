@@ -98,3 +98,16 @@ def test_read_documents_splits_orders_and_collects_errors(tmp_path):
     assert len(imported) == 6 and len(planned) == 1
     assert planned[0]["net_mass_kg"] == 12000.0
     assert len(errors) == 2
+
+
+def test_parse_number_rejects_non_numbers():
+    from cbam.extract import parse_number
+    assert parse_number("-") is None and parse_number("--") is None
+
+
+def test_header_ignores_uid_supplier_no_and_delivery_date():
+    from cbam.extract import _header_fields
+    text = ("ACME GmbH\nUID-Nr.: ATU123\nLieferanten-Nr.: 4711\nLieferdatum: 30.01.2026\n"
+            "Rechnungsnummer: R-77\nDatum: 01.02.2026\nLieferant: Çelik A.Ş.\n")
+    date, number, supplier, _ = _header_fields(text)
+    assert (date, number, supplier) == ("2026-02-01", "R-77", "Çelik A.Ş.")

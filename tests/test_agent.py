@@ -62,3 +62,16 @@ def test_api_error_falls_back():
 def test_fallback_in_russian():
     text, _ = answer("?", CTX, language="Russisch")
     assert "45.0 t" in text and "близко к порогу" in text
+
+
+def test_tool_schemas_have_no_empty_parameters():
+    from cbam.agent import TOOLS
+    for f in TOOLS[0]["function_declarations"]:
+        assert "parameters" not in f or f["parameters"]["properties"]  # Gemini rejects empty OBJECT schemas
+
+
+def test_request_body_is_valid_json_without_nan():
+    import json
+    from cbam.agent import _json_safe
+    body = _json_safe({"a": float("nan"), "b": [1.5, float("inf")], "c": None})
+    assert json.dumps(body, allow_nan=False) == '{"a": null, "b": [1.5, null], "c": null}'

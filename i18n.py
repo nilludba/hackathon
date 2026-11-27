@@ -169,6 +169,9 @@ T = {
     "Ihre Frage": {"en": "Your question", "ru": "Ваш вопрос"},
     "Fragen": {"en": "Ask", "ru": "Спросить"},
 
+    "{n} Zeile(n) ohne Gewicht oder Datum werden nicht gezählt — bitte oben ergänzen.": {
+        "en": "{n} line(s) without weight or date are not counted — please complete them above.",
+        "ru": "Строк без веса или даты: {n} — они не учитываются, допишите их в таблице выше."},
 }
 
 
