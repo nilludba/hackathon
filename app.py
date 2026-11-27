@@ -80,6 +80,12 @@ div[data-testid="stMetricLabel"] p { color: #6E6E73; }
 [data-baseweb="tab-list"] { gap: 1.8rem; }
 [data-baseweb="tab"] p { font-weight: 500; font-size: 1rem; }
 [data-testid="stExpander"] details { border: 1px solid rgba(255,255,255,.7); background: var(--glass); backdrop-filter: blur(18px); border-radius: 14px; }
+[data-testid="stExpander"] summary, [data-testid="stExpander"] summary:hover, [data-testid="stExpander"] summary:focus,
+[data-testid="stExpander"] summary:focus-visible, [data-testid="stExpander"] details[open] > summary {
+  background: transparent !important; color: #1D1D1F !important; }
+[data-testid="stExpander"] summary p, [data-testid="stExpander"] summary:hover p,
+[data-testid="stExpander"] details[open] > summary p { color: #1D1D1F !important; }
+[data-testid="stExpander"] summary svg { color: #1D1D1F !important; fill: #1D1D1F !important; }
 [data-testid="stFileUploaderDropzone"] { background: var(--glass); backdrop-filter: blur(18px); border: 1px dashed #C7C7CC; border-radius: 18px; }
 .foot { color: #86868B; font-size: .8rem; text-align: center; margin-top: 4.5rem; line-height: 1.6; }
 /* Motion and detail */
@@ -243,12 +249,11 @@ def hero():
 BAND_CSS = """<style>
 .st-key-band_how, .st-key-band_faq { padding: 1rem 0 3.5rem; clip-path: inset(0 -100vmax); }
 .st-key-band_how { background: #F2F3F5; box-shadow: 0 0 0 100vmax #F2F3F5; margin-top: 4rem; }
-.st-key-band_faq { background: #171A20; box-shadow: 0 0 0 100vmax #171A20; }
-.st-key-band_faq .section, .st-key-band_faq .section small { color: #F5F5F7; }
-.st-key-band_faq [data-testid="stExpander"] details { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); }
-.st-key-band_faq [data-testid="stExpander"] summary p, .st-key-band_faq [data-testid="stExpander"] p,
-.st-key-band_faq [data-testid="stExpander"] li, .st-key-band_faq .foot { color: #E8E8ED !important; }
-.st-key-band_faq [data-testid="stExpander"] svg { color: #E8E8ED; fill: #E8E8ED; }
+.st-key-band_faq { background: #FFFFFF; box-shadow: 0 0 0 100vmax #FFFFFF; }
+.st-key-band_faq .section, .st-key-band_faq .section small { color: #1D1D1F; }
+.st-key-band_faq [data-testid="stExpander"] details { background: #F7F8FB; border: 1px solid rgba(29,29,31,.1); }
+.st-key-band_faq [data-testid="stExpander"] p, .st-key-band_faq [data-testid="stExpander"] li,
+.st-key-band_faq .foot { color: #1D1D1F !important; }
 .step-card { background: #FFFFFF; border-radius: 4px; padding: 1.6rem 1.4rem; min-height: 170px; }
 .step-card .no { font-size: .85rem; font-weight: 600; color: #3E6AE1; }
 .step-card b { display: block; font-size: 1.15rem; margin: .35rem 0 .4rem; color: #171A20; }
