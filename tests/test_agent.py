@@ -91,3 +91,18 @@ def test_post_falls_back_to_next_model_on_404(monkeypatch):
     monkeypatch.setattr(agent.urllib.request, "urlopen", fake_urlopen)
     assert agent._post({"a": 1}, "k") == {"ok": 1}
     assert agent.MODELS[0] in tried[0] and agent.MODELS[1] in tried[1]
+
+
+def test_post_falls_back_on_overload_but_not_on_bad_key(monkeypatch):
+    import io, urllib.error
+    import pytest
+    import cbam.agent as agent
+    codes = iter([503, 403])
+
+    def fake_urlopen(req, timeout):
+        raise urllib.error.HTTPError(req.full_url, next(codes), "x", {}, io.BytesIO(b"{}"))
+
+    monkeypatch.setattr(agent.urllib.request, "urlopen", fake_urlopen)
+    with pytest.raises(urllib.error.HTTPError) as e:
+        agent._post({}, "k")
+    assert e.value.code == 403  # 503 moved on to the next model, 403 (bad key) stops at once

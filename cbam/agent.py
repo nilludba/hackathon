@@ -15,7 +15,7 @@ from cbam.annex import check_annex_i
 from cbam.cost import estimate_cost
 from cbam.threshold import threshold_status
 
-# Newest first; a model Google retired or limited answers 404 and the next one is tried.
+# Newest first; if a model is retired (404), rate-limited (429) or overloaded (5xx), the next one is tried.
 # See https://ai.google.dev/gemini-api/docs/deprecations
 MODELS = ("gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite")
 URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
@@ -79,7 +79,7 @@ def _post(body, api_key):
             with urllib.request.urlopen(req, timeout=60) as resp:
                 return json.load(resp)
         except urllib.error.HTTPError as e:
-            if e.code != 404 or i == len(MODELS) - 1:
+            if e.code not in (404, 429, 500, 503) or i == len(MODELS) - 1:
                 raise
 
 
