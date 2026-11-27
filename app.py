@@ -88,6 +88,12 @@ div[data-testid="stMetricLabel"] p { color: #6E6E73; }
 [data-testid="stExpander"] summary svg { color: #1D1D1F !important; fill: #1D1D1F !important; }
 [data-testid="stFileUploaderDropzone"] { background: var(--glass); backdrop-filter: blur(18px); border: 1px dashed #C7C7CC; border-radius: 18px; }
 .foot { color: #86868B; font-size: .8rem; text-align: center; margin-top: 4.5rem; line-height: 1.6; }
+.cta-trust { text-align: center; color: #424245; font-size: .88rem; margin-top: .7rem; }
+.next-step { background: #FFFFFF; border: 1px solid rgba(29,29,31,.1); border-left: 6px solid var(--c); border-radius: 14px;
+  padding: 1.1rem 1.3rem; margin: 1.4rem 0 .6rem; }
+.next-step .lbl { font-size: .8rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #6E6E73; }
+.next-step b { display: block; font-size: 1.15rem; margin: .25rem 0 .3rem; color: #1D1D1F; }
+.next-step span { color: #424245; line-height: 1.45; }
 /* Motion and detail */
 :root { --glass: rgba(255,255,255,.72); --lift: 0 10px 30px rgba(17,17,26,.06); }
 .stApp { background: #F7F8FB; }
@@ -284,10 +290,15 @@ if page == "faq":
 if page == "home":
     st.markdown(INTRO_CSS, unsafe_allow_html=True)
     hero()
-    _pad_l, go, _pad_r = st.columns([1, 1, 1])
-    if go.button(_("Los geht's"), type="primary", width="stretch"):
+    _pad_l, own, demo, _pad_r = st.columns([0.5, 1, 1, 0.5])
+    if own.button(_("Eigene Rechnungen prüfen"), type="primary", width="stretch", key="cta_own"):
         st.session_state["page"] = "tool"
         st.rerun()
+    if demo.button(_("Beispiel ansehen – 30 Sekunden"), width="stretch", key="cta_demo"):
+        st.session_state.update(page="tool", demo="pdf", scroll_to_result=True)
+        st.rerun()
+    st.markdown(f"<div class='cta-trust'>{_('Kostenlos · ohne Anmeldung · Ihre Rechnungen werden nicht gespeichert')}</div>",
+                unsafe_allow_html=True)
     st.markdown("<div style='height:2.5rem'></div>", unsafe_allow_html=True)
     f1, f2, f3 = st.columns(3)
     for i, (col, k, d) in enumerate(((f1, "50 t", _("pro Jahr. Darunter sind Sie befreit, darüber brauchen Sie eine Zulassung.")),
@@ -501,6 +512,56 @@ if cost:
         m3.metric(_("Falls über 50 t: Zertifikate") if not over_now else _("Strafe ohne Zulassung"),
                   eur(cost["certificate_cost_eur"]) if not over_now else f"€ {n(lo / 1000, ',.0f')}–{n(hi / 1000, ',.0f')} k")
 
+# One primary next step, depending on the situation
+cbam_suppliers = sorted({r["supplier"] for r in records if r["cbam"] and isinstance(r.get("supplier"), str)})
+
+
+@st.dialog(_("Checkliste für die Zulassung"), width="large")
+def checklist_dialog():
+    st.markdown(CHECKLIST.read_text(encoding="utf-8"))
+
+
+@st.dialog(_("Brief an Ihren Lieferanten"), width="large")
+def letter_dialog():
+    sup = st.selectbox(_("Lieferant"), cbam_suppliers)
+    lg = st.radio(_("Sprache des Briefs"), ["de", "en"], horizontal=True, key="dlg_lang")
+    txt = supplier_letter(sup, records, importer, lg)
+    st.text_area(_("Brief"), txt, height=300, label_visibility="collapsed")
+    st.download_button(_("Brief herunterladen (.txt)"), txt, file_name=f"CBAM_Anfrage_{sup[:20]}.txt", type="primary")
+
+
+if crosses or t > THRESHOLD_T:
+    ns_title = _("Zulassung beantragen, bevor die Ware kommt")
+    ns_text = _("Ohne Zulassung drohen Strafen auf alle Emissionen des Jahres. Die Checkliste zeigt Schritt für Schritt, was das AnEH braucht.")
+    ns_kind = "checklist" if CHECKLIST.exists() else "report"
+elif status["status"] == "near" and cbam_suppliers:
+    ns_title = _("Lieferanten nach echten Emissionsdaten fragen")
+    ns_text = _("Sie sind knapp unter 50 t. Echte Daten sind oft niedriger als die EU-Standardwerte — der fertige Brief spart Ihnen die Formulierung.")
+    ns_kind = "letter"
+else:
+    ns_title = _("Befreiung dokumentieren")
+    ns_text = _("Laden Sie den Bericht mit Quellen herunter — so können Sie jederzeit belegen, warum Sie befreit sind.")
+    ns_kind = "report"
+st.markdown(f"<div class='next-step' style='--c:{STATUS_COLOR['over' if crosses or t > THRESHOLD_T else status['status']]}'>"
+            f"<div class='lbl'>{_('Ihr nächster Schritt')}</div><b>{ns_title}</b><span>{ns_text}</span></div>",
+            unsafe_allow_html=True)
+ns_col, _ns_pad = st.columns([1, 1.4])
+if ns_kind == "checklist":
+    if ns_col.button(_("Checkliste öffnen"), type="primary", width="stretch", key="ns_checklist"):
+        checklist_dialog()
+elif ns_kind == "letter":
+    if ns_col.button(_("Brief erstellen"), type="primary", width="stretch", key="ns_letter"):
+        letter_dialog()
+else:
+    ns_col.download_button(_("Bericht herunterladen (PDF)"), report_pdf(importer, year, status, records, cost),
+                           file_name=f"CBAM_Bericht_{year}.pdf", mime="application/pdf", type="primary",
+                           width="stretch", key="ns_report")
+
+if st.session_state.pop("scroll_to_result", False):  # came from "Beispiel ansehen": jump to the answer
+    import streamlit.components.v1 as components
+    components.html("<script>const d=window.parent.document;const el=d.querySelector('.hero-card');"
+                    "if(el){el.scrollIntoView({behavior:'smooth',block:'start'});}</script>", height=0)
+
 # Step 3: details and actions
 section(_("Schritt 3"), _("Was jetzt?"))
 t_act, t_goods, t_cost, t_what, t_ask = st.tabs([_("Nächste Schritte"), _("Waren"), _("Kosten"),
@@ -539,7 +600,7 @@ with t_act:
     importer = st.text_input(_("Ihr Unternehmen"), importer, key="importer")
     pdf = report_pdf(importer, year, status, records, cost)
     st.download_button(_("Bericht herunterladen (PDF)"), pdf, file_name=f"CBAM_Bericht_{year}.pdf",
-                       mime="application/pdf", type="primary")
+                       mime="application/pdf")
     suppliers = sorted({r["supplier"] for r in records if r["cbam"] and isinstance(r.get("supplier"), str)})
     if suppliers:
         s1, s2 = st.columns([3, 1])

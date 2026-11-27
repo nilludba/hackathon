@@ -315,6 +315,24 @@ T.update({
     'Nein. CBAM Helper ist eine Ersteinschätzung und bereitet Unterlagen vor. Die Entscheidung treffen Sie bzw. die Behörde.': {"en": "No. CBAM Helper is a first assessment and prepares documents. The decision is yours and the authority's."},
 })
 
+T.update({
+    "Eigene Rechnungen prüfen": {"en": "Check my own invoices"},
+    "Beispiel ansehen – 30 Sekunden": {"en": "See an example – 30 seconds"},
+    "Kostenlos · ohne Anmeldung · Ihre Rechnungen werden nicht gespeichert": {"en": "Free · no sign-up · your invoices are not stored"},
+    "Ihr nächster Schritt": {"en": "Your next step"},
+    "Zulassung beantragen, bevor die Ware kommt": {"en": "Apply for authorisation before the goods arrive"},
+    "Ohne Zulassung drohen Strafen auf alle Emissionen des Jahres. Die Checkliste zeigt Schritt für Schritt, was das AnEH braucht.": {"en": "Without authorisation, penalties apply to all emissions of the year. The checklist shows step by step what the AnEH needs."},
+    "Lieferanten nach echten Emissionsdaten fragen": {"en": "Ask your supplier for actual emissions data"},
+    "Sie sind knapp unter 50 t. Echte Daten sind oft niedriger als die EU-Standardwerte — der fertige Brief spart Ihnen die Formulierung.": {"en": "You are just under 50 t. Actual data is often lower than the EU default values — the ready-made letter saves you the wording."},
+    "Befreiung dokumentieren": {"en": "Document your exemption"},
+    "Laden Sie den Bericht mit Quellen herunter — so können Sie jederzeit belegen, warum Sie befreit sind.": {"en": "Download the report with sources — so you can always show why you are exempt."},
+    "Checkliste öffnen": {"en": "Open checklist"},
+    "Checkliste für die Zulassung": {"en": "Checklist for authorisation"},
+    "Brief erstellen": {"en": "Create letter"},
+    "Brief an Ihren Lieferanten": {"en": "Letter to your supplier"},
+    "Lieferant": {"en": "Supplier"},
+})
+
 def tr(text, lang, **kw):
     """Translate a German UI text and fill its {placeholders}."""
     s = T.get(text, {}).get(lang, text)
