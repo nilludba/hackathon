@@ -121,6 +121,18 @@ div[data-testid="stMetric"]:hover, .option:hover { transform: translateY(-3px); 
 .tbar .imp, .tbar .plan { transform-origin: left center; animation: grow 1.1s cubic-bezier(.2,.8,.2,1) both; }
 .tbar .plan { animation-delay: .85s; }
 [data-testid="InputInstructions"] { display: none; }
+@media (max-width: 640px) {  /* phone: logo + language on one line, links on the next; Streamlit would stack all five */
+  .st-key-topnav [data-testid="stHorizontalBlock"] { flex-direction: row !important; flex-wrap: wrap !important; gap: .1rem 1.1rem !important; }
+  .st-key-topnav [data-testid="stColumn"] { width: auto !important; flex: 0 0 auto !important; min-width: 0 !important; order: 2; }
+  .st-key-topnav [data-testid="stColumn"]:first-child { flex: 1 0 46% !important; order: 0; }
+  .st-key-topnav [data-testid="stColumn"]:last-child { order: 1; }
+  .st-key-topnav [data-testid="stButtonGroup"] button { padding: .15rem .55rem; min-height: 32px; }
+  .st-key-topnav [data-testid="stButtonGroup"] button p, .st-key-topnav button[data-testid="stBaseButton-tertiary"] p { font-size: .9rem; }
+  .pill { margin-top: 1rem; }
+  .hero-t { margin-top: 1.2rem !important; }
+  .section { margin-top: 2.6rem; }
+  .hero-card { padding: 1.6rem 1.4rem 1.4rem; }
+}
 button[data-testid="stBaseButton-tertiary"] { background: transparent !important; min-height: auto; padding: .25rem .1rem;
   color: #171A20 !important; font-weight: 500; }
 button[data-testid="stBaseButton-tertiary"]:hover { color: #3E6AE1 !important; }
@@ -144,7 +156,8 @@ prices = try_load(load_prices)
 
 # Top bar: wordmark · Home · Prüfen · Fragen & Antworten · language
 page = st.session_state.setdefault("page", "home")
-nav = st.columns([2.1, .8, .9, 1.9, 1.5], vertical_alignment="center")
+with st.container(key="topnav"):
+    nav = st.columns([2.1, .8, .9, 1.9, 1.5], vertical_alignment="center")
 if nav[0].button("CBAM Helper", type="tertiary", key="nav_logo"):  # wordmark = home link
     st.session_state["page"] = "home"
     st.rerun()
