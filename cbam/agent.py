@@ -6,6 +6,7 @@ Without GEMINI_API_KEY the app still works: `answer()` falls back to a fixed sum
 """
 
 import json
+from datetime import date
 import logging
 import math
 import urllib.error
@@ -50,7 +51,8 @@ def run_tool(name, args, ctx):
         except ValueError as e:
             return {"error": str(e)}
     if name == "threshold":
-        return threshold_status(cbam_lines, ctx["year"])
+        today = date.today() if int(ctx["year"]) == date.today().year else None  # else the forecast can lie in the past
+        return threshold_status(cbam_lines, ctx["year"], today=today)
     if name == "cost":
         if ctx.get("values") is None or ctx.get("prices") is None:
             return {"error": "Standardwerte oder Zertifikatspreis fehlen."}

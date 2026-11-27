@@ -106,3 +106,12 @@ def test_post_falls_back_on_overload_but_not_on_bad_key(monkeypatch):
     with pytest.raises(urllib.error.HTTPError) as e:
         agent._post({}, "k")
     assert e.value.code == 403  # 503 moved on to the next model, 403 (bad key) stops at once
+
+
+def test_threshold_tool_forecast_is_never_in_the_past():
+    from datetime import date
+    ctx = {**CTX, "year": date.today().year,
+           "lines": [{"cbam": True, "sector": "iron_steel", "cn": "7318", "origin": "TR", "net_mass_kg": 45_000,
+                      "date": f"{date.today().year}-01-15"}]}
+    f = run_tool("threshold", {}, ctx)["forecast_crossing"]
+    assert f is None or f >= date.today().isoformat()
