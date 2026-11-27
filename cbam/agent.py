@@ -1,4 +1,4 @@
-"""CBAM-Lotse agent: Gemini answers questions in German, but every number comes from our tools.
+"""CBAM-Lotse agent: Gemini answers questions in the chosen language, but every number comes from our tools.
 
 The LLM never decides legal questions or computes figures itself. It calls
 check_cn / threshold / cost, which wrap the tested deterministic functions.
@@ -15,8 +15,10 @@ from cbam.annex import check_annex_i
 from cbam.cost import estimate_cost
 from cbam.threshold import threshold_status
 
-MODEL = "gemini-2.5-flash"
-URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
+# Newest first; a model Google retired or limited answers 404 and the next one is tried.
+# See https://ai.google.dev/gemini-api/docs/deprecations
+MODELS = ("gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite")
+URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 MAX_STEPS = 5
 
 SYSTEM = (
@@ -69,10 +71,16 @@ def _json_safe(x):
 
 
 def _post(body, api_key):
-    req = urllib.request.Request(URL, data=json.dumps(_json_safe(body), allow_nan=False).encode(), method="POST",
-                                 headers={"Content-Type": "application/json", "x-goog-api-key": api_key})
-    with urllib.request.urlopen(req, timeout=60) as resp:
-        return json.load(resp)
+    data = json.dumps(_json_safe(body), allow_nan=False).encode()
+    for i, model in enumerate(MODELS):
+        req = urllib.request.Request(URL.format(model=model), data=data, method="POST",
+                                     headers={"Content-Type": "application/json", "x-goog-api-key": api_key})
+        try:
+            with urllib.request.urlopen(req, timeout=60) as resp:
+                return json.load(resp)
+        except urllib.error.HTTPError as e:
+            if e.code != 404 or i == len(MODELS) - 1:
+                raise
 
 
 FALLBACK = {

@@ -75,3 +75,19 @@ def test_request_body_is_valid_json_without_nan():
     from cbam.agent import _json_safe
     body = _json_safe({"a": float("nan"), "b": [1.5, float("inf")], "c": None})
     assert json.dumps(body, allow_nan=False) == '{"a": null, "b": [1.5, null], "c": null}'
+
+
+def test_post_falls_back_to_next_model_on_404(monkeypatch):
+    import io, urllib.error
+    import cbam.agent as agent
+    tried = []
+
+    def fake_urlopen(req, timeout):
+        tried.append(req.full_url)
+        if len(tried) == 1:
+            raise urllib.error.HTTPError(req.full_url, 404, "not found", {}, io.BytesIO(b"{}"))
+        return io.BytesIO(b'{"ok": 1}')
+
+    monkeypatch.setattr(agent.urllib.request, "urlopen", fake_urlopen)
+    assert agent._post({"a": 1}, "k") == {"ok": 1}
+    assert agent.MODELS[0] in tried[0] and agent.MODELS[1] in tried[1]
