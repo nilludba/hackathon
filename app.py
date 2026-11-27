@@ -451,11 +451,14 @@ with t_ask:
     with st.form("ask", clear_on_submit=True):
         question = st.text_input(_("Ihre Frage"), placeholder=_("z. B. Was passiert, wenn ich im Herbst noch 20 t Profile kaufe?"))
         sent = st.form_submit_button(_("Fragen"))
+    history = st.session_state.setdefault("chat", [])  # every click reruns the script; keep the answers
     if sent and question:
         ctx = {"lines": records, "year": int(year), "values": default_values, "prices": prices}
         with st.spinner(_("Der Lotse rechnet …")):
             text, calls = answer(question, ctx, api_key=api_key,
                                  language={"de": "Deutsch", "en": "Englisch", "ru": "Russisch"}[L])
+        history.append((question, text, calls))
+    for question, text, calls in reversed(history):
         st.chat_message("user").write(question)
         st.chat_message("assistant").write(text)
         for call in calls:
