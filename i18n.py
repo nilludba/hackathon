@@ -352,8 +352,8 @@ T.update({
 T.update({
     "nicht berechenbar": {"en": "cannot be calculated"},
     "mind. {v}": {"en": "at least {v}"},
-    "Für {c} sind noch keine EU-Standardwerte geladen (bisher TR, CN, IN). Die Menge zählt für die 50-t-Schwelle, die Kosten können wir dafür nicht schätzen.":
-        {"en": "No EU default values are loaded for {c} yet (so far TR, CN, IN). The quantity counts towards the 50 t threshold, but we cannot estimate its cost."},
+    "Für einige Positionen ({c}) gibt es keinen EU-Standardwert (nur Eisen/Stahl und Aluminium sind hinterlegt). Die Menge zählt für die 50-t-Schwelle, die Kosten können wir dafür nicht schätzen.":
+        {"en": "Some items ({c}) have no EU default value (only iron/steel and aluminium are included). The quantity counts towards the 50 t threshold, but we cannot estimate its cost."},
 })
 
 def tr(text, lang, **kw):

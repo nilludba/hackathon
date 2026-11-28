@@ -12,9 +12,10 @@ def test_prices_2026():
     assert p["source"].startswith("https://taxation-customs.ec.europa.eu/")
 
 
-def test_default_values_cover_three_countries_with_source():
+def test_default_values_cover_all_countries_with_source():
     rows = load_default_values()
-    assert {r["country_iso"] for r in rows} == {"TR", "CN", "IN"}
+    isos = {r["country_iso"] for r in rows}
+    assert {"TR", "CN", "IN", "AZ", "UA", "VN", "XX"} <= isos and len(isos) == 75  # 74 countries + Other (XX)
     assert all(r["source"] for r in rows)
     assert {r["sector"] for r in rows} == {"iron_steel", "aluminium"}
 
@@ -34,8 +35,11 @@ def test_default_value_lookup(cn, country, total, markup_2026):
     assert float(dv["total_incl_markup_2026"]) == pytest.approx(markup_2026, abs=0.0015)
 
 
-def test_unknown_country_returns_none():
-    assert default_value("7308 90 59", "RS", load_default_values()) is None
+def test_unlisted_country_uses_other_countries_and_territories():
+    # Kosovo has no sheet in the EC table -> "Other countries and territories" (Annex I, 2025/2621)
+    assert default_value("7308 90 59", "XK", load_default_values())["country_iso"] == "XX"
+    assert default_value("7308 90 59", "RS", load_default_values())["country_iso"] == "RS"
+    assert default_value("2716 00 00", "RS", load_default_values()) is None  # not iron/steel/aluminium
 
 
 def test_only_direct_emissions_count_for_steel_and_aluminium():

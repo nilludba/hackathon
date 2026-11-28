@@ -578,7 +578,7 @@ def krange(c, lo, hi):
 
 
 if cost and cost["missing_default_value"]:
-    st.caption(_("Für {c} sind noch keine EU-Standardwerte geladen (bisher TR, CN, IN). Die Menge zählt für die 50-t-Schwelle, die Kosten können wir dafür nicht schätzen.",
+    st.caption(_("Für einige Positionen ({c}) gibt es keinen EU-Standardwert (nur Eisen/Stahl und Aluminium sind hinterlegt). Die Menge zählt für die 50-t-Schwelle, die Kosten können wir dafür nicht schätzen.",
                  c=", ".join(sorted({str(l.get("origin") or "?") for l in cost["missing_default_value"]}))))
 if cost:
     over_now = t > THRESHOLD_T

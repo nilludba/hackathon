@@ -44,7 +44,7 @@ Customs authority, application process and language are national; we built the A
 ## Limits — say them before the jury does
 
 - First assessment, not legal advice; the AnEH and the customs office decide.
-- Default values only (no actual installation emissions); data for Türkiye, China, India.
+- Default values only (no actual installation emissions); all 74 countries of the EC table plus "Other countries and territories" for the rest (Annex I, Impl. Reg. 2025/2621), iron/steel and aluminium only.
 - Scanned PDFs without a text layer are not read yet.
 - Q4 2026 certificate price is not published yet: Q3 is used and marked "estimate".
 
