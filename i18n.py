@@ -356,6 +356,11 @@ T.update({
         {"en": "Some items ({c}) have no EU default value (only iron/steel and aluminium are included). The quantity counts towards the 50 t threshold, but we cannot estimate its cost."},
 })
 
+T.update({
+    "Strafe 3–5 × € 100 je Tonne CO₂ (Art. 26 Abs. 2a VO 2023/956), auf alle Emissionen des Jahres. Deshalb eine Spanne: Den genauen Betrag legt die Behörde (AnEH) fest — je nach Dauer, Schwere und Vorsatz. Die € 100 werden zusätzlich an die Inflation angepasst, die echte Strafe kann also etwas höher sein.":
+        {"en": "Fine of 3–5 × €100 per tonne of CO₂ (Art. 26(2a) Reg. 2023/956), on all emissions of the year. That is why it is a range: the authority (AnEH) sets the exact amount depending on duration, gravity and intent. The €100 is also adjusted for inflation, so the real fine can be somewhat higher."},
+})
+
 def tr(text, lang, **kw):
     """Translate a German UI text and fill its {placeholders}."""
     s = T.get(text, {}).get(lang, text)

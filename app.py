@@ -642,6 +642,7 @@ if cost and cost["missing_default_value"]:
                  c=", ".join(sorted({str(l.get("origin") or "?") for l in cost["missing_default_value"]}))))
 if cost:
     over_now = t > THRESHOLD_T
+    PENALTY_HELP = _("Strafe 3–5 × € 100 je Tonne CO₂ (Art. 26 Abs. 2a VO 2023/956), auf alle Emissionen des Jahres. Deshalb eine Spanne: Den genauen Betrag legt die Behörde (AnEH) fest — je nach Dauer, Schwere und Vorsatz. Die € 100 werden zusätzlich an die Inflation angepasst, die echte Strafe kann also etwas höher sein.")
     m1, m2, m3 = st.columns(3)
     m1.metric(_("Heute zu zahlen"), money(cost, cost["certificate_cost_eur"]) if over_now else _("€ 0 (befreit)"),
               help=_("Zertifikate für alle CBAM-Waren des Jahres, sobald Sie über 50 t liegen."))
@@ -650,13 +651,15 @@ if cost:
         m2.metric(_("Nach der Lieferung: Zertifikate"), money(after, after["certificate_cost_eur"]),
                   help=_("Mit Zulassung: Menge × EU-Standardwert × Zertifikatspreis des Quartals, für alle Waren des Jahres."))
         m3.metric(_("Nach der Lieferung ohne Zulassung"), krange(after, lo, hi),
-                  help=_("Strafe 3–5 × € 100 je fehlendem Zertifikat (Art. 26 Abs. 2a)."))
+                  help=PENALTY_HELP)
     else:
         lo, hi = cost["penalty_range_eur"]
         m2.metric(_("Graue Emissionen"), (_("nicht berechenbar") if cost["missing_default_value"] and not cost["lines"]
                                           else ("≥ " if cost["missing_default_value"] else "") + f"{n(cost['total_emissions_t'], ',.0f')} t CO₂e"))
         m3.metric(_("Falls über 50 t: Zertifikate") if not over_now else _("Strafe ohne Zulassung"),
-                  money(cost, cost["certificate_cost_eur"]) if not over_now else krange(cost, lo, hi))
+                  money(cost, cost["certificate_cost_eur"]) if not over_now else krange(cost, lo, hi),
+                  help=_("Mit Zulassung: Menge × EU-Standardwert × Zertifikatspreis des Quartals, für alle Waren des Jahres.")
+                  if not over_now else PENALTY_HELP)
 
 # One primary next step, depending on the situation
 cbam_suppliers = sorted({r["supplier"] for r in records if r["cbam"] and isinstance(r.get("supplier"), str)})
