@@ -156,7 +156,8 @@ Gib NUR JSON zurück: {"doc_type": "invoice" | "order", "invoice": Rechnungsnumm
 "date": Rechnungsdatum als YYYY-MM-DD oder null, "supplier": Name des Lieferanten/Verkäufers oder null,
 "lines": [{"description": Warenbeschreibung, "cn": KN-/HS-Code wie gedruckt oder null,
 "net_mass_kg": Nettomasse in kg als Zahl oder null, "origin": Ursprungsland als ISO-2-Code oder null}]}.
-Regeln: eine Zeile pro Warenposition, keine Summen-, Fracht- oder Steuerzeilen. Tonnen in kg umrechnen.
+Regeln: eine Zeile pro Warenposition, keine Summen-, Fracht- oder Steuerzeilen. Tonnen in kg umrechnen,
+Pfund (lbs) ebenfalls (1 lb = 0,45359 kg).
 Stückzahlen sind KEINE Masse (dann null). Keinen KN-Code erfinden: nur, was im Dokument steht.
 Steht das Ursprungsland nur im Kopf des Dokuments, gilt es für alle Positionen."""
 

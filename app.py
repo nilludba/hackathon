@@ -409,6 +409,25 @@ def use_documents(blobs):
     planned_lines = list(planned_lines)
     imported = list(imported)
     failed = {e.split(":")[0]: e for e in errors}
+    # Parsed, but no position has a weight: the layout fooled the parser - let the AI try as well
+    weak = {name for _d, name in blobs if name.lower().endswith(".pdf")
+            and (ls := [l for l in imported + planned_lines if l.get("file") == name])
+            and all(l.get("net_mass_kg") is None for l in ls)}
+    if weak and gemini_key():
+        for data, name in blobs:
+            if name not in weak:
+                continue
+            try:
+                with st.spinner(_("{f} wird mit KI gelesen …", f=name)):
+                    ai = _read_ai(data, name)
+            except Exception:
+                continue
+            if any(l.get("net_mass_kg") for l in ai):
+                imported = [l for l in imported if l.get("file") != name]
+                planned_lines = [l for l in planned_lines if l.get("file") != name]
+                st.info(_("{f}: per KI gelesen — bitte Codes und Gewichte unten prüfen.", f=name))
+                for l in ai:
+                    (planned_lines if l["doc_type"] == "order" else imported).append(l)
     if failed and gemini_key():
         for data, name in blobs:
             if name in failed and name.lower().endswith(".pdf"):

@@ -220,7 +220,7 @@ def _header_fields(text):
     if m:
         supplier = m.group(1).strip()
     else:
-        title = re.compile(r"^\s*(commercial invoice|invoice|rechnung|handelsrechnung|packing list|proforma)", re.I)
+        title = re.compile(r"^\s*(date|datum|commercial invoice|invoice|rechnung|handelsrechnung|packing list|proforma)", re.I)
         supplier = next((l.strip() for l in text.splitlines() if re.search(r"[A-Za-z]{3}", l)
                          and not DATE_WORDS.search(l) and not title.match(l)), None)
     if supplier:  # first line often also holds the document title: "Kaspia Metall MMC RECHNUNG"
