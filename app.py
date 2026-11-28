@@ -564,22 +564,39 @@ st.markdown(
     + "</div>", unsafe_allow_html=True)
 if status["forecast_crossing"]:
     st.caption(_("Prognose beim bisherigen Tempo: Schwelle erreicht am **{d}**.", d=status["forecast_crossing"]))
+def money(c, v):
+    """No EU default value for some lines: never show their share as € 0."""
+    if not c["missing_default_value"]:
+        return eur(v)
+    return _("nicht berechenbar") if not c["lines"] else _("mind. {v}", v=eur(v))
+
+
+def krange(c, lo, hi):
+    if not c["missing_default_value"]:
+        return f"€ {n(lo / 1000, ',.0f')}–{n(hi / 1000, ',.0f')} k"
+    return _("nicht berechenbar") if not c["lines"] else _("mind. {v}", v=f"€ {n(lo / 1000, ',.0f')} k")
+
+
+if cost and cost["missing_default_value"]:
+    st.caption(_("Für {c} sind noch keine EU-Standardwerte geladen (bisher TR, CN, IN). Die Menge zählt für die 50-t-Schwelle, die Kosten können wir dafür nicht schätzen.",
+                 c=", ".join(sorted({str(l.get("origin") or "?") for l in cost["missing_default_value"]}))))
 if cost:
     over_now = t > THRESHOLD_T
     m1, m2, m3 = st.columns(3)
-    m1.metric(_("Heute zu zahlen"), eur(cost["certificate_cost_eur"]) if over_now else _("€ 0 (befreit)"),
+    m1.metric(_("Heute zu zahlen"), money(cost, cost["certificate_cost_eur"]) if over_now else _("€ 0 (befreit)"),
               help=_("Zertifikate für alle CBAM-Waren des Jahres, sobald Sie über 50 t liegen."))
     if crosses:
         lo, hi = after["penalty_range_eur"]
-        m2.metric(_("Nach der Lieferung: Zertifikate"), eur(after["certificate_cost_eur"]),
+        m2.metric(_("Nach der Lieferung: Zertifikate"), money(after, after["certificate_cost_eur"]),
                   help=_("Mit Zulassung: Menge × EU-Standardwert × Zertifikatspreis des Quartals, für alle Waren des Jahres."))
-        m3.metric(_("Nach der Lieferung ohne Zulassung"), f"€ {n(lo / 1000, ',.0f')}–{n(hi / 1000, ',.0f')} k",
+        m3.metric(_("Nach der Lieferung ohne Zulassung"), krange(after, lo, hi),
                   help=_("Strafe 3–5 × € 100 je fehlendem Zertifikat (Art. 26 Abs. 2a)."))
     else:
         lo, hi = cost["penalty_range_eur"]
-        m2.metric(_("Graue Emissionen"), f"{n(cost['total_emissions_t'], ',.0f')} t CO₂e")
+        m2.metric(_("Graue Emissionen"), (_("nicht berechenbar") if cost["missing_default_value"] and not cost["lines"]
+                                          else ("≥ " if cost["missing_default_value"] else "") + f"{n(cost['total_emissions_t'], ',.0f')} t CO₂e"))
         m3.metric(_("Falls über 50 t: Zertifikate") if not over_now else _("Strafe ohne Zulassung"),
-                  eur(cost["certificate_cost_eur"]) if not over_now else f"€ {n(lo / 1000, ',.0f')}–{n(hi / 1000, ',.0f')} k")
+                  money(cost, cost["certificate_cost_eur"]) if not over_now else krange(cost, lo, hi))
 
 # One primary next step, depending on the situation
 cbam_suppliers = sorted({r["supplier"] for r in records if r["cbam"] and isinstance(r.get("supplier"), str)})
@@ -639,7 +656,7 @@ t_act, t_goods, t_cost, t_what, t_ask = st.tabs([_("Nächste Schritte"), _("Ware
 with t_act:
     a, b, c = st.columns(3)
     a.markdown(f"<div class='option'><b>{_('A · Unter 50 t bleiben')}</b>"
-               f"{_('Noch **{t:.1f} t** bis zur Schwelle. Käufe planen und dokumentieren.', t=max(THRESHOLD_T - t, 0)).replace('**', '')}</div>",
+               f"{_('Noch **{t:.1f} t** bis zur Schwelle. Käufe planen und dokumentieren.', t=float(max(THRESHOLD_T - t, 0))).replace('**', '')}</div>",
                unsafe_allow_html=True)
     b.markdown(f"<div class='option'><b>{_('B · Zulassung beantragen')}</b>"
                f"{_('Antrag als zugelassener CBAM-Anmelder beim AnEH (cbam@bmf.gv.at), bevor die Schwelle überschritten wird.')}</div>",
@@ -648,16 +665,17 @@ with t_act:
                f"{_('Echte Emissionsdaten beim Lieferanten anfordern — oft niedriger als die Standardwerte.')}</div>",
                unsafe_allow_html=True)
     if cost is not None and (planned_t or status["status"] != "exempt"):
-        now_eur = _("€ 0 (befreit)") if t <= THRESHOLD_T else eur(cost["certificate_cost_eur"])
+        now_eur = _("€ 0 (befreit)") if t <= THRESHOLD_T else money(cost, cost["certificate_cost_eur"])
         rows = [{_("Szenario"): _("Ohne geplante Lieferung"), _("Menge"): f"{n(t)} t", _("Kosten im Jahr"): now_eur}]
         if planned_t:
             rows.append({_("Szenario"): _("Mit geplanter Lieferung und Zulassung"), _("Menge"): f"{n(total_after)} t",
-                         _("Kosten im Jahr"): (eur(after["certificate_cost_eur"]) if total_after > THRESHOLD_T
+                         _("Kosten im Jahr"): (money(after, after["certificate_cost_eur"]) if total_after > THRESHOLD_T
                                                else _("€ 0 (befreit)"))})
         if total_after > THRESHOLD_T:
             lo_a, hi_a = after["penalty_range_eur"]
             rows.append({_("Szenario"): _("Über 50 t ohne Zulassung"), _("Menge"): f"{n(total_after)} t",
-                         _("Kosten im Jahr"): f"{eur(lo_a)} – {eur(hi_a)}"})
+                         _("Kosten im Jahr"): (f"{eur(lo_a)} – {eur(hi_a)}" if not after["missing_default_value"]
+                                               else money(after, lo_a))})
         st.markdown("#### " + _("Was kostet welche Entscheidung?"))
         st.table(pd.DataFrame(rows))
         st.caption(_("Wird die Schwelle überschritten, zählen alle CBAM-Waren des Jahres, nicht nur die Menge über 50 t. Lieferung später planen ist zulässig; Lieferungen künstlich aufzuteilen, um unter 50 t zu bleiben, ist es nicht."))

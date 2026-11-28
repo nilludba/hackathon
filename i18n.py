@@ -349,6 +349,13 @@ T.update({
         {"en": "{f}: could not be read. Please upload it as CSV or enter the items below by hand."},
 })
 
+T.update({
+    "nicht berechenbar": {"en": "cannot be calculated"},
+    "mind. {v}": {"en": "at least {v}"},
+    "Für {c} sind noch keine EU-Standardwerte geladen (bisher TR, CN, IN). Die Menge zählt für die 50-t-Schwelle, die Kosten können wir dafür nicht schätzen.":
+        {"en": "No EU default values are loaded for {c} yet (so far TR, CN, IN). The quantity counts towards the 50 t threshold, but we cannot estimate its cost."},
+})
+
 def tr(text, lang, **kw):
     """Translate a German UI text and fill its {placeholders}."""
     s = T.get(text, {}).get(lang, text)
