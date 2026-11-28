@@ -744,7 +744,7 @@ with t_act:
         st.markdown("#### " + _("Was kostet welche Entscheidung?"))
         st.table(pd.DataFrame(rows))
         st.caption(_("Wird die Schwelle überschritten, zählen alle CBAM-Waren des Jahres, nicht nur die Menge über 50 t. Lieferung später planen ist zulässig; Lieferungen künstlich aufzuteilen, um unter 50 t zu bleiben, ist es nicht."))
-    if CHECKLIST.exists():
+    if CHECKLIST.exists() and ns_kind != "checklist":  # otherwise the blue button above already opens it
         with st.expander(_("Checkliste Antrag")):
             st.markdown(checklist_text())
 
