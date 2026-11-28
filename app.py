@@ -300,9 +300,21 @@ def section(step, title):
     st.markdown(f"<div class='section'><small>{step}</small>{title}</div>", unsafe_allow_html=True)
 
 
+def _version():
+    """Short commit of the running code, to see in the footer which version is deployed."""
+    try:
+        import subprocess
+        return subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True,
+                              text=True, timeout=2).stdout.strip()
+    except Exception:
+        return ""
+
+
 def footer():
+    v = _version()
     st.markdown(f"<div class='foot'>{_('Ersteinschätzung, keine Rechtsberatung. Zuständig in Österreich: AnEH, cbam@bmf.gv.at.')}"
-                f"<br>{_('Quellen: Verordnung (EU) 2023/956, (EU) 2025/2083, DVO (EU) 2025/2621, Europäische Kommission.')}</div>",
+                f"<br>{_('Quellen: Verordnung (EU) 2023/956, (EU) 2025/2083, DVO (EU) 2025/2621, Europäische Kommission.')}"
+                f"{f'<br><span style=\'opacity:.55\'>v {v}</span>' if v else ''}</div>",
                 unsafe_allow_html=True)
     with st.expander(_("Wie prüfen wir uns selbst?")):
         st.markdown(_("Die KI liest nur und erklärt. Anhang I, Schwelle und Kosten rechnet geprüfter Code. Sie können die automatischen Tests hier selbst laufen lassen."))
