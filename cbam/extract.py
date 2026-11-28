@@ -85,6 +85,20 @@ COUNTRIES = {
     "PE": ["peru"],
     "CO": ["kolumbien", "colombia"],
     "VE": ["venezuela"],
+    # EU: goods of EU origin are not CBAM goods (cbam.annex.origin_exemption)
+    "EU": ["eu", "europäische union", "europaeische union", "european union", "made in eu", "eu origin", "eu-ursprung"],
+    "AT": ["österreich", "oesterreich", "austria"], "BE": ["belgien", "belgium"], "BG": ["bulgarien", "bulgaria"],
+    "HR": ["kroatien", "croatia"], "CY": ["zypern", "cyprus"], "CZ": ["tschechien", "tschechische republik", "czechia", "czech republic"],
+    "DK": ["dänemark", "daenemark", "denmark"], "EE": ["estland", "estonia"], "FI": ["finnland", "finland"],
+    "FR": ["frankreich", "france"], "DE": ["deutschland", "germany", "bundesrepublik deutschland"],
+    "GR": ["griechenland", "greece"], "HU": ["ungarn", "hungary"], "IE": ["irland", "ireland"], "IT": ["italien", "italy"],
+    "LV": ["lettland", "latvia"], "LT": ["litauen", "lithuania"], "LU": ["luxemburg", "luxembourg"], "MT": ["malta"],
+    "NL": ["niederlande", "netherlands", "holland"], "PL": ["polen", "poland"], "PT": ["portugal"],
+    "RO": ["rumänien", "rumaenien", "romania"], "SK": ["slowakei", "slovakia"], "SI": ["slowenien", "slovenia"],
+    "ES": ["spanien", "spain"], "SE": ["schweden", "sweden"], "MC": ["monaco"],
+    # Annex III territories (cbam.annex.ANNEX_III); listed before their countries would match
+    "XB": ["büsingen", "buesingen", "büsingen am hochrhein"], "XH": ["helgoland", "heligoland"],
+    "XV": ["livigno"], "XC": ["ceuta"], "XL": ["melilla"],
 }
 
 # header keyword -> field
@@ -159,9 +173,11 @@ def normalize_origin(s):
     if m:
         return m.group(1)
     if re.fullmatch(r"[A-Za-z]{2}", s):  # a cell holding only the code: "TR", "cn"
-        return s.upper()
+        return {"UK": "GB", "EL": "GR"}.get(s.upper(), s.upper())
     words = " " + re.sub(r"[^\wäöüß]+", " ", s.lower()).strip() + " "
-    for iso, names in COUNTRIES.items():
+    order = sorted(COUNTRIES, key=lambda iso: not iso.startswith("X"))  # territories before countries
+    for iso in order:
+        names = COUNTRIES[iso]
         if any(f" {re.sub(r'[^\wäöüß]+', ' ', n)} " in words for n in names):
             return iso
     return None

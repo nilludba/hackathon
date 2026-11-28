@@ -370,6 +370,14 @@ T.update({
         {"en": "No longer possible for {y}. From {n} the count starts again — plan purchases early."},
 })
 
+T.update({
+    "Ursprung EU — kein CBAM": {"en": "EU origin — no CBAM"},
+    "Ursprung {c} (Anhang III) — kein CBAM": {"en": "Origin {c} (Annex III) — no CBAM"},
+    "Hinweis": {"en": "Note"},
+    "{n} Zeile(n) sind zwar Waren aus Anhang I, kommen aber aus der EU oder einem Land/Gebiet aus Anhang III (Island, Liechtenstein, Norwegen, Schweiz, Büsingen, Helgoland, Livigno, Ceuta, Melilla) — kein CBAM. Maßgeblich ist der Warenursprung, nicht der Sitz des Lieferanten.":
+        {"en": "{n} line(s) are Annex I goods but originate in the EU or in a country/territory of Annex III (Iceland, Liechtenstein, Norway, Switzerland, Büsingen, Heligoland, Livigno, Ceuta, Melilla) — no CBAM. What counts is the origin of the goods, not where the supplier is based."},
+})
+
 def tr(text, lang, **kw):
     """Translate a German UI text and fill its {placeholders}."""
     s = T.get(text, {}).get(lang, text)

@@ -49,3 +49,27 @@ def check_annex_i(cn, entries=None):
         "description": best.get("description_de") if best else None,
         "source": best.get("source") if best else None,
     }
+
+
+# --- Origin: CBAM covers goods originating in a third country (Art. 2(1) Reg. 2023/956) ---------
+
+EU_MEMBER_STATES = {"AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "EL", "HU", "IE", "IT",
+                    "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE"}
+EU_CUSTOMS_EXTRA = {"MC"}  # Monaco belongs to the customs territory of the Union (Art. 4 UCC)
+# Annex III point 1 Reg. 2023/956: countries in or linked to the EU ETS, and five territories
+ANNEX_III = {"IS": "Island", "LI": "Liechtenstein", "NO": "Norwegen", "CH": "Schweiz",
+             "XB": "Büsingen", "XH": "Helgoland", "XV": "Livigno", "XC": "Ceuta", "XL": "Melilla"}
+# XC/XL are the EU statistics codes for Ceuta/Melilla; XB/XH/XV are our own codes for the other three.
+
+
+def origin_exemption(origin):
+    """Why goods of this origin are outside CBAM, or None if CBAM applies.
+
+    Returns {"reason": "eu" | "annex_iii", "label": ...}. What counts is the origin of the goods,
+    not where the supplier sits: Chinese steel bought from a Swiss trader is still a CBAM good."""
+    o = str(origin or "").strip().upper()
+    if o in EU_MEMBER_STATES or o in EU_CUSTOMS_EXTRA or o == "EU":
+        return {"reason": "eu", "label": o}
+    if o in ANNEX_III:
+        return {"reason": "annex_iii", "label": ANNEX_III[o]}
+    return None

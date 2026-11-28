@@ -10,25 +10,26 @@ import pandas as pd
 import streamlit as st
 
 import importlib
+import os
 
 import cbam.agent
+import cbam.annex
 import cbam.cost
 import cbam.extract
 
-# Streamlit Cloud keeps imported modules (and their lru caches) across a git pull;
-# reload them if they predate this app.py
-_stale_cost = not hasattr(cbam.cost, "OTHER")
-if _stale_cost:
-    importlib.reload(cbam.cost)
-if _stale_cost or not hasattr(cbam.extract, "parse_mass") or not hasattr(cbam.agent, "extract_document"):
-    importlib.reload(cbam.extract)
-    importlib.reload(cbam.agent)
+# Streamlit Cloud keeps imported modules (and their lru caches) across a git pull. Reload every cbam
+# module whose file changed since it was loaded - in dependency order, all of them if one is stale.
+_MODS = [cbam.annex, cbam.extract, cbam.cost, cbam.agent]
+if any(getattr(m, "_loaded_mtime", None) != os.path.getmtime(m.__file__) for m in _MODS):
+    for m in _MODS:  # first run of a process reloads once too - cheap, and then it is known fresh
+        importlib.reload(m)
+        m._loaded_mtime = os.path.getmtime(m.__file__)
 # data/default_values.csv may have changed without a code change: reload it when its size differs
 _dv = cbam.cost.DATA_DIR / "default_values.csv"
 if cbam.cost.load_default_values.cache_info().currsize and len(cbam.cost.load_default_values()) != sum(1 for _ in open(_dv, encoding="utf-8")) - 1:
     cbam.cost.load_default_values.cache_clear()
 from cbam.agent import answer, extract_document
-from cbam.annex import check_annex_i, load_annex
+from cbam.annex import check_annex_i, origin_exemption, load_annex
 from cbam.cost import estimate_cost, load_default_values, load_prices
 from cbam.documents import report_pdf, supplier_letter
 from cbam.extract import read_documents
@@ -573,6 +574,11 @@ for row in lines.to_dict("records"):
         verdict = check_annex_i(row["cn"])
     except (ValueError, TypeError):
         verdict = {"cbam": None, "sector": None, "annex_entry": None, "description": None, "source": None}
+    exempt = origin_exemption(row.get("origin")) if verdict["cbam"] else None
+    if exempt:  # Annex I good, but EU origin or Annex III country/territory: not a CBAM import
+        verdict = {**verdict, "cbam": False}
+    row["origin_note"] = (_("Ursprung EU — kein CBAM") if exempt and exempt["reason"] == "eu"
+                          else _("Ursprung {c} (Anhang III) — kein CBAM", c=exempt["label"]) if exempt else None)
     records.append({**row, **{k: verdict[k] for k in ("cbam", "sector", "annex_entry", "source")},
                     "annex_description": verdict["description"]})
 result = pd.DataFrame(records)
@@ -583,14 +589,15 @@ status = threshold_status([r for r in records if r["cbam"]], int(year),
                           today=date.today() if int(year) == date.today().year else None)
 
 
-def _is_cbam(cn):
+def _is_cbam(cn, origin=None):
     try:
-        return check_annex_i(cn)["cbam"]
+        return check_annex_i(cn)["cbam"] and not origin_exemption(origin)
     except (ValueError, TypeError):
         return False
 
 
-planned_cbam = [l for l in planned_lines if str(l.get("date", "")).startswith(year) and _is_cbam(l.get("cn"))]
+planned_cbam = [l for l in planned_lines if str(l.get("date", "")).startswith(year)
+                and _is_cbam(l.get("cn"), l.get("origin"))]
 planned_t = sum(l["net_mass_kg"] for l in planned_cbam) / 1000
 cost = after = None
 total_after = status["total_t"] + planned_t
@@ -785,12 +792,15 @@ with t_goods:
     st.markdown(_("**{y}** CBAM-Ware(n) · **{n}** nicht betroffen · **{u}** unklar", y=len(yes), n=len(no), u=len(unclear)))
     if len(unclear):
         st.warning(_("{n} Zeile(n) ohne gültigen KN-Code — bitte oben ergänzen.", n=len(unclear)))
-    view = result[["description", "cn", "net_mass_kg", "origin", "cbam", "annex_description", "source"]].copy()
+    exempt_n = int(result["origin_note"].notna().sum())
+    if exempt_n:
+        st.info(_("{n} Zeile(n) sind zwar Waren aus Anhang I, kommen aber aus der EU oder einem Land/Gebiet aus Anhang III (Island, Liechtenstein, Norwegen, Schweiz, Büsingen, Helgoland, Livigno, Ceuta, Melilla) — kein CBAM. Maßgeblich ist der Warenursprung, nicht der Sitz des Lieferanten.", n=exempt_n))
+    view = result[["description", "cn", "net_mass_kg", "origin", "cbam", "origin_note", "annex_description", "source"]].copy()
     view["net_mass_kg"] = view["net_mass_kg"] / 1000
     st.dataframe(view, width="stretch", hide_index=True, column_config={
         "description": _("Ware"), "cn": _("KN-Code"),
         "net_mass_kg": st.column_config.NumberColumn(_("Menge (t)"), format="%.1f"),
-        "origin": _("Land"), "cbam": st.column_config.CheckboxColumn(_("CBAM-Ware")),
+        "origin": _("Land"), "cbam": st.column_config.CheckboxColumn(_("CBAM-Ware")), "origin_note": _("Hinweis"),
         "annex_description": _("Anhang I"), "source": st.column_config.LinkColumn(_("Quelle"), display_text="EUR-Lex")})
     st.caption(_("Quelle: [Verordnung (EU) 2025/2083 (CBAM-Omnibus)]({o}), Anhang I der [Verordnung (EU) 2023/956]({r}).",
                  o=OMNIBUS_URL, r=CBAM_REG_URL))
