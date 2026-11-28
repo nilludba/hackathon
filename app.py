@@ -203,9 +203,26 @@ if nav[0].button("CBAM Helper", type="tertiary", key="nav_logo"):  # wordmark = 
     go("home")
 nav_r = nav[4]
 FLAGS = {"DE": "🇦🇹 DE", "EN": "🇬🇧 EN"}  # Austrian German, British English
-L = LANGS[nav_r.segmented_control("Sprache", list(LANGS), default=list(LANGS)[0], key="ui_lang",
-                                  format_func=lambda k: FLAGS.get(k, k),
-                                  label_visibility="collapsed") or list(LANGS)[0]]
+# Widget state is per page (/, /tool, /faq), so the chosen language lives in its own key and in
+# the URL (?lang=en): it survives page changes, reloads and shared links.
+if "lang" not in st.session_state:
+    _q = str(st.query_params.get("lang", "")).upper()
+    _w = st.session_state.get("ui_lang")
+    st.session_state["lang"] = _q if _q in LANGS else _w if _w in LANGS else list(LANGS)[0]
+if st.session_state.get("ui_lang") not in LANGS:  # new page or deselected: restore the switch
+    st.session_state["ui_lang"] = st.session_state["lang"]
+
+
+def _keep_lang():
+    if st.session_state.get("ui_lang") in LANGS:
+        st.session_state["lang"] = st.session_state["ui_lang"]
+
+
+nav_r.segmented_control("Sprache", list(LANGS), key="ui_lang", on_change=_keep_lang,
+                        format_func=lambda k: FLAGS.get(k, k), label_visibility="collapsed")
+L = LANGS[st.session_state["lang"]]
+if st.query_params.get("lang") != st.session_state["lang"].lower():
+    st.query_params["lang"] = st.session_state["lang"].lower()
 
 
 def _loc(s):
