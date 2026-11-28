@@ -129,19 +129,27 @@ def parse_number(s):
         return None
 
 
-UNIT_RE = re.compile(r"(\d[\d.,\s]*\d|\d)\s*(kg|kgs|kilogramm|kilogram|t|to|tonnen|tonne|tons|mt)\b", re.I)
+UNIT_RE = re.compile(r"(\d[\d.,\s]*\d|\d)\s*(kg|kgs|kilogramm|kilogram|t|to|tonnen|tonne|tons|mt|lbs|lb|pounds?)\b", re.I)
+LB_KG = 0.45359237
 
 
-def parse_mass(cell, weight_column=False):
-    """Mass in kg from a cell: '60.000 kg' -> 60000, '12,5 t' -> 12500.
-    A plain number counts only in a weight column (kg assumed); '46 Stk' never counts."""
+def _unit_factor(unit):
+    u = unit.lower()
+    return 1.0 if u.startswith("k") else LB_KG if u.startswith(("lb", "pound")) else 1000.0
+
+
+def parse_mass(cell, weight_column=False, column_factor=1.0):
+    """Mass in kg from a cell: '60.000 kg' -> 60000, '12,5 t' -> 12500, '50 lbs' -> 22.7.
+    A plain number counts only in a weight column (unit from its header, kg if none);
+    '46 Stk' never counts."""
     m = UNIT_RE.search(str(cell or ""))
     if m:
         v = parse_number(m.group(1).replace(" ", ""))
         if v is not None:
-            return v if m.group(2).lower().startswith("k") else v * 1000
+            return round(v * _unit_factor(m.group(2)), 3)
     if weight_column and not re.search(r"[a-zA-Z]{2,}", str(cell or "").replace("kg", "")):
-        return parse_number(cell)
+        v = parse_number(cell)
+        return None if v is None else round(v * column_factor, 3)
     return None
 
 
@@ -150,7 +158,7 @@ def normalize_origin(s):
     m = re.search(r"\(([A-Z]{2})\)", s)
     if m:
         return m.group(1)
-    if re.fullmatch(r"[A-Za-z]{2}", s):
+    if re.fullmatch(r"[A-Za-z]{2}", s):  # a cell holding only the code: "TR", "cn"
         return s.upper()
     words = " " + re.sub(r"[^\wäöüß]+", " ", s.lower()).strip() + " "
     for iso, names in COUNTRIES.items():
@@ -197,8 +205,15 @@ def _header_fields(text):
 
 def _doc_origin(text):
     """'Ursprungsland Aserbaidschan', 'Country of origin: China', 'Warenursprung: TR' -> ISO-2."""
+    m = re.search(r"\bof\s+((?:[A-Z][\w'-]*\s){0,3}[A-Z][\w'-]*)\s+origin\b", text)  # "... of United States origin"
+    if m and normalize_origin(m.group(1)):
+        return normalize_origin(m.group(1))
     for m in re.finditer(r"(?:Ursprungsland|Warenursprung|Ursprung|Country of origin|Origin)\s*[:]?\s*([^\n,;.]{2,40})", text, re.I):
-        iso = normalize_origin(m.group(1)) or normalize_origin(m.group(1).split()[0] if m.group(1).split() else "")
+        words = m.group(1).split()
+        # "Origin: TR ..." -> first word if it is a capital ISO code; never "... origin to be displayed"
+        iso = None if re.fullmatch(r"[a-z]{2}", m.group(1).strip()) else normalize_origin(m.group(1))
+        if not iso and words and re.fullmatch(r"[A-Z]{2}", words[0]):
+            iso = words[0]
         if iso:
             return iso
     return None
@@ -222,15 +237,41 @@ def _map_header(row):
     return mapping if "description" in mapping and ({"net_mass_kg", "qty"} & mapping.keys()) else None
 
 
+def _header_unit_factor(cell):
+    """'Weight / Lbs' -> lb, 'Netto (t)' / 'Weight MT' -> t, else kg."""
+    c = " " + re.sub(r"[^a-z]+", " ", (cell or "").lower()) + " "
+    if " lb " in c or " lbs " in c or " pounds " in c:
+        return LB_KG
+    if any(f" {u} " in c for u in ("t", "to", "mt", "tonnen", "tonnes", "tons")):
+        return 1000.0
+    return 1.0
+
+
+def _split_row(row, mapping):
+    """Tables without lines between rows: pdfplumber returns one row whose cells hold all
+    positions, one per text line. Split it when the CN column holds several codes."""
+    cn_cell = (row[mapping["cn"]] or "") if "cn" in mapping and mapping["cn"] < len(row) else ""
+    k = sum(1 for part in cn_cell.split("\n") if len(re.sub(r"\D", "", part)) >= 4)
+    if k < 2:
+        return [row]
+    cols = [(c or "").split("\n") for c in row]
+    return [[parts[j] if len(parts) == k else "" for parts in cols] for j in range(k)]
+
+
 def _lines_from_table(table, meta):
-    lines, mapping = [], None
+    lines, mapping, factor = [], None, 1.0
+    pending = []
     for row in table:
         if mapping is None:
             mapping = _map_header(row)
+            if mapping and "net_mass_kg" in mapping:
+                factor = _header_unit_factor(row[mapping["net_mass_kg"]])
             continue
+        pending += _split_row(row, mapping)
+    for row in pending:
         get = lambda f: (row[mapping[f]] or "").strip() if f in mapping and mapping[f] < len(row) else ""
         desc = re.sub(r"\s+", " ", get("description"))
-        mass = parse_mass(get("net_mass_kg"), weight_column=True) if "net_mass_kg" in mapping else None
+        mass = parse_mass(get("net_mass_kg"), weight_column=True, column_factor=factor) if "net_mass_kg" in mapping else None
         if mass is None and "qty" in mapping:
             mass = parse_mass(get("qty"))
         if not desc or re.match(r"(zwischen)?(summe|total|gesamt|subtotal)", desc, re.I):

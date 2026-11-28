@@ -161,6 +161,11 @@ Stückzahlen sind KEINE Masse (dann null). Keinen KN-Code erfinden: nur, was im 
 Steht das Ursprungsland nur im Kopf des Dokuments, gilt es für alle Positionen."""
 
 
+def _iso(x):
+    x = str(x or "").strip()
+    return x.upper() if len(x) == 2 else x
+
+
 def extract_document(data, name, api_key, post=_post):
     """PDF bytes -> invoice lines in the same schema as cbam.extract, read by Gemini.
     Returns [] if the model finds nothing; raises on API errors (caller reports them)."""
@@ -185,5 +190,5 @@ def extract_document(data, name, api_key, post=_post):
         desc = str(l.get("description") or "").strip()
         if desc:
             lines.append({"description": desc, "cn": normalize_cn_text(l.get("cn")), "net_mass_kg": mass,
-                          "origin": normalize_origin(str(l.get("origin") or "")), **meta})
+                          "origin": normalize_origin(_iso(l.get("origin"))), **meta})
     return lines

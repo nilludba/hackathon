@@ -154,3 +154,19 @@ def test_invoice_without_any_table_is_read_line_by_line():
 def test_parse_mass_units(cell, kg):
     from cbam.extract import parse_mass
     assert parse_mass(cell) == kg
+
+
+def test_rows_without_lines_are_split_and_pounds_converted():
+    # one table row holding three positions (no lines between rows), weights in "Weight / Lbs"
+    lines = extract_pdf(FIX / "invoice_rows_without_lines_lbs.pdf")
+    assert [l["cn"] for l in lines] == ["7308 90 95 90", "7318 15 80 66", "9403 20 00 80"]
+    assert [l["net_mass_kg"] for l in lines] == pytest.approx([498.952, 299.371, 45.359])
+    assert {l["origin"] for l in lines} == {"US"}  # "of United States origin", not "TO" from "origin to be"
+
+
+@pytest.mark.parametrize("text,iso", [("The goods are of United States origin to be displayed", "US"),
+                                      ("Ursprungsland Aserbaidschan", "AZ"), ("Country of origin: TR", "TR"),
+                                      ("origin to be displayed", None)])
+def test_document_origin(text, iso):
+    from cbam.extract import _doc_origin
+    assert _doc_origin(text) == iso
