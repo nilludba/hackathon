@@ -5,13 +5,13 @@ cbam@bmf.gv.at, +43 (0) 50 233 560 555 (Mo–Do 7:30–15:30, Fr 7:30–12:00). 
 
 > Vorab-Check, keine Rechtsberatung. Verbindlich sind Durchführungsverordnung (EU) 2025/486 und die Angaben des AnEH.
 
-## 0. Brauche ich die Zulassung?
+## 1. Brauche ich die Zulassung?
 
 - [ ] Summe der Nettomasse aller CBAM-Waren im Kalenderjahr **über 50 t** (Strom und Wasserstoff: immer) → Zulassung nötig. Seit 1.1.2026 ist für Einfuhren über der Schwelle eine Zulassung (oder ein indirekter Zollvertreter mit Zulassung) erforderlich.
 - [ ] Unter 50 t: in der Zollanmeldung die Befreiung angeben. Das BMF nennt dafür TARIC-Code **Y137**, an anderer Stelle **Y128**. Welcher Code in welchem Fall gilt, mit AnEH oder Zollamt klären.
 - [ ] Alternative: einen **indirekten Zollvertreter** (Spediteur) mit CBAM-Zulassung beauftragen. Importeure außerhalb der EU müssen das.
 
-## 1. Zugänge einrichten
+## 2. Zugänge einrichten
 
 - [ ] **EORI-Nummer** (Zollamt Österreich)
 - [ ] **EU Login** anlegen, Bestätigungslink (24 h gültig) klicken, Passwort setzen, den **„uid“-Code** notieren
@@ -20,7 +20,7 @@ cbam@bmf.gv.at, +43 (0) 50 233 560 555 (Mo–Do 7:30–15:30, Fr 7:30–12:00). 
 - [ ] **uid-Code und Firmenname an cbam@bmf.gv.at mailen**, Prüfung durch das AnEH abwarten
 - [ ] **NEIS-Registrierung**: Bescheide werden über das Nationale Emissionshandels-Informationssystem zugestellt
 
-## 2. Antrag im CBAM-Register (Authorisation Management Module, AMM)
+## 3. Antrag im CBAM-Register (Authorisation Management Module, AMM)
 
 Anmeldung: CBAM → Austria → Economic operator → EORI, dann EU Login. Menü „Authorisations“ → „New application“.
 
@@ -30,7 +30,7 @@ Anmeldung: CBAM → Austria → Economic operator → EORI, dann EU Login. Menü
 - [ ] Finanz- und Betriebsdaten: Rechtsform, Mitarbeiter, Gründungsjahr, UID, AEO-Status (Nummer, falls vorhanden), Jahresabschlüsse
 - [ ] Mit „Proceed“ absenden. Die **Antragsnummer** wird automatisch vergeben, bei jeder Rückfrage angeben
 
-## 3. Unterlagen (jeweils nicht älter als 3 Monate)
+## 4. Unterlagen (jeweils nicht älter als 3 Monate)
 
 - [ ] **Finanzstrafregisterauszug** des Unternehmens (Amt für Betrugsbekämpfung)
 - [ ] **Steuerliche Unbedenklichkeitsbescheinigung** (Formular Verf 34a, Finanzamt)
@@ -38,7 +38,7 @@ Anmeldung: CBAM → Austria → Economic operator → EORI, dann EU Login. Menü
 - [ ] **Bankgarantie** nach BMF-Vorlage (Bürgschaftserklärung), falls das Unternehmen nach dem 31.12.2023 gegründet wurde. Höhe laut Leitfaden: (Zertifikate des Antragsjahres + des Folgejahres) × geschätzter Zertifikatspreis, Leitfaden rechnet mit 80 € je Zertifikat
 - [ ] **Bonitätsnachweis** (z. B. KSV), nur wenn mindestens **6.000 t CO₂** aus Einfuhren in 2026 oder 2027 erwartet werden und kein AEO-Status besteht
 
-## 4. Nach der Entscheidung
+## 5. Nach der Entscheidung
 
 - [ ] Die Zulassung wirkt ab Eintragung im CBAM-Register; Sie erhalten eine **CBAM-Kontonummer** (bei verlangter Sicherheit erst, wenn diese registriert ist)
 - [ ] Änderungen (Mengen, Vertreter, Firmendaten) über das CBAM-Register melden, das kann eine neue Prüfung auslösen
