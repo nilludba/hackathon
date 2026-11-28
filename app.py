@@ -40,6 +40,13 @@ ROOT = Path(__file__).resolve().parent
 DEMO_CSV = ROOT / "demo" / "purchases_2026.csv"
 DEMO_PDFS = sorted((ROOT / "demo").glob("*.pdf"))
 CHECKLIST = ROOT / "data" / "declarant_checklist.md"
+CHECKLIST_EN = ROOT / "data" / "declarant_checklist_en.md"
+
+
+def checklist_text():
+    """Checklist in the UI language (German original, English translation)."""
+    path = CHECKLIST_EN if L == "en" and CHECKLIST_EN.exists() else CHECKLIST
+    return path.read_text(encoding="utf-8")
 COLUMNS = ["description", "cn", "net_mass_kg", "origin", "date", "supplier"]
 
 OMNIBUS_URL = "https://eur-lex.europa.eu/eli/reg/2025/2083/oj"
@@ -632,7 +639,7 @@ cbam_suppliers = sorted({r["supplier"] for r in records if r["cbam"] and isinsta
 
 @st.dialog(_("Checkliste für die Zulassung"), width="large")
 def checklist_dialog():
-    st.markdown(CHECKLIST.read_text(encoding="utf-8"))
+    st.markdown(checklist_text())
 
 
 @st.dialog(_("Brief an Ihren Lieferanten"), width="large")
@@ -709,7 +716,7 @@ with t_act:
         st.caption(_("Wird die Schwelle überschritten, zählen alle CBAM-Waren des Jahres, nicht nur die Menge über 50 t. Lieferung später planen ist zulässig; Lieferungen künstlich aufzuteilen, um unter 50 t zu bleiben, ist es nicht."))
     if CHECKLIST.exists():
         with st.expander(_("Checkliste Antrag")):
-            st.markdown(CHECKLIST.read_text(encoding="utf-8"))
+            st.markdown(checklist_text())
 
     st.markdown("#### " + _("Dokumente"))
     importer = st.text_input(_("Ihr Unternehmen"), key="importer")
