@@ -383,8 +383,12 @@ def _read_ai(data, name):
     return extract_document(data, name, gemini_key())
 
 
+# Part of the cache key: an updated parser must not serve results cached by the old one
+PARSER_VERSION = __import__("hashlib").sha1(Path(cbam.extract.__file__).read_bytes()).hexdigest()
+
+
 @st.cache_data(show_spinner=False)
-def _read(blobs):
+def _read(blobs, parser_version=None):
     """Parse each document once; Streamlit reruns the script on every click."""
     return read_documents([(io.BytesIO(data), name) for data, name in blobs])
 
@@ -392,7 +396,7 @@ def _read(blobs):
 def use_documents(blobs):
     """blobs: list of (bytes, file name), PDF or CSV. Returns invoice lines as DataFrame (or None)."""
     global planned_lines
-    imported, planned_lines, errors = _read(tuple(blobs))
+    imported, planned_lines, errors = _read(tuple(blobs), PARSER_VERSION)
     planned_lines = list(planned_lines)
     imported = list(imported)
     failed = {e.split(":")[0]: e for e in errors}
