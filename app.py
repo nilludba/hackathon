@@ -216,6 +216,7 @@ if st.session_state.get("ui_lang") not in LANGS:  # new page or deselected: rest
 def _keep_lang():
     if st.session_state.get("ui_lang") in LANGS:
         st.session_state["lang"] = st.session_state["ui_lang"]
+        st.session_state["_lang_changed"] = True
 
 
 nav_r.segmented_control("Sprache", list(LANGS), key="ui_lang", on_change=_keep_lang,
@@ -223,6 +224,13 @@ nav_r.segmented_control("Sprache", list(LANGS), key="ui_lang", on_change=_keep_l
 L = LANGS[st.session_state["lang"]]
 if st.query_params.get("lang") != st.session_state["lang"].lower():
     st.query_params["lang"] = st.session_state["lang"].lower()
+if st.session_state.pop("_lang_changed", False):
+    # Streamlit Cloud wraps the app in an outer page whose URL is not always updated: fix it there too,
+    # otherwise a reload would bring back the previous language
+    import streamlit.components.v1 as components
+    components.html("<script>try{const w=window.top,u=new URL(w.location.href);"
+                    f"u.searchParams.set('lang','{st.session_state['lang'].lower()}');"
+                    "w.history.replaceState(w.history.state,'',u.toString());}catch(e){}</script>", height=0)
 
 
 def _loc(s):
