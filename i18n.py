@@ -361,6 +361,10 @@ T.update({
         {"en": "Fine of 3–5 × €100 per tonne of CO₂ (Art. 26(2a) Reg. 2023/956), on all emissions of the year. That is why it is a range: the authority (AnEH) sets the exact amount depending on duration, gravity and intent. The €100 is also adjusted for inflation, so the real fine can be somewhat higher."},
 })
 
+T.update({
+    "Größer als der Schwellenwert (+{o:.1f} t).": {"en": "Above the threshold (+{o:.1f} t)."},
+})
+
 def tr(text, lang, **kw):
     """Translate a German UI text and fill its {placeholders}."""
     s = T.get(text, {}).get(lang, text)

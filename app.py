@@ -718,9 +718,9 @@ t_act, t_goods, t_cost, t_what, t_ask = st.tabs([_("Nächste Schritte"), _("Ware
 
 with t_act:
     a, b, c = st.columns(3)
-    a.markdown(f"<div class='option'><b>{_('A · Unter 50 t bleiben')}</b>"
-               f"{_('Noch **{t:.1f} t** bis zur Schwelle. Käufe planen und dokumentieren.', t=float(max(THRESHOLD_T - t, 0))).replace('**', '')}</div>",
-               unsafe_allow_html=True)
+    a_text = (_("Größer als der Schwellenwert (+{o:.1f} t).", o=float(t - THRESHOLD_T)) if t > THRESHOLD_T
+              else _('Noch **{t:.1f} t** bis zur Schwelle. Käufe planen und dokumentieren.', t=float(THRESHOLD_T - t)).replace('**', ''))
+    a.markdown(f"<div class='option'><b>{_('A · Unter 50 t bleiben')}</b>{a_text}</div>", unsafe_allow_html=True)
     b.markdown(f"<div class='option'><b>{_('B · Zulassung beantragen')}</b>"
                f"{_('Antrag als zugelassener CBAM-Anmelder beim AnEH (cbam@bmf.gv.at), bevor die Schwelle überschritten wird.')}</div>",
                unsafe_allow_html=True)
