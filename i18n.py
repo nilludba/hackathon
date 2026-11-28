@@ -365,6 +365,11 @@ T.update({
     "Größer als der Schwellenwert (+{o:.1f} t).": {"en": "Above the threshold (+{o:.1f} t)."},
 })
 
+T.update({
+    "Für {y} geht diese Option nicht mehr — es zählen alle Einfuhren des Jahres. Ab {n} beginnt die Zählung neu: Einkäufe früh planen, dann reicht vielleicht wieder die Befreiung.":
+        {"en": "For {y} this option is no longer possible — all imports of the year count. From {n} the count starts again: plan purchases early and the exemption may be enough again."},
+})
+
 def tr(text, lang, **kw):
     """Translate a German UI text and fill its {placeholders}."""
     s = T.get(text, {}).get(lang, text)
