@@ -90,7 +90,7 @@ COUNTRIES = {
 # header keyword -> field
 HEADER_KEYS = [
     ("description", ["beschreibung", "warenbeschreibung", "description", "goods", "warenbezeichnung", "artikel",
-                     "bezeichnung", "produkt", "product", "item", "ware", "leistung"]),
+                     "bezeichnung", "produkt", "product", "item description", "ware", "leistung", "contents"]),
     ("cn", ["kn-code", "kn code", "kn", "hs", "hs-code", "hs code", "cn code", "cn-code", "cn", "zolltarif", "taric",
             "warennummer", "tarifnummer", "statistische warennummer", "commodity code", "customs code"]),
     ("origin", ["ursprung", "origin", "herkunft", "ursprungsland", "country of origin", "coo", "land"]),
@@ -175,12 +175,29 @@ def normalize_cn_text(s):
     return " ".join(groups)
 
 
+MONTHS = {m: i + 1 for i, names in enumerate([
+    ("januar", "jänner", "jaenner", "january", "jan"), ("februar", "february", "feb"), ("märz", "maerz", "march", "mar", "mär"),
+    ("april", "apr"), ("mai", "may"), ("juni", "june", "jun"), ("juli", "july", "jul"), ("august", "aug"),
+    ("september", "sept", "sep"), ("oktober", "october", "okt", "oct"), ("november", "nov"),
+    ("dezember", "december", "dez", "dec")]) for m in names}
+DATE_WORDS = re.compile(r"(\d{1,2})\.?\s+([A-Za-zäÄ]+)\.?\s+(\d{4})|([A-Za-zäÄ]+)\.?\s+(\d{1,2}),?\s+(\d{4})")
+
+
 def parse_date(s):
-    for fmt in ("%d.%m.%Y", "%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y"):
+    s = (s or "").strip()
+    for fmt in ("%d.%m.%Y", "%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y", "%d.%m.%y"):
         try:
-            return datetime.strptime(s.strip(), fmt).date().isoformat()
+            return datetime.strptime(s, fmt).date().isoformat()
         except ValueError:
             pass
+    m = DATE_WORDS.search(s)  # "5. März 2026", "January 1, 2006", "Jan 5 2026"
+    if m:
+        d, mon, y = (m.group(1), m.group(2), m.group(3)) if m.group(1) else (m.group(5), m.group(4), m.group(6))
+        if mon.lower() in MONTHS:
+            try:
+                return datetime(int(y), MONTHS[mon.lower()], int(d)).date().isoformat()
+            except ValueError:
+                pass
     return None
 
 
@@ -190,12 +207,22 @@ def _header_fields(text):
     m = re.search(r"(?<![\w-])(?:Rechnungsdatum|Invoice date|Datum|Date)\b[^:\n]*:\s*([\d./-]{8,10})", text, re.I)
     if m:
         date = parse_date(m.group(1))
+    if not date:  # "January 1, 2006", "5. März 2026" anywhere near the top
+        for raw in text.splitlines()[:25]:
+            date = parse_date(raw) if DATE_WORDS.search(raw) else None
+            if date:
+                break
     m = (re.search(r"(?:Rechnungsnummer|Rechnungs-Nr\.?|Invoice No\.?)\s*[:#]\s*(\S+)", text, re.I)
          or re.search(r"(?<![\w-])(?:Nr\.|No\.)(?:\s*/\s*(?:Nr\.|No\.))?\s*:\s*(\S+)", text, re.I))
     if m:
         number = m.group(1)
     m = re.search(r"(?<![\w-])(?:Lieferant|Seller|Supplier|Verkäufer)\b[^:\n]*:\s*(.+)", text, re.I)
-    supplier = m.group(1).strip() if m else (text.strip().splitlines() or [None])[0]
+    if m:
+        supplier = m.group(1).strip()
+    else:
+        title = re.compile(r"^\s*(commercial invoice|invoice|rechnung|handelsrechnung|packing list|proforma)", re.I)
+        supplier = next((l.strip() for l in text.splitlines() if re.search(r"[A-Za-z]{3}", l)
+                         and not DATE_WORDS.search(l) and not title.match(l)), None)
     if supplier:  # first line often also holds the document title: "Kaspia Metall MMC RECHNUNG"
         supplier = re.sub(r"\s+(HANDELSRECHNUNG|RECHNUNG|COMMERCIAL INVOICE|INVOICE|PROFORMA.*|AUFTRAGSBESTÄTIGUNG)\s*$",
                           "", supplier, flags=re.I).strip() or supplier
@@ -255,7 +282,11 @@ def _split_row(row, mapping):
     if k < 2:
         return [row]
     cols = [(c or "").split("\n") for c in row]
-    return [[parts[j] if len(parts) == k else "" for parts in cols] for j in range(k)]
+    out = [[parts[j] if len(parts) == k else "" for parts in cols] for j in range(k)]
+    if "description" in mapping:  # wrapped descriptions: keep the code, ask the user to check the text
+        for j, r in enumerate(out):
+            r[mapping["description"]] = r[mapping["description"]] or f"Position {j + 1} (Text bitte prüfen)"
+    return out
 
 
 def _lines_from_table(table, meta):

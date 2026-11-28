@@ -170,3 +170,10 @@ def test_rows_without_lines_are_split_and_pounds_converted():
 def test_document_origin(text, iso):
     from cbam.extract import _doc_origin
     assert _doc_origin(text) == iso
+
+
+@pytest.mark.parametrize("s,iso", [("January 1, 2006", "2006-01-01"), ("5. März 2026", "2026-03-05"),
+                                   ("Jan 5 2026", "2026-01-05"), ("1 Dec 2025", "2025-12-01"), ("12.02.2026", "2026-02-12")])
+def test_parse_date_with_month_names(s, iso):
+    from cbam.extract import parse_date
+    assert parse_date(s) == iso
