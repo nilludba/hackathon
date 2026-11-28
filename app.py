@@ -59,7 +59,9 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Color+Emoji&display=swap');
 html, body, .stApp, button, input, textarea, select, p, li, label {
-  font-family: 'Inter', 'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  /* Apple Color Emoji first: Safari/iOS cannot draw the web Noto Color Emoji and would show empty flags;
+     Windows has no flag emoji of its own, so it falls through to Noto */
+  font-family: 'Inter', 'Apple Color Emoji', 'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
   -webkit-font-smoothing: antialiased; }
 header[data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDecoration"], footer, #MainMenu,
 section[data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"] { display: none !important; }
@@ -202,7 +204,20 @@ with st.container(key="topnav"):
 if nav[0].button("CBAM Helper", type="tertiary", key="nav_logo"):  # wordmark = home link
     go("home")
 nav_r = nav[4]
-FLAGS = {"DE": "🇦🇹 DE", "EN": "🇬🇧 EN"}  # Austrian German, British English
+# Flags as small SVG images, not emoji: emoji flags are missing on Windows and blank on some phones
+_AT = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 2'><rect width='3' height='2' fill='#C8102E'/><rect y='.667' width='3' height='.667' fill='#fff'/></svg>"
+_GB = ("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'><clipPath id='t'><path d='M30,15h30v15zv15h-30zh-30v-15zv-15h30z'/></clipPath>"
+       "<path d='M0,0v30h60v-30z' fill='#012169'/><path d='M0,0L60,30M60,0L0,30' stroke='#fff' stroke-width='6'/>"
+       "<path d='M0,0L60,30M60,0L0,30' clip-path='url(#t)' stroke='#C8102E' stroke-width='4'/>"
+       "<path d='M30,0v30M0,15h60' stroke='#fff' stroke-width='10'/><path d='M30,0v30M0,15h60' stroke='#C8102E' stroke-width='6'/></svg>")
+_flag = lambda svg: "url(\"data:image/svg+xml," + __import__("urllib.parse").parse.quote(svg) + "\")"
+st.markdown(f"""<style>
+.st-key-ui_lang button p::before {{ content: ""; display: inline-block; width: 1.25em; height: .83em; margin-right: .4em;
+  vertical-align: -0.08em; background-size: cover; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,.08); }}
+.st-key-ui_lang button:nth-of-type(1) p::before {{ background-image: {_flag(_AT)}; }}
+.st-key-ui_lang button:nth-of-type(2) p::before {{ background-image: {_flag(_GB)}; }}
+</style>""", unsafe_allow_html=True)
+FLAGS = {"DE": "DE", "EN": "EN"}  # Austrian German, British English (flags drawn by the CSS above)
 # Widget state is per page (/, /tool, /faq), so the chosen language lives in its own key and in
 # the URL (?lang=en): it survives page changes, reloads and shared links.
 if "lang" not in st.session_state:
