@@ -312,9 +312,10 @@ def _version():
 
 def footer():
     v = _version()
+    version_html = "<br><span style='opacity:.55'>v " + v + "</span>" if v else ""
     st.markdown(f"<div class='foot'>{_('Ersteinschätzung, keine Rechtsberatung. Zuständig in Österreich: AnEH, cbam@bmf.gv.at.')}"
                 f"<br>{_('Quellen: Verordnung (EU) 2023/956, (EU) 2025/2083, DVO (EU) 2025/2621, Europäische Kommission.')}"
-                f"{f'<br><span style=\'opacity:.55\'>v {v}</span>' if v else ''}</div>",
+                f"{version_html}</div>",
                 unsafe_allow_html=True)
     with st.expander(_("Wie prüfen wir uns selbst?")):
         st.markdown(_("Die KI liest nur und erklärt. Anhang I, Schwelle und Kosten rechnet geprüfter Code. Sie können die automatischen Tests hier selbst laufen lassen."))
