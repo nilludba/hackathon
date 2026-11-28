@@ -719,7 +719,7 @@ t_act, t_goods, t_cost, t_what, t_ask = st.tabs([_("Nächste Schritte"), _("Ware
 with t_act:
     a, b, c = st.columns(3)
     a_text = (_("Größer als der Schwellenwert (+{o:.1f} t).", o=float(t - THRESHOLD_T)) + " "
-              + _("Für {y} geht diese Option nicht mehr — es zählen alle Einfuhren des Jahres. Ab {n} beginnt die Zählung neu: Einkäufe früh planen, dann reicht vielleicht wieder die Befreiung.",
+              + _("Für {y} nicht mehr möglich. Ab {n} zählt es neu — Einkäufe früh planen.",
                   y=year, n=int(year) + 1) if t > THRESHOLD_T
               else _('Noch **{t:.1f} t** bis zur Schwelle. Käufe planen und dokumentieren.', t=float(THRESHOLD_T - t)).replace('**', ''))
     a.markdown(f"<div class='option'><b>{_('A · Unter 50 t bleiben')}</b>{a_text}</div>", unsafe_allow_html=True)

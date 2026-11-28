@@ -366,8 +366,8 @@ T.update({
 })
 
 T.update({
-    "Für {y} geht diese Option nicht mehr — es zählen alle Einfuhren des Jahres. Ab {n} beginnt die Zählung neu: Einkäufe früh planen, dann reicht vielleicht wieder die Befreiung.":
-        {"en": "For {y} this option is no longer possible — all imports of the year count. From {n} the count starts again: plan purchases early and the exemption may be enough again."},
+    "Für {y} nicht mehr möglich. Ab {n} zählt es neu — Einkäufe früh planen.":
+        {"en": "No longer possible for {y}. From {n} the count starts again — plan purchases early."},
 })
 
 def tr(text, lang, **kw):
