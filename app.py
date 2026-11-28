@@ -213,7 +213,7 @@ _GB = ("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'><clipPath id
 _flag = lambda svg: "url(\"data:image/svg+xml," + __import__("urllib.parse").parse.quote(svg) + "\")"
 st.markdown(f"""<style>
 .st-key-ui_lang button p::before {{ content: ""; display: inline-block; width: 1.25em; height: .83em; margin-right: .4em;
-  vertical-align: -0.08em; background-size: cover; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,.08); }}
+  vertical-align: -0.08em; background-size: cover; background-position: center; background-repeat: no-repeat; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,.08); }}
 .st-key-ui_lang button:nth-of-type(1) p::before {{ background-image: {_flag(_AT)}; }}
 .st-key-ui_lang button:nth-of-type(2) p::before {{ background-image: {_flag(_GB)}; }}
 </style>""", unsafe_allow_html=True)
