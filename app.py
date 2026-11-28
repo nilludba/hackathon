@@ -12,12 +12,21 @@ import streamlit as st
 import importlib
 
 import cbam.agent
+import cbam.cost
 import cbam.extract
 
-# Streamlit Cloud keeps imported modules across a git pull; reload them if they predate this app.py
-if not hasattr(cbam.extract, "parse_mass") or not hasattr(cbam.agent, "extract_document"):
+# Streamlit Cloud keeps imported modules (and their lru caches) across a git pull;
+# reload them if they predate this app.py
+_stale_cost = not hasattr(cbam.cost, "OTHER")
+if _stale_cost:
+    importlib.reload(cbam.cost)
+if _stale_cost or not hasattr(cbam.extract, "parse_mass") or not hasattr(cbam.agent, "extract_document"):
     importlib.reload(cbam.extract)
     importlib.reload(cbam.agent)
+# data/default_values.csv may have changed without a code change: reload it when its size differs
+_dv = cbam.cost.DATA_DIR / "default_values.csv"
+if cbam.cost.load_default_values.cache_info().currsize and len(cbam.cost.load_default_values()) != sum(1 for _ in open(_dv, encoding="utf-8")) - 1:
+    cbam.cost.load_default_values.cache_clear()
 from cbam.agent import answer, extract_document
 from cbam.annex import check_annex_i, load_annex
 from cbam.cost import estimate_cost, load_default_values, load_prices
