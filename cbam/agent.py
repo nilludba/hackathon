@@ -147,3 +147,43 @@ def answer(question, ctx, api_key=None, post=_post, language="Deutsch"):
             responses.append({"functionResponse": {"name": fc["name"], "response": {"result": result}}})
         contents.append({"role": "user", "parts": responses})
     return fallback_answer(ctx, "steps", language), calls
+
+
+# --- Reading documents our parser cannot read (scans, photos, unusual layouts) ---
+
+EXTRACT_PROMPT = """Du liest eine Rechnung oder Auftragsbestätigung für einen österreichischen Importeur.
+Gib NUR JSON zurück: {"doc_type": "invoice" | "order", "invoice": Rechnungsnummer oder null,
+"date": Rechnungsdatum als YYYY-MM-DD oder null, "supplier": Name des Lieferanten/Verkäufers oder null,
+"lines": [{"description": Warenbeschreibung, "cn": KN-/HS-Code wie gedruckt oder null,
+"net_mass_kg": Nettomasse in kg als Zahl oder null, "origin": Ursprungsland als ISO-2-Code oder null}]}.
+Regeln: eine Zeile pro Warenposition, keine Summen-, Fracht- oder Steuerzeilen. Tonnen in kg umrechnen.
+Stückzahlen sind KEINE Masse (dann null). Keinen KN-Code erfinden: nur, was im Dokument steht.
+Steht das Ursprungsland nur im Kopf des Dokuments, gilt es für alle Positionen."""
+
+
+def extract_document(data, name, api_key, post=_post):
+    """PDF bytes -> invoice lines in the same schema as cbam.extract, read by Gemini.
+    Returns [] if the model finds nothing; raises on API errors (caller reports them)."""
+    import base64
+    from cbam.extract import normalize_cn_text, normalize_origin, parse_date, parse_mass, parse_number
+
+    body = {"contents": [{"role": "user", "parts": [
+                {"inline_data": {"mime_type": "application/pdf", "data": base64.b64encode(data).decode()}},
+                {"text": EXTRACT_PROMPT}]}],
+            "generationConfig": {"responseMimeType": "application/json", "temperature": 0}}
+    reply = post(body, api_key)
+    text = "".join(p.get("text", "") for p in reply["candidates"][0]["content"].get("parts", []))
+    doc = json.loads(text[text.find("{"): text.rfind("}") + 1])
+    date_ = doc.get("date")
+    date_ = date_ if date_ and len(str(date_)) == 10 and str(date_)[4] == "-" else parse_date(str(date_ or ""))
+    meta = {"date": date_, "supplier": doc.get("supplier"), "invoice": doc.get("invoice") or name,
+            "doc_type": "order" if doc.get("doc_type") == "order" else "invoice", "file": name, "read_by": "ai"}
+    lines = []
+    for l in doc.get("lines") or []:
+        mass = l.get("net_mass_kg")
+        mass = float(mass) if isinstance(mass, (int, float)) else (parse_mass(mass) or parse_number(mass))
+        desc = str(l.get("description") or "").strip()
+        if desc:
+            lines.append({"description": desc, "cn": normalize_cn_text(l.get("cn")), "net_mass_kg": mass,
+                          "origin": normalize_origin(str(l.get("origin") or "")), **meta})
+    return lines

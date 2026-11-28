@@ -9,7 +9,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from cbam.agent import answer
+from cbam.agent import answer, extract_document
 from cbam.annex import check_annex_i, load_annex
 from cbam.cost import estimate_cost, load_default_values, load_prices
 from cbam.documents import report_pdf, supplier_letter
@@ -360,6 +360,20 @@ lines = None
 planned_lines = []  # order confirmations: planned imports, never counted as imported
 
 
+def gemini_key():
+    try:
+        key = st.secrets.get("GEMINI_API_KEY")
+    except Exception:  # no secrets.toml locally
+        key = None
+    return key or os.environ.get("GEMINI_API_KEY")
+
+
+@st.cache_data(show_spinner=False)
+def _read_ai(data, name):
+    """Fallback for PDFs our parser cannot read (scans, photos, unusual layouts)."""
+    return extract_document(data, name, gemini_key())
+
+
 @st.cache_data(show_spinner=False)
 def _read(blobs):
     """Parse each document once; Streamlit reruns the script on every click."""
@@ -370,8 +384,26 @@ def use_documents(blobs):
     """blobs: list of (bytes, file name), PDF or CSV. Returns invoice lines as DataFrame (or None)."""
     global planned_lines
     imported, planned_lines, errors = _read(tuple(blobs))
-    for e in errors:
-        st.warning(e)
+    planned_lines = list(planned_lines)
+    imported = list(imported)
+    failed = {e.split(":")[0]: e for e in errors}
+    if failed and gemini_key():
+        for data, name in blobs:
+            if name in failed and name.lower().endswith(".pdf"):
+                try:
+                    with st.spinner(_("{f} wird mit KI gelesen …", f=name)):
+                        ai = _read_ai(data, name)
+                except Exception as e:  # API down or quota: keep the parser's message
+                    failed[name] += f" · KI: {type(e).__name__}"
+                    continue
+                if ai:
+                    del failed[name]
+                    st.info(_("{f}: per KI gelesen — bitte Codes und Gewichte unten prüfen.", f=name))
+                    for l in ai:
+                        (planned_lines if l["doc_type"] == "order" else imported).append(l)
+    for e in failed.values():
+        st.warning(_("{f}: konnte nicht gelesen werden. Bitte als CSV hochladen oder Positionen unten von Hand eintragen.",
+                     f=e.split(":")[0]) + f" ({e.split(':', 1)[-1].strip()})")
     st.caption(_("{n} Dokument(e) gelesen: {inv} Rechnungszeile(n), {plan} geplante Zeile(n) aus Auftragsbestätigungen.",
                  n=len(blobs), inv=len(imported), plan=len(planned_lines)))
     return pd.DataFrame(imported) if imported else None
@@ -711,11 +743,7 @@ with t_what:
                 st.info(_("Für diesen KN-Code gibt es in unseren Daten keinen Standardwert."))
 
 with t_ask:
-    try:
-        api_key = st.secrets.get("GEMINI_API_KEY")
-    except Exception:  # no secrets.toml locally
-        api_key = None
-    api_key = api_key or os.environ.get("GEMINI_API_KEY")
+    api_key = gemini_key()
     if not api_key:
         st.caption(_("KI-Assistent aus (kein GEMINI_API_KEY) — Sie erhalten eine feste Zusammenfassung."))
     with st.form("ask", clear_on_submit=True):

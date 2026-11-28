@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from cbam.annex import check_annex_i
-from cbam.extract import (ExtractionError, extract_lines, normalize_cn_text, normalize_origin,
+from cbam.extract import (ExtractionError, extract_lines, extract_pdf, normalize_cn_text, normalize_origin,
                           parse_number)
 
 DEMO = Path(__file__).resolve().parent.parent / "demo"
@@ -20,7 +20,7 @@ def test_parse_number(s, v):
 @pytest.mark.parametrize("s, iso", [
     ("Türkei (TR)", "TR"), ("Turkey", "TR"), ("cn", "CN"), ("Volksrepublik China", "CN"),
     ("Indien", "IN"), ("Atlantis", None), ("Ukraine", "UA"), ("Made in UK", "GB"),
-    ("Indiana, USA", "US"), ("Russland", None),
+    ("Indiana, USA", "US"), ("Atlantis", None), ("Russland", "RU"), ("Aserbaidschan", "AZ"),
 ])
 def test_normalize_origin(s, iso):
     assert normalize_origin(s) == iso
@@ -127,3 +127,30 @@ def test_invoice_without_ruling_lines_english():
 def test_invoice_without_ruling_lines_single_row_weight_column():
     lines = extract_lines(FIX / "invoice_no_grid_de_one_line.pdf")
     assert len(lines) == 1 and lines[0]["net_mass_kg"] == 1200.0 and lines[0]["cn"] is None
+
+
+# Layouts seen in real invoices: weight only in "Menge"/"Quantity" with a unit, no table at all,
+# country names outside the old list, origin only in the document header.
+def test_weight_in_quantity_column_and_origin_azerbaijan():
+    (l,) = extract_pdf(FIX / "invoice_quantity_kg_azerbaijan.pdf")
+    assert (l["cn"], l["net_mass_kg"], l["origin"], l["invoice"]) == ("7208 39 00", 60000.0, "AZ", "KME-2026-184")
+    assert l["supplier"] == "Kaspia Metall Export MMC"
+
+
+def test_quantity_in_tonnes_and_goods_description_beats_item_column():
+    lines = extract_pdf(FIX / "invoice_quantity_tonnes.pdf")
+    assert lines[0]["description"].startswith("Aluminium plates") and lines[0]["net_mass_kg"] == 12500.0
+    assert lines[0]["origin"] == "VN" and lines[1]["net_mass_kg"] is None  # "40 pcs" is not a mass
+
+
+def test_invoice_without_any_table_is_read_line_by_line():
+    lines = extract_pdf(FIX / "invoice_text_only_en.pdf")
+    assert [(l["cn"], l["net_mass_kg"], l["origin"]) for l in lines] == [
+        ("7208 51 20", 24500.0, "UA"), ("7213 91 10", 8200.0, "UA")]
+
+
+@pytest.mark.parametrize("cell,kg", [("60.000 kg", 60000.0), ("12,5 t", 12500.0), ("8,200 kg", 8200.0),
+                                     ("46 Stk", None), ("1.5 to", 1500.0)])
+def test_parse_mass_units(cell, kg):
+    from cbam.extract import parse_mass
+    assert parse_mass(cell) == kg

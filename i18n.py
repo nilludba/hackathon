@@ -342,6 +342,13 @@ T.update({
     "PDF oder CSV — oder erst das Beispiel ansehen. Codes, Gewichte und Herkunft werden erkannt.": {"en": "PDF or CSV — or look at the example first. Codes, weights and origin are recognised."},
 })
 
+T.update({
+    "{f} wird mit KI gelesen …": {"en": "Reading {f} with AI …"},
+    "{f}: per KI gelesen — bitte Codes und Gewichte unten prüfen.": {"en": "{f}: read by AI — please check codes and weights below."},
+    "{f}: konnte nicht gelesen werden. Bitte als CSV hochladen oder Positionen unten von Hand eintragen.":
+        {"en": "{f}: could not be read. Please upload it as CSV or enter the items below by hand."},
+})
+
 def tr(text, lang, **kw):
     """Translate a German UI text and fill its {placeholders}."""
     s = T.get(text, {}).get(lang, text)

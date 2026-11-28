@@ -25,23 +25,78 @@ class ExtractionError(ValueError):
 
 COUNTRIES = {
     "TR": ["türkei", "turkei", "türkiye", "turkiye", "turkey"],
-    "CN": ["china", "volksrepublik china", "prc"],
+    "CN": ["china", "volksrepublik china", "prc", "people s republic of china"],
     "IN": ["indien", "india"],
     "RS": ["serbien", "serbia"],
     "UA": ["ukraine"],
-    "BA": ["bosnien", "bosnia"],
-    "KR": ["südkorea", "korea", "south korea"],
+    "BA": ["bosnien", "bosnien und herzegowina", "bosnia", "bosnia and herzegovina"],
+    "KR": ["südkorea", "suedkorea", "republik korea", "korea", "south korea", "republic of korea"],
     "VN": ["vietnam", "viet nam"],
-    "US": ["usa", "vereinigte staaten", "united states"],
-    "GB": ["vereinigtes königreich", "united kingdom", "großbritannien", "uk"],
+    "US": ["usa", "vereinigte staaten", "united states", "united states of america"],
+    "GB": ["vereinigtes königreich", "united kingdom", "großbritannien", "grossbritannien", "england", "uk"],
+    "AZ": ["aserbaidschan", "azerbaijan"],
+    "KZ": ["kasachstan", "kazakhstan"],
+    "GE": ["georgien", "georgia"],
+    "AM": ["armenien", "armenia"],
+    "UZ": ["usbekistan", "uzbekistan"],
+    "RU": ["russland", "russische föderation", "russia", "russian federation"],
+    "BY": ["belarus", "weißrussland", "weissrussland"],
+    "MD": ["moldau", "moldawien", "moldova"],
+    "MK": ["nordmazedonien", "mazedonien", "north macedonia", "macedonia"],
+    "AL": ["albanien", "albania"],
+    "ME": ["montenegro"],
+    "XK": ["kosovo"],
+    "CH": ["schweiz", "switzerland"],
+    "NO": ["norwegen", "norway"],
+    "IS": ["island", "iceland"],
+    "LI": ["liechtenstein"],
+    "EG": ["ägypten", "aegypten", "egypt"],
+    "MA": ["marokko", "morocco"],
+    "DZ": ["algerien", "algeria"],
+    "TN": ["tunesien", "tunisia"],
+    "ZA": ["südafrika", "suedafrika", "south africa"],
+    "MZ": ["mosambik", "mozambique"],
+    "NG": ["nigeria"],
+    "AE": ["vereinigte arabische emirate", "united arab emirates", "vae", "uae"],
+    "SA": ["saudi arabien", "saudi-arabien", "saudi arabia"],
+    "QA": ["katar", "qatar"],
+    "BH": ["bahrain"],
+    "OM": ["oman"],
+    "IR": ["iran"],
+    "IL": ["israel"],
+    "JO": ["jordanien", "jordan"],
+    "PK": ["pakistan"],
+    "BD": ["bangladesch", "bangladesh"],
+    "TH": ["thailand"],
+    "MY": ["malaysia"],
+    "ID": ["indonesien", "indonesia"],
+    "PH": ["philippinen", "philippines"],
+    "TW": ["taiwan"],
+    "JP": ["japan"],
+    "HK": ["hongkong", "hong kong"],
+    "SG": ["singapur", "singapore"],
+    "AU": ["australien", "australia"],
+    "NZ": ["neuseeland", "new zealand"],
+    "CA": ["kanada", "canada"],
+    "MX": ["mexiko", "mexico"],
+    "BR": ["brasilien", "brazil"],
+    "AR": ["argentinien", "argentina"],
+    "CL": ["chile"],
+    "PE": ["peru"],
+    "CO": ["kolumbien", "colombia"],
+    "VE": ["venezuela"],
 }
 
 # header keyword -> field
 HEADER_KEYS = [
-    ("description", ["beschreibung", "description", "warenbezeichnung", "artikel", "bezeichnung"]),
-    ("cn", ["kn-code", "kn code", "kn", "hs", "cn code", "zolltarif", "taric", "warennummer"]),
-    ("origin", ["ursprung", "origin", "herkunft", "ursprungsland"]),
-    ("net_mass_kg", ["netto kg", "nettogewicht", "net weight", "netto", "net kg", "net mass", "gewicht", "weight"]),
+    ("description", ["beschreibung", "warenbeschreibung", "description", "goods", "warenbezeichnung", "artikel",
+                     "bezeichnung", "produkt", "product", "item", "ware", "leistung"]),
+    ("cn", ["kn-code", "kn code", "kn", "hs", "hs-code", "hs code", "cn code", "cn-code", "cn", "zolltarif", "taric",
+            "warennummer", "tarifnummer", "statistische warennummer", "commodity code", "customs code"]),
+    ("origin", ["ursprung", "origin", "herkunft", "ursprungsland", "country of origin", "coo", "land"]),
+    ("net_mass_kg", ["netto kg", "nettogewicht", "net weight", "netto", "net kg", "net mass", "nettomasse", "eigenmasse",
+                     "gewicht", "weight", "masse", "kg", "tonnage"]),
+    ("qty", ["menge", "quantity", "qty", "anzahl", "liefermenge", "amount"]),
 ]
 
 # Fallback for invoices whose table has no ruling lines: columns from text positions
@@ -74,6 +129,22 @@ def parse_number(s):
         return None
 
 
+UNIT_RE = re.compile(r"(\d[\d.,\s]*\d|\d)\s*(kg|kgs|kilogramm|kilogram|t|to|tonnen|tonne|tons|mt)\b", re.I)
+
+
+def parse_mass(cell, weight_column=False):
+    """Mass in kg from a cell: '60.000 kg' -> 60000, '12,5 t' -> 12500.
+    A plain number counts only in a weight column (kg assumed); '46 Stk' never counts."""
+    m = UNIT_RE.search(str(cell or ""))
+    if m:
+        v = parse_number(m.group(1).replace(" ", ""))
+        if v is not None:
+            return v if m.group(2).lower().startswith("k") else v * 1000
+    if weight_column and not re.search(r"[a-zA-Z]{2,}", str(cell or "").replace("kg", "")):
+        return parse_number(cell)
+    return None
+
+
 def normalize_origin(s):
     s = (s or "").strip()
     m = re.search(r"\(([A-Z]{2})\)", s)
@@ -83,7 +154,7 @@ def normalize_origin(s):
         return s.upper()
     words = " " + re.sub(r"[^\wäöüß]+", " ", s.lower()).strip() + " "
     for iso, names in COUNTRIES.items():
-        if any(f" {n} " in words for n in names):
+        if any(f" {re.sub(r'[^\wäöüß]+', ' ', n)} " in words for n in names):
             return iso
     return None
 
@@ -117,21 +188,38 @@ def _header_fields(text):
         number = m.group(1)
     m = re.search(r"(?<![\w-])(?:Lieferant|Seller|Supplier|Verkäufer)\b[^:\n]*:\s*(.+)", text, re.I)
     supplier = m.group(1).strip() if m else (text.strip().splitlines() or [None])[0]
+    if supplier:  # first line often also holds the document title: "Kaspia Metall MMC RECHNUNG"
+        supplier = re.sub(r"\s+(HANDELSRECHNUNG|RECHNUNG|COMMERCIAL INVOICE|INVOICE|PROFORMA.*|AUFTRAGSBESTÄTIGUNG)\s*$",
+                          "", supplier, flags=re.I).strip() or supplier
     doc_type = "order" if re.search(r"Auftragsbestätigung|Order Confirmation|Proforma", text, re.I) else "invoice"
     return date, number, supplier, doc_type
+
+
+def _doc_origin(text):
+    """'Ursprungsland Aserbaidschan', 'Country of origin: China', 'Warenursprung: TR' -> ISO-2."""
+    for m in re.finditer(r"(?:Ursprungsland|Warenursprung|Ursprung|Country of origin|Origin)\s*[:]?\s*([^\n,;.]{2,40})", text, re.I):
+        iso = normalize_origin(m.group(1)) or normalize_origin(m.group(1).split()[0] if m.group(1).split() else "")
+        if iso:
+            return iso
+    return None
+
+
+def _doc_mass(text):
+    m = re.search(r"(?:Nettogewicht|Net weight|Nettomasse|Gesamtgewicht netto)\s*[:]?\s*([\d.,\s]+\s*(?:kg|t)\b)", text, re.I)
+    return parse_mass(m.group(1)) if m else None
 
 
 def _map_header(row):
     cells = [re.sub(r"\s+", " ", (c or "").replace("\n", " ")).strip().lower() for c in row]
     mapping = {}
-    for field, keys in HEADER_KEYS:
-        for i, c in enumerate(cells):
-            if i in mapping.values():
-                continue
-            if any(c.startswith(k) or f" {k}" in f" {c}" for k in keys):
-                mapping[field] = i
+    for field, keys in HEADER_KEYS:  # keys in priority order: "Goods description" beats "Item"
+        for k in keys:
+            hit = next((i for i, c in enumerate(cells) if i not in mapping.values()
+                        and (c.startswith(k) or f" {k}" in f" {c}" or (len(k) > 5 and k in c))), None)
+            if hit is not None:
+                mapping[field] = hit
                 break
-    return mapping if {"description", "net_mass_kg"} <= mapping.keys() else None
+    return mapping if "description" in mapping and ({"net_mass_kg", "qty"} & mapping.keys()) else None
 
 
 def _lines_from_table(table, meta):
@@ -142,8 +230,12 @@ def _lines_from_table(table, meta):
             continue
         get = lambda f: (row[mapping[f]] or "").strip() if f in mapping and mapping[f] < len(row) else ""
         desc = re.sub(r"\s+", " ", get("description"))
-        mass = parse_number(get("net_mass_kg"))
-        if not desc or mass is None or re.match(r"(summe|total|gesamt)", desc, re.I):
+        mass = parse_mass(get("net_mass_kg"), weight_column=True) if "net_mass_kg" in mapping else None
+        if mass is None and "qty" in mapping:
+            mass = parse_mass(get("qty"))
+        if not desc or re.match(r"(zwischen)?(summe|total|gesamt|subtotal)", desc, re.I):
+            continue
+        if mass is None and not normalize_cn_text(get("cn")):
             continue
         lines.append({
             "description": desc,
@@ -175,8 +267,35 @@ def extract_pdf(path, name=None):
             for page in pdf.pages:
                 for table in page.extract_tables(settings):
                     lines += _lines_from_table(table, meta)
+        if not lines:  # no table at all: one line of text per position (CN code + mass with unit)
+            lines = _lines_from_text(text, meta)
+    origin, doc_mass = _doc_origin(text), _doc_mass(text)
+    for l in lines:
+        l["origin"] = l["origin"] or origin
+    if len(lines) == 1 and lines[0]["net_mass_kg"] is None:
+        lines[0]["net_mass_kg"] = doc_mass
     if not lines:
         raise ExtractionError(f"{name}: no line-item table found")
+    return lines
+
+
+CN_RE = re.compile(r"(?<![\d.,])(\d{4}\s?\d{2}(?:\s?\d{2})?(?:\s?\d{2})?)(?![\d.,])")
+
+
+def _lines_from_text(text, meta):
+    """Last resort for PDFs without any detectable table: a text line with a CN code
+    and a mass with unit ('... 7208 39 00 ... 60.000 kg ...') is one position."""
+    lines = []
+    for raw in text.splitlines():
+        cn_m, mass_m = CN_RE.search(raw), UNIT_RE.search(raw)
+        if not cn_m or not mass_m or mass_m.start() < cn_m.start():
+            continue
+        desc = re.sub(r"^\s*\d{1,3}[.)]?\s+", "", raw[:cn_m.start()]).strip(" -|:")
+        if not desc or re.match(r"(zwischen)?(summe|total|gesamt)", desc, re.I):
+            continue
+        lines.append({"description": desc, "cn": normalize_cn_text(cn_m.group(1)),
+                      "net_mass_kg": parse_mass(mass_m.group(0)),
+                      "origin": normalize_origin(raw[cn_m.end():mass_m.start()]), **meta})
     return lines
 
 
