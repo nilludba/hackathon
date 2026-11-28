@@ -56,11 +56,20 @@ def factor(dv, year):
     return dv.get(f"total_incl_markup_{year}") or dv["total_tco2_per_t"]
 
 
+OTHER = "XX"  # "Other countries and territories" in Annex I of Impl. Reg. (EU) 2025/2621
+
+
 def default_value(cn, country, values):
-    """Longest-prefix default value for (CN code, origin country), or None."""
+    """Longest-prefix default value for (CN code, origin country), or None.
+
+    Annex I, introductory note: where a country is not listed, or listed without a value
+    for the good, the values for "Other countries and territories" apply (country_iso XX)."""
     code = normalize_cn(cn)
-    matches = [v for v in values if v["country_iso"] == country and code.startswith(v["cn"])]
-    return max(matches, key=lambda v: len(v["cn"])) if matches else None
+    for iso in (country, OTHER):
+        matches = [v for v in values if v["country_iso"] == iso and code.startswith(v["cn"])]
+        if matches:
+            return max(matches, key=lambda v: len(v["cn"]))
+    return None
 
 
 def estimate_cost(lines, price, values):

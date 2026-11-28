@@ -50,3 +50,12 @@ def test_price_per_quarter_and_markup():
     assert r["total_emissions_t"] == pytest.approx(44.0)          # 20 t x 2.2 (2026 mark-up)
     assert r["certificate_cost_eur"] == pytest.approx(22 * 75 + 22 * 82)
     assert price_for("2026-11-01", prices) == ("2026-Q3 (Schätzung für 2026-Q4)", 82.0)
+
+
+def test_other_countries_and_territories_apply_when_country_has_no_value():
+    values = VALUES + [{"country_iso": "XX", "cn": "7318", "total_tco2_per_t": 4.0, "source": "test"},
+                       {"country_iso": "XX", "cn": "7604", "total_tco2_per_t": 12.0, "source": "test"}]
+    assert default_value("7318 15", "AZ", values)["total_tco2_per_t"] == 4.0   # country not listed
+    assert default_value("7604 29", "TR", values)["total_tco2_per_t"] == 12.0  # listed, no value for the good
+    assert default_value("7318 15", "TR", values)["total_tco2_per_t"] == 2.5   # own value wins
+    assert default_value("2716", "AZ", values) is None
